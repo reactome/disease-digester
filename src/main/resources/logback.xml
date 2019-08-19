@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="3 seconds">
+	<contextName>report</contextName>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{32} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<jmxConfigurator />
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+	<logger name="org.springframework" level="ERROR" />
+	<logger name="org.hibernate" level="ERROR" />
+	<logger name="com.zaxxer" level="ERROR" />
+	<logger name="net.sf.uadetector" level="ERROR" />
+
+	<logger name="org.reactome.server" level="ALL" />
+</configuration>
