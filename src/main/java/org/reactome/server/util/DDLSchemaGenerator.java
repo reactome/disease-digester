@@ -27,7 +27,7 @@ public class DDLSchemaGenerator {
 
     private static final String DB_NAME = "digester";
     private static final String DB_USER = "root";
-    private static final String DB_PASS = "";
+    private static final String DB_PASS = "root123123";
     private static String dbScript = "sql/ddl-report-##action##.sql";
     private static Map<String, String> settings = new HashMap<>();
 
@@ -36,7 +36,7 @@ public class DDLSchemaGenerator {
         settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
         settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
         // do not generate directly in the server,
-        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME);
+        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME+"?characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
         settings.put(Environment.USER, DB_USER);
         settings.put(Environment.PASS, DB_PASS);
     }

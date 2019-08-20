@@ -14,5 +14,4 @@ public class DiseaseDigesterController {
     public @ResponseBody String echo(@PathVariable String echo) {
         return echo;
     }
-
 }
