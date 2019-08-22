@@ -1,14 +1,9 @@
 package org.reactome.server.config;
 
-import java.util.Objects;
-import java.util.Properties;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
 import org.reactome.server.Application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -19,10 +14,17 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import java.util.Objects;
+import java.util.Properties;
+
+
 @Configuration
-@EnableJpaRepositories(basePackageClasses = Application.class)
-@PropertySource("persistence-test.properties")
 @EnableTransactionManagement
+@PropertySource("persistence-test.properties")
+@ComponentScan(basePackageClasses = Application.class)
+@EnableJpaRepositories(basePackageClasses = Application.class)
 public class DiseaseDigesterJpaConfig {
 
     @Autowired
@@ -49,7 +51,7 @@ public class DiseaseDigesterJpaConfig {
     }
 
     @Bean
-    JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory);
         return transactionManager;

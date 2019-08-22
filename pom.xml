@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.reactome.server</groupId>
     <artifactId>disease-digester</artifactId>
@@ -16,15 +16,18 @@
         <deploymentPath>/</deploymentPath>
         <spring.version>5.0.5.RELEASE</spring.version>
         <mysql.connector.version>8.0.11</mysql.connector.version>
-        <hibernate.version>5.3.0.Final</hibernate.version>
+        <hibernate.version>5.4.1.Final</hibernate.version>
         <hibernate.validator.version>6.0.9.Final</hibernate.validator.version>
         <spring.data.jpa.version>2.0.6.RELEASE</spring.data.jpa.version>
         <hikari.version>3.1.0</hikari.version>
         <jackson.version>2.9.4</jackson.version>
         <h2.version>1.4.197</h2.version>
+        <jsap.version>2.1</jsap.version>
         <javax.servlet.version>4.0.0</javax.servlet.version>
         <commons.lang.version>3.7</commons.lang.version>
+        <jaxb.version>2.3.1</jaxb.version>
 
+        <httpclient.version>4.5.3</httpclient.version>
         <maven.war.version>2.6</maven.war.version>
         <jdk.version>1.8</jdk.version>
         <slf4j.version>1.7.25</slf4j.version>
@@ -70,6 +73,12 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
+        </dependency>
+        <!-- java.lang.NoClassDefFoundError: org/apache/http/client/HttpClient-->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
         </dependency>
         <!-- lightweight and lightning fast JDBC connection pooling framework -->
         <dependency>
@@ -131,7 +140,12 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-
+        <!--JSAP console reader-->
+        <dependency>
+            <groupId>com.martiansoftware</groupId>
+            <artifactId>jsap</artifactId>
+            <version>${jsap.version}</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>
