@@ -1,75 +1,59 @@
 package org.reactome.server.tools;
 
-import com.martiansoftware.jsap.*;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
+import com.martiansoftware.jsap.JSAPResult;
 import org.reactome.server.domain.DiseaseItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.reactome.server.domain.GeneItem;
 
-import javax.persistence.EntityManager;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 public class DiseaseParser {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiseaseParser.class);
-    private static final String DB_NAME = "digester";
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "root";
-    private static final String DB_CREATE = "create";
-    private static Map<String, String> settings = new HashMap<>();
-    private static EntityManager entityManager;
+    private List<DiseaseItem> diseaseItems;
 
-    static {
-        settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
-        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
-        settings.put(Environment.USER, DB_USER);
-        settings.put(Environment.PASS, DB_PASS);
-        settings.put(Environment.HBM2DDL_AUTO, DB_CREATE);
-        Configuration configuration = new Configuration();
-        configuration.addAnnotatedClass(DiseaseItem.class);
-        SessionFactory sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
-        entityManager = sessionFactory.createEntityManager();
+
+    DiseaseParser(JSAPResult config) throws Exception {
+        setDiseaseItems(getDiseaseItemsFromFile(config));
     }
 
-
-    public static void main(String[] args) throws JSAPException {
-
-        SimpleJSAP jsap = new SimpleJSAP(
-                DiseaseParser.class.getName(),
-                "Read and save disease table data from file to database.",
-                new Parameter[]{
-                        new FlaggedOption("fileName", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'f', "fileName", "The disease overlay table data in tsv/csv format with columns: 'diseaseId', 'diseaseName' and 'geneSymbol' from DisGeNet").setList(true).setListSeparator(','),
-                }
-        );
-
-        try {
-            saveDiseaseItems(getDiseaseItemsFromFile(jsap.parse(args)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    List<DiseaseItem> getDiseaseItems() {
+        return diseaseItems;
     }
 
-    private static void saveDiseaseItems(List<DiseaseItem> diseaseItems) {
-        entityManager.getTransaction().begin();
-        diseaseItems.forEach(entityManager::persist);
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        LOGGER.info("Load " + diseaseItems.size() + " items into database.");
-        System.exit(0);
+    private void setDiseaseItems(List<DiseaseItem> diseaseItems) {
+        this.diseaseItems = diseaseItems;
     }
 
-    public static List<DiseaseItem> getDiseaseItemsFromFile(JSAPResult config) throws Exception {
+    private List<DiseaseItem> getDiseaseItemsFromFile(JSAPResult config) throws Exception {
         return getDiseaseItemsFromFile(config.getString("fileName"));
     }
 
-    public static List<DiseaseItem> getDiseaseItemsFromFile(String fileName) throws Exception {
+    private BufferedReader getTSVFile(String fileName) throws IOException {
+        BufferedReader TSVFile = new BufferedReader(new FileReader(fileName));
+        String delimiter = fileName.endsWith(".tsv") ? "\t" : ",";
+        TSVFile.readLine();
+        return TSVFile;
+    }
+
+    private Map<String, String> getGeneIdMap(String fileName) throws IOException {
+        Map<String, String> geneMap = new HashMap<>();
+        BufferedReader TSVFile = new BufferedReader(new FileReader(fileName));
+        String delimiter = fileName.endsWith(".tsv") ? "\t" : ",";
+        TSVFile.readLine();
+        String line = TSVFile.readLine();
         StringTokenizer st;
+        while (line != null) {
+            st = new StringTokenizer(line, delimiter);
+            geneMap.put(st.nextElement().toString(), st.nextElement().toString());
+            line = TSVFile.readLine();
+        }
+        TSVFile.close();
+        return geneMap;
+    }
+//    todo: use lambada
+    private List<DiseaseItem> getDiseaseItemsFromFile(String fileName) throws Exception {
 
         BufferedReader TSVFile = new BufferedReader(new FileReader(fileName));
         String delimiter = fileName.endsWith(".tsv") ? "\t" : ",";
@@ -80,6 +64,7 @@ public class DiseaseParser {
         int[] columnIndex = new int[]{
                 columns.indexOf("diseaseId"),
                 columns.indexOf("diseaseName"),
+                columns.indexOf("geneId"),
                 columns.indexOf("geneSymbol"),
         };
 //      <-- read table header start -->
@@ -88,6 +73,7 @@ public class DiseaseParser {
 
 //      <-- read content start -->
         String line = TSVFile.readLine(); // Read first data row.
+        StringTokenizer st;
         while (line != null) {
             st = new StringTokenizer(line, delimiter);
             List<String> dataArray = new ArrayList<>();
@@ -133,7 +119,7 @@ public class DiseaseParser {
             diseaseItem.setDiseaseId(entry.getKey());
             diseaseItem.setDiseaseName(entry.getValue());
             Set<String> geneSet = overlay.get(entry.getKey());
-            diseaseItem.setGeneList((new ArrayList<>(geneSet)));
+//            diseaseItem.setGeneList((new ArrayList<GeneItem>(geneSet)));
             diseaseItems.add(diseaseItem);
         }
         return diseaseItems;

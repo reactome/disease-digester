@@ -27,7 +27,7 @@ public class DiseaseDigesterController {
         return echo;
     }
 
-    @GetMapping(value = "/test/findAll", produces = "application/json")
+    @GetMapping(value = "/test/findAll")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     List<DiseaseItem> findAll() {

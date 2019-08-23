@@ -25,7 +25,6 @@
         <jsap.version>2.1</jsap.version>
         <javax.servlet.version>4.0.0</javax.servlet.version>
         <commons.lang.version>3.7</commons.lang.version>
-        <jaxb.version>2.3.1</jaxb.version>
 
         <httpclient.version>4.5.3</httpclient.version>
         <maven.war.version>2.6</maven.war.version>
@@ -239,7 +238,7 @@
                     <finalName>digester-importer</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>org.reactome.server.tools.DiseaseParser</mainClass>
+                            <mainClass>org.reactome.server.tools.Importer</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -1,5 +1,6 @@
 package org.reactome.server.domain;
 
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -10,15 +11,26 @@ import java.util.List;
 @Table(name = "disease")
 public class DiseaseItem {
     @Id
-    @Column(name = "id", nullable = false, length = 32, unique = true)
+    @Column(name = "id", nullable = false, length = 16, unique = true)
     @GenericGenerator(name = "idGenerator", strategy = "uuid.hex")
     @GeneratedValue(generator = "idGenerator")
     private String id;
     private String diseaseId;
     private String diseaseName;
-    @ElementCollection
-//    @OneToMany(fetch = FetchType.EAGER)
-    private List<String> geneList;
+    private String diseaseClass;
+    @OneToMany(mappedBy = "id", fetch = FetchType.EAGER)
+    private List<GeneItem> geneItems;
+
+    public DiseaseItem() {
+    }
+
+    public DiseaseItem(String diseaseId, String diseaseName, String diseaseClass, List<GeneItem> geneItems) {
+        this.diseaseId = diseaseId;
+        this.diseaseName = diseaseName;
+        this.diseaseClass = diseaseClass;
+        this.geneItems = geneItems;
+    }
+
 
     public String getId() {
         return id;
@@ -44,12 +56,20 @@ public class DiseaseItem {
         this.diseaseName = diseaseName;
     }
 
-    public List<String> getGeneList() {
-        return geneList;
+    public String getDiseaseClass() {
+        return diseaseClass;
     }
 
-    public void setGeneList(List<String> geneList) {
-        this.geneList = geneList;
+    public void setDiseaseClass(String diseaseClass) {
+        this.diseaseClass = diseaseClass;
+    }
+
+    public List<GeneItem> getGeneItems() {
+        return geneItems;
+    }
+
+    public void setGeneItems(List<GeneItem> geneItems) {
+        this.geneItems = geneItems;
     }
 
     @Override
@@ -58,7 +78,8 @@ public class DiseaseItem {
                 "id='" + id + '\'' +
                 ", diseaseId='" + diseaseId + '\'' +
                 ", diseaseName='" + diseaseName + '\'' +
-                ", geneList=" + geneList +
+                ", diseaseClass='" + diseaseClass + '\'' +
+                ", geneItems=" + geneItems +
                 '}';
     }
 }

@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.reactome.server.TestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.reactome.server.tools.DiseaseParser.getDiseaseItemsFromFile;
 
 public class DiseaseItemServiceTest extends TestBase {
 
@@ -13,6 +12,6 @@ public class DiseaseItemServiceTest extends TestBase {
 
     @Test
     public void saveAllTest() throws Exception {
-        diseaseItemService.saveAll(getDiseaseItemsFromFile("src/test/resources/curated_gene_disease_associations.tsv"));
+//        diseaseItemService.saveAll(getDiseaseItemsFromFile("src/test/resources/curated_gene_disease_associations.tsv"));
     }
 }
