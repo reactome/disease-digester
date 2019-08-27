@@ -44,7 +44,7 @@ shown above the column (!) whole with pagination
 - in the future, there will be an additional column "Disease class", with
 a mapping file from "Disease ID" to "Disease Class". The new "Disease
 class" column should also be searchable and auto-completable.  This is
-not for now, just as a heads-up.
+not for now, just as a heads-up. Please note that there is an n:m mapping. If you have more than one disease class, then duplicate the row, one row for each disease class. 
 
 disease class 
 cancer

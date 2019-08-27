@@ -1,12 +1,15 @@
 package org.reactome.server.controller;
 
 import org.reactome.server.domain.DiseaseItem;
+import org.reactome.server.domain.GeneItem;
+import org.reactome.server.domain.PaginationResult;
 import org.reactome.server.service.DiseaseItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -34,5 +37,24 @@ public class DiseaseDigesterController {
         List<DiseaseItem> diseaseItems = diseaseItemService.findAll();
         logger.info(diseaseItems.toString());
         return diseaseItems;
+    }
+
+    @GetMapping(value = "/test/saveOne")
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    DiseaseItem saveOne() {
+        DiseaseItem diseaseItem = new DiseaseItem();
+        diseaseItem.setDiseaseClass("test");
+        diseaseItem.setDiseaseId("test");
+        diseaseItem.setDiseaseName("test");
+        diseaseItem.setGeneItems(Collections.singletonList(new GeneItem("demo", "demo", "demo", diseaseItem)));
+        return diseaseItemService.save(diseaseItem);
+    }
+
+    @GetMapping(value = "/test/pagination")
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    PaginationResult pagination(@RequestParam("pageNumber") Integer pageNumber, @RequestParam(value = "pageSize") Integer pageSize) {
+        return diseaseItemService.getPaginationResult(pageNumber, pageSize);
     }
 }

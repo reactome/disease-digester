@@ -7,27 +7,28 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "disease_gene")
-public class GeneItem {
+public class GeneItem implements Cloneable {
     @Id
-    @Column(name = "id", nullable = false, length = 16, unique = true)
+    @JsonIgnore
+    @Column(name = "id", nullable = false, length = 32, unique = true)
     @GenericGenerator(name = "idGenerator", strategy = "uuid.hex")
     @GeneratedValue(generator = "idGenerator")
     private String id;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private DiseaseItem diseaseItem;
     private String geneId;
     private String geneSymbol;
-    private String geneACCNum;
+    private String accessionNumber;
 
     public GeneItem() {
     }
 
-    public GeneItem(DiseaseItem diseaseItem, String geneId, String geneSymbol, String geneACCNum) {
-        this.diseaseItem = diseaseItem;
+    public GeneItem(String geneId, String geneSymbol, String accessionNumber, DiseaseItem diseaseItem) {
         this.geneId = geneId;
         this.geneSymbol = geneSymbol;
-        this.geneACCNum = geneACCNum;
+        this.accessionNumber = accessionNumber;
+        this.diseaseItem = diseaseItem;
     }
 
     public String getId() {
@@ -62,12 +63,18 @@ public class GeneItem {
         this.geneSymbol = geneSymbol;
     }
 
-    public String getGeneACCNum() {
-        return geneACCNum;
+    public String getAccessionNumber() {
+        return accessionNumber;
     }
 
-    public void setGeneACCNum(String geneACCNum) {
-        this.geneACCNum = geneACCNum;
+    public void setAccessionNumber(String accessionNumber) {
+        this.accessionNumber = accessionNumber;
+    }
+
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     @Override
@@ -76,7 +83,7 @@ public class GeneItem {
                 "id='" + id + '\'' +
                 ", geneId='" + geneId + '\'' +
                 ", geneSymbol='" + geneSymbol + '\'' +
-                ", geneACCNum='" + geneACCNum + '\'' +
+                ", accessionNumber='" + accessionNumber + '\'' +
                 '}';
     }
 }
