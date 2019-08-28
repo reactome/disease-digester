@@ -1,7 +1,6 @@
 package org.reactome.server.tools;
 
 import com.martiansoftware.jsap.*;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -20,12 +19,12 @@ public class Importer {
     private static final String DB_NAME = "digester";
     private static final String DB_USER = "root";
     private static final String DB_PASS = "root";
-    private static final String DB_CREATE = "update";
+    private static final String DB_CREATE = "create";
     private static final String SHOW_SQL = "false";
     private static final String FORMAT_SQL = "false";
-    private static final String STORAGE_ENGINE = "innodb";
+    //    private static final String STORAGE_ENGINE = "innodb";
     private static Map<String, String> settings = new HashMap<>();
-    private static Session session;
+    private static SessionFactory sessionFactory;
 
 
     static {
@@ -37,12 +36,11 @@ public class Importer {
         settings.put(Environment.HBM2DDL_AUTO, DB_CREATE);
         settings.put(Environment.SHOW_SQL, SHOW_SQL);
         settings.put(Environment.FORMAT_SQL, FORMAT_SQL);
-        settings.put(Environment.STORAGE_ENGINE, STORAGE_ENGINE);
+//        settings.put(Environment.STORAGE_ENGINE, STORAGE_ENGINE);
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(DiseaseItem.class);
         configuration.addAnnotatedClass(GeneItem.class);
-        SessionFactory sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
-        session = sessionFactory.openSession();
+        sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
     }
 
 
@@ -64,18 +62,18 @@ public class Importer {
     }
 
     private static void saveDiseaseItems(List<DiseaseItem> diseaseItems) {
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            diseaseItems.forEach(session::save);
-            transaction.commit();
-        } catch (HibernateException e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-        } finally {
+//        Collections.synchronizedList(diseaseItems).parallelStream().forEach(diseaseItem -> {
+        long start = System.currentTimeMillis();
+        diseaseItems.parallelStream().forEach(diseaseItem -> {
+            Session session = sessionFactory.openSession();
+            Transaction tx = session.beginTransaction();
+//            if (diseaseItem.getDiseaseClass().indexOf(";") != -1) System.out.println(diseaseItem);
+//            System.out.println(diseaseItem.getDiseaseClass());
+            session.save(diseaseItem);
+            tx.commit();
             session.close();
-        }
-        System.out.println("Load " + diseaseItems.size() + " items into database.");
+        });
+        System.out.println("Load " + diseaseItems.size() + " in: " + (System.currentTimeMillis() - start) / 1000.0 + "s items into database.");
         System.exit(0);
     }
 }

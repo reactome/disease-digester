@@ -31,12 +31,20 @@ public class DiseaseItemService {
         return diseaseItemRepository.findAll();
     }
 
+    public List<DiseaseItem> findDiseaseItemsByDiseaseNameContaining(String diseaseName) {
+        return diseaseItemRepository.findDiseaseItemsByDiseaseNameContaining(diseaseName);
+    }
+
+    public List<DiseaseItem> findDiseaseItemsByDiseaseClassContaining(String diseaseClass) {
+        return diseaseItemRepository.findDiseaseItemsByDiseaseClassContaining(diseaseClass);
+    }
+
     public DiseaseItem save(DiseaseItem diseaseItem) {
         diseaseItemRepository.save(diseaseItem);
         return diseaseItem;
     }
 
-    public PaginationResult getPaginationResult(Integer pageNumber, Integer pageSize) {
+    public PaginationResult getPaginationResult(Integer pageNumber, Integer pageSize, String sortBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DiseaseItem> query = criteriaBuilder.createQuery(DiseaseItem.class);
         Root<DiseaseItem> from = query.from(DiseaseItem.class);

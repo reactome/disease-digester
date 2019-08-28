@@ -26,7 +26,7 @@ public class GeneAnalysisService {
     }
 
     // todo: use reactome analysis-service component instead of request data via API from network
-    public String checkGeneAnalysisResult(List<String> geneList) throws EmptyGeneAnalysisResultException {
+    public String checkGeneListAnalysisResult(List<String> geneList) throws EmptyGeneAnalysisResultException {
         String payload = String.join(" ", geneList);
 //        String payload01 = geneList.stream().reduce(" ", String::concat);
         AnalysisResult result = restTemplate.postForObject(ANALYSIS_SERVICE, payload, AnalysisResult.class);

@@ -47,7 +47,7 @@ public class DiseaseDigesterController {
         diseaseItem.setDiseaseClass("test");
         diseaseItem.setDiseaseId("test");
         diseaseItem.setDiseaseName("test");
-        diseaseItem.setGeneItems(Collections.singletonList(new GeneItem("demo", "demo", "demo", diseaseItem)));
+        diseaseItem.setGeneItems(Collections.singletonList(new GeneItem("demo", "demo", "demo")));
         return diseaseItemService.save(diseaseItem);
     }
 
@@ -55,6 +55,6 @@ public class DiseaseDigesterController {
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     PaginationResult pagination(@RequestParam("pageNumber") Integer pageNumber, @RequestParam(value = "pageSize") Integer pageSize) {
-        return diseaseItemService.getPaginationResult(pageNumber, pageSize);
+        return diseaseItemService.getPaginationResult(pageNumber, pageSize,"sortBy");
     }
 }

@@ -2,16 +2,19 @@ package org.reactome.server.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.ManyToAny;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Entity
 @Table(name = "disease")
-public class DiseaseItem implements Cloneable {
+public class DiseaseItem {
     @Id
     @JsonIgnore
     @Column(name = "id", nullable = false, length = 32, unique = true)
@@ -22,7 +25,8 @@ public class DiseaseItem implements Cloneable {
     private String diseaseName;
     private String diseaseClass;
     //    The value of mappedBy attributes is the name of the class field on the other side of the relationship
-    @OneToMany(mappedBy = "diseaseItem", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "diseaseItem", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = GeneItem.class,mappedBy = "diseaseItems",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<GeneItem> geneItems;
 
     public DiseaseItem() {
@@ -33,6 +37,26 @@ public class DiseaseItem implements Cloneable {
         this.diseaseName = diseaseName;
         this.diseaseClass = diseaseClass;
     }
+
+    private DiseaseItem(DiseaseItem diseaseItem) {
+        this.diseaseId = diseaseItem.diseaseId;
+        this.diseaseName = diseaseItem.diseaseName;
+    }
+
+    public List<DiseaseItem> cleavage(DiseaseItem diseaseItem) {
+//        return Arrays.stream(diseaseItem.getDiseaseClass().split(";"))
+//        System.out.println(diseaseItem.getDiseaseClass()+"for :"+Arrays.stream(diseaseItem.getDiseaseClass().split(";")).collect(Collectors.toList()));
+        List<DiseaseItem> clonedDiseaseItems = Arrays.stream(diseaseItem.getDiseaseClass().split(";"))
+                .map(dc -> {
+                    DiseaseItem cloned = new DiseaseItem(diseaseItem);
+                    cloned.setDiseaseClass(dc);
+                    return cloned;
+                }).collect(Collectors.toList());
+
+        clonedDiseaseItems.forEach(d -> d.getGeneItems().forEach(geneItem -> geneItem.setDiseaseItems(clonedDiseaseItems)));
+        return clonedDiseaseItems;
+    }
+
 
     public String getId() {
         return id;
@@ -72,26 +96,6 @@ public class DiseaseItem implements Cloneable {
 
     public void setGeneItems(List<GeneItem> geneItems) {
         this.geneItems = geneItems;
-    }
-
-    @Override
-    public Object clone() {
-        DiseaseItem clonedDisease = null;
-        try {
-            clonedDisease = (DiseaseItem) super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        List<GeneItem> clonedGene = new ArrayList<>();
-        Objects.requireNonNull(clonedDisease).getGeneItems().forEach(oldGene -> {
-            try {
-                clonedGene.add((GeneItem) oldGene.clone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        });
-        clonedDisease.setGeneItems(clonedGene);
-        return clonedDisease;
     }
 
     @Override

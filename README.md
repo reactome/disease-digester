@@ -5,51 +5,53 @@ To represent the disease-gene binary relationship with a REACTOME overlay
 ---
 
 disease-import [usage:]
-- use maven plugin to package/install codes into executable jar file, remember to change the database configuration in location: `org.reactome.server.tools.Importer.java` before you run command
-- download raw data [curated_gene_disease_associations.tsv.gz](http://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz) from [DisGeNET](http://www.disgenet.org) , and unzip it release the `curated_gene_disease_associations.tsv` file as input          
+- use maven plugin to package/install codes into executable jar file, remember to change the database configuration in 
+location: `org.reactome.server.tools.Importer.java` before you run command
+- download raw data [curated_gene_disease_associations.tsv.gz](http://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz) 
+from [DisGeNET](http://www.disgenet.org) , and unzip it release the `curated_gene_disease_associations.tsv` file as input          
 - java -jar ${classpath}/digester-importer-jar-with-dependencies.jar -f ${location}/curated_gene_disease_associations.tsv
 
 
-dataSource.driverClassName=com.mysql.cj.jdbc.Driver
-dataSource.url=jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.report.database}?characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto
-dataSource.username=${mysql.user}
-dataSource.password=${mysql.password}
+## Task list, ordered in descending importance: 
 
-hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
-# validate | update | create | create-drop
-hibernate.hbm2ddl.auto=validate
-hibernate.show_sql=false
-hibernate.format_sql=false
-hibernate.use_sql_comments=false
+### 1. disease overlay table showed in webpage: 
 
-###Task list, ordered in descending importance:
+create a table show in reactome webpage (Reactome >> Tools >> Disease Overlay) with format like:
 
-- introduce a new column "number of genes"  **Done √**
+|Disease name|Disease class|Number of genes|Gene list||Disease id|Check in Pathway Browser|
+|:---|:----|:---|:---|:---|:---|:---|
+|Testotoxicosis|Cancer|1|LHCGR|C1504412|[Analysis](https://reactome.org/PathwayBrowser#/DTAB=AN&ANALYSIS=)|
+
+features about this table:
+
+- table data from DisGeNet is a binary data about 'Entity - Molecule', This is reformatted to aggregate all molecules 
+related to one entity: Clicking the last column named 'Analysis' in each row link will execute pathway analysis for all 
+proteins associated with Entity. and redirect to the analysis result in Pathway Browser page
 
 - allow to order by Disease name and Number of genes, ascending and
-descending.  whole table
+descending, (sort whole table, so that the subsequent retrieved results still keep the same order) 
 
 - pagination **Done √**
 
-- Make the column "Disease name" searchable with an auto-completing field
-shown above the column (!) whole with pagination
+- ★ Make the column "Disease name" searchable with an auto-completing field
+shown above the column (searchable against whole data from database with pagination) 
 
-    - within each box, order the gene names alphabetically **Done √**
-
-- the "check in-->" can be removed **Done √**
-
-- disease ID is not very important, move column to be LAST column. **Done √**
-
+- within each box, order the gene names alphabetically **Done √**
 
 - in the future, there will be an additional column "Disease class", with
 a mapping file from "Disease ID" to "Disease Class". The new "Disease
 class" column should also be searchable and auto-completable.  This is
-not for now, just as a heads-up. Please note that there is an n:m mapping. If you have more than one disease class, then duplicate the row, one row for each disease class. 
+not for now, just as a heads-up. Please note that there is an n:m mapping. If you have more than one disease class, 
+then duplicate the row, one row for each disease class. 
 
-disease class 
-cancer
-imm
-lung cancer
-sort with pagination searchable
+### 2. interactor overlay:
 
-should i use some jsp page to show the results or just privoide the restful apis?
+ - Reformat the table above to be suitable as input table for user-provided interactor overlay.
+ 
+ - Desirable additional features of interactor overlay
+     - Provide target URL for linking to external data resource for Entity
+        - Possible implementation through CompactIdentifiers
+     - Colour overlay boxes differently for different types of Entity
+     - Provide different visual cues in pathway viewer for different types of Entity, for example “blue bubble in top 
+     right corner of protein”.
+     - Allow more than one interactor overlay type at the same time.Perhaps limit to four, one for each corner

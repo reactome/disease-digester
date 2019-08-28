@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "disease_gene")
-public class GeneItem implements Cloneable {
+@Table(name = "gene")
+public class GeneItem {
     @Id
     @JsonIgnore
     @Column(name = "id", nullable = false, length = 32, unique = true)
@@ -15,8 +16,10 @@ public class GeneItem implements Cloneable {
     @GeneratedValue(generator = "idGenerator")
     private String id;
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private DiseaseItem diseaseItem;
+//    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = DiseaseItem.class, fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+//    @ManyToOne(fetch = FetchType.EAGER)
+    private List<DiseaseItem> diseaseItems;
     private String geneId;
     private String geneSymbol;
     private String accessionNumber;
@@ -24,11 +27,10 @@ public class GeneItem implements Cloneable {
     public GeneItem() {
     }
 
-    public GeneItem(String geneId, String geneSymbol, String accessionNumber, DiseaseItem diseaseItem) {
+    public GeneItem(String geneId, String geneSymbol, String accessionNumber) {
         this.geneId = geneId;
         this.geneSymbol = geneSymbol;
         this.accessionNumber = accessionNumber;
-        this.diseaseItem = diseaseItem;
     }
 
     public String getId() {
@@ -39,12 +41,12 @@ public class GeneItem implements Cloneable {
         this.id = id;
     }
 
-    public DiseaseItem getDiseaseItem() {
-        return diseaseItem;
+    public List<DiseaseItem> getDiseaseItems() {
+        return diseaseItems;
     }
 
-    public void setDiseaseItem(DiseaseItem diseaseItem) {
-        this.diseaseItem = diseaseItem;
+    public void setDiseaseItems(List<DiseaseItem> diseaseItems) {
+        this.diseaseItems = diseaseItems;
     }
 
     public String getGeneId() {
@@ -69,12 +71,6 @@ public class GeneItem implements Cloneable {
 
     public void setAccessionNumber(String accessionNumber) {
         this.accessionNumber = accessionNumber;
-    }
-
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 
     @Override
