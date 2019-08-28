@@ -19,28 +19,24 @@ public class Importer {
     private static final String DB_NAME = "digester";
     private static final String DB_USER = "root";
     private static final String DB_PASS = "root";
-    private static final String DB_CREATE = "create";
-    private static final String SHOW_SQL = "false";
-    private static final String FORMAT_SQL = "false";
-    //    private static final String STORAGE_ENGINE = "innodb";
+//    private static final String DB_CREATE = "create";
+        private static final String DB_CREATE = "update";
     private static Map<String, String> settings = new HashMap<>();
-    private static SessionFactory sessionFactory;
+    private static Session session;
 
 
     static {
         settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
         settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
-        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
+        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto&useSSL=false");
         settings.put(Environment.USER, DB_USER);
         settings.put(Environment.PASS, DB_PASS);
         settings.put(Environment.HBM2DDL_AUTO, DB_CREATE);
-        settings.put(Environment.SHOW_SQL, SHOW_SQL);
-        settings.put(Environment.FORMAT_SQL, FORMAT_SQL);
-//        settings.put(Environment.STORAGE_ENGINE, STORAGE_ENGINE);
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(DiseaseItem.class);
         configuration.addAnnotatedClass(GeneItem.class);
-        sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
+        SessionFactory sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
+        session = sessionFactory.openSession();
     }
 
 
@@ -62,18 +58,19 @@ public class Importer {
     }
 
     private static void saveDiseaseItems(List<DiseaseItem> diseaseItems) {
-//        Collections.synchronizedList(diseaseItems).parallelStream().forEach(diseaseItem -> {
         long start = System.currentTimeMillis();
-        diseaseItems.parallelStream().forEach(diseaseItem -> {
-            Session session = sessionFactory.openSession();
-            Transaction tx = session.beginTransaction();
-//            if (diseaseItem.getDiseaseClass().indexOf(";") != -1) System.out.println(diseaseItem);
-//            System.out.println(diseaseItem.getDiseaseClass());
-            session.save(diseaseItem);
-            tx.commit();
-            session.close();
-        });
-        System.out.println("Load " + diseaseItems.size() + " in: " + (System.currentTimeMillis() - start) / 1000.0 + "s items into database.");
+        Transaction tx = session.beginTransaction();
+        diseaseItems.forEach(session::save);
+        tx.commit();
+        session.close();
+//        diseaseItems.parallelStream().forEach(diseaseItem -> {
+//            Session session = sessionFactory.openSession();
+//            Transaction tx = session.beginTransaction();
+//            session.save(diseaseItem);
+//            tx.commit();
+//            session.close();
+//        });
+        System.out.println("Load: " + diseaseItems.size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
         System.exit(0);
     }
 }

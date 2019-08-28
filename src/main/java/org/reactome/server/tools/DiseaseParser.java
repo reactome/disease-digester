@@ -65,10 +65,11 @@ class DiseaseParser {
         }
         //      <-- read content end -->
         TSVFile.close();
-        return cleavage(transferTable2DiseaseItems(table));
+//        return cleavage(transferTable2DiseaseItems(table));
+        return abbreviatedAttributeMapping(transferTable2DiseaseItems(table));
     }
 
-    private List<DiseaseItem> transferTable2DiseaseItems(List<Map<String, String>> table) throws IOException {
+    private List<DiseaseItem> transferTable2DiseaseItems(List<Map<String, String>> table) {
         /* transfer Map<table> to DiseaseItem objects */
         List<String> diseaseFields = Arrays.stream(DiseaseItem.class.getDeclaredFields())
                 .map(Field::getName)
@@ -79,84 +80,83 @@ class DiseaseParser {
                 .filter(s -> s.contains("gene"))
                 .collect(toList());
 
-        // grouping with disease name
-        Map<Map<String, String>, List<Map<String, String>>> byDiseaseName = table.stream()
-                .collect(Collectors.groupingBy((Map<String, String> m) -> diseaseFields.stream()
+        /* grouping disease with disease id */
+        Map<Map<String, String>, List<String>> byDiseaseId = table.stream()
+                .collect(Collectors.groupingBy(m -> diseaseFields.stream()
                                 .collect(toMap(Function.identity(), m::get)),
-                        mapping((Map<String, String> n) -> geneFields.stream()
-                                .collect(toMap(Function.identity(), n::get)), toList())));
+                        mapping(n -> n.get("geneId"), toList())));
 
-        // create new object according to the grouped attributes
+        /* grouping gene with gene id */
+        Map<Map<String, String>, List<String>> byGeneId = table.stream()
+                .collect(Collectors.groupingBy(m -> geneFields.stream()
+                                .collect(toMap(Function.identity(), m::get)),
+                        mapping(n -> n.get("diseaseId"), toList())));
+
+        /* record mapping relationship */
+        Map<String, List<String>> diseaseIdMap = new HashMap<>();
+        byDiseaseId.forEach((k, v) -> diseaseIdMap.put(k.get("diseaseId"), v));
+        Map<String, List<String>> geneIdMap = new HashMap<>();
+        byGeneId.forEach((k, v) -> geneIdMap.put(k.get("geneId"), v));
+
         List<DiseaseItem> diseaseItems = new ArrayList<>();
-        Map<String, String> geneId2AccNumMap = loadGeneId2AccNumMap(GENEID_4_UNIPROT);
-        byDiseaseName.forEach((key, value) -> {
-            DiseaseItem diseaseItem = new DiseaseItem(key.get("diseaseId"), key.get("diseaseName").replaceAll("[^\\w]+", "_"), key.get("diseaseClass"));
-            List<GeneItem> geneItems = value.stream()
-                    .map(g -> new GeneItem(g.get("geneId"), g.get("geneSymbol"),
-                            geneId2AccNumMap.get(g.get("geneId"))))
-                    .sorted(Comparator.comparing(GeneItem::getGeneSymbol))
-                    .collect(toList());
-            diseaseItem.setGeneItems(geneItems);
-            diseaseItems.add(diseaseItem);
-        });
-        return diseaseItems;
+        List<GeneItem> geneItems = new ArrayList<>();
+
+        byDiseaseId.keySet().forEach(m -> diseaseItems.add(new DiseaseItem(m.get("diseaseId"), m.get("diseaseName").replaceAll("[^\\w]+", "_"), m.get("diseaseClass"))));
+
+        List<DiseaseItem> uniqueDiseaseItems = cleavageDiseaseItemsByDiseaseClass(diseaseItems);
+
+        byGeneId.keySet().forEach(m -> geneItems.add(new GeneItem(m.get("geneId"), m.get("geneSymbol"))));
+
+//        geneItems.forEach(geneItem -> geneItem.setDiseaseItems(uniqueDiseaseItems.stream().filter(diseaseItem -> geneIdMap.get(geneItem.getGeneId()).contains(diseaseItem.getDiseaseId())).collect(toList())));
+        Collections.synchronizedList(geneItems).parallelStream().forEach(geneItem -> geneItem.setDiseaseItems(uniqueDiseaseItems.stream().filter(diseaseItem -> geneIdMap.get(geneItem.getGeneId()).contains(diseaseItem.getDiseaseId())).collect(toList())));
+
+//        uniqueDiseaseItems.forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toList())));
+        Collections.synchronizedList(uniqueDiseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toList())));
+
+        return uniqueDiseaseItems;
     }
 
 
-//    private List<DiseaseItem> cleavageDiseaseClass(List<DiseaseItem> diseaseItems) {
-//        /* duplicate/cleavage object who has more than one disease classes and do disease class name substitute*/
-//        Map<String, String> diseaseClassMap = loadDiseaseClass();
-//        Map<Boolean, List<DiseaseItem>> hasMoreThanOneDiseaseClass = diseaseItems.stream()
-//                .collect(partitioningBy((DiseaseItem di) -> di.getDiseaseClass().contains(";")));
-//        List<DiseaseItem> uniqueDiseaseClass = hasMoreThanOneDiseaseClass.get(false);
-//
-//        // for those just have singe disease class one, replace with it's explicit name
-//        uniqueDiseaseClass.stream()
-//                .filter(di -> !di.getDiseaseClass().isEmpty())
-//                .forEach(di -> di.setDiseaseClass(diseaseClassMap.get(di.getDiseaseClass())));
-//
-//        List<DiseaseItem> rs = hasMoreThanOneDiseaseClass.get(true).stream()
-//                .flatMap(di -> di.cleavage(di).stream())
-//                .collect(toList());
-//        uniqueDiseaseClass.addAll(rs);
-//        uniqueDiseaseClass.forEach(
-//                diseaseItem -> diseaseItem.getGeneItems().forEach(
-//                        geneItem -> geneItem.setDiseaseItem(diseaseItem)));
-//        return uniqueDiseaseClass;
-//    }
+    private List<DiseaseItem> abbreviatedAttributeMapping(List<DiseaseItem> diseaseItems) {
+        Map<String, String> diseaseClassMap = loadDiseaseClass2TopDiseaseClassMap();
+        Map<String, String> geneId2AccNumMap = loadGeneId2AccNumMap();
 
-    private List<DiseaseItem> cleavage(List<DiseaseItem> diseaseItems) {
+        Collections.synchronizedList(diseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setDiseaseClass(diseaseClassMap.get(diseaseItem.getDiseaseClass())));
+        Collections.synchronizedList(diseaseItems).parallelStream().forEach(
+                diseaseItem -> diseaseItem.getGeneItems().forEach(
+                        geneItem -> geneItem.setAccessionNumber(geneId2AccNumMap.get(geneItem.getGeneId()))));
+        return diseaseItems;
+    }
 
+    private List<DiseaseItem> cleavageDiseaseItemsByDiseaseClass(List<DiseaseItem> diseaseItems) {
         List<DiseaseItem> hasMoreThanOneDiseaseClass = diseaseItems.stream().filter(diseaseItem -> diseaseItem.getDiseaseClass().contains(";")).collect(toList());
         diseaseItems.removeAll(hasMoreThanOneDiseaseClass);
         diseaseItems.addAll(hasMoreThanOneDiseaseClass.stream().flatMap(diseaseItem -> new DiseaseItem().cleavage(diseaseItem).stream()).collect(toList()));
-
-        Map<String, String> diseaseClassMap = loadDiseaseClass();
-//        diseaseItems.forEach(diseaseItem -> diseaseItem.setDiseaseClass(diseaseClassMap.get(diseaseItem.getDiseaseClass())));
-//        diseaseItems.forEach(
-//                diseaseItem -> diseaseItem.getGeneItems().forEach(
-//                        geneItem -> geneItem.setDiseaseItem(diseaseItem)));
         return diseaseItems;
     }
 
-    private Map<String, String> loadGeneId2AccNumMap(InputStream inputStream) throws IOException {
+    private Map<String, String> loadGeneId2AccNumMap() {
         /* load gene id ot UniProtKB mapping paris */
         Map<String, String> geneIdMap = new HashMap<>();
-        BufferedReader TSVFile = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader TSVFile = new BufferedReader(new InputStreamReader(Objects.requireNonNull(GENEID_4_UNIPROT)));
         String delimiter = "\t";
-        TSVFile.readLine(); // Read header line.
-        String line = TSVFile.readLine(); // Read first data row.
-        while (line != null) {
-            String[] split = line.split(delimiter);
-            assert 2 == split.length;
-            geneIdMap.put(split[1], split[0]);
-            line = TSVFile.readLine();
+        try {
+            TSVFile.readLine(); // Read header line.
+            String line = TSVFile.readLine(); // Read first data row.
+            while (line != null) {
+                String[] split = line.split(delimiter);
+                assert 2 == split.length;
+                geneIdMap.put(split[1], split[0]);
+                line = TSVFile.readLine();
+            }
+            TSVFile.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        TSVFile.close();
         return geneIdMap;
     }
 
-    private Map<String, String> loadDiseaseClass() {
+    private Map<String, String> loadDiseaseClass2TopDiseaseClassMap() {
         /* load disease class abbreviation name to explicit name mapping paris */
         Properties properties = new Properties();
         try {

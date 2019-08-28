@@ -39,18 +39,6 @@ public class DiseaseDigesterController {
         return diseaseItems;
     }
 
-    @GetMapping(value = "/test/saveOne")
-    @ResponseStatus(value = HttpStatus.OK)
-    public @ResponseBody
-    DiseaseItem saveOne() {
-        DiseaseItem diseaseItem = new DiseaseItem();
-        diseaseItem.setDiseaseClass("test");
-        diseaseItem.setDiseaseId("test");
-        diseaseItem.setDiseaseName("test");
-        diseaseItem.setGeneItems(Collections.singletonList(new GeneItem("demo", "demo", "demo")));
-        return diseaseItemService.save(diseaseItem);
-    }
-
     @GetMapping(value = "/test/pagination")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody

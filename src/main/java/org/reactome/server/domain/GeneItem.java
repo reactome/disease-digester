@@ -16,9 +16,7 @@ public class GeneItem {
     @GeneratedValue(generator = "idGenerator")
     private String id;
     @JsonIgnore
-//    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @ManyToMany(targetEntity = DiseaseItem.class, fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-//    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems", fetch = FetchType.EAGER)
     private List<DiseaseItem> diseaseItems;
     private String geneId;
     private String geneSymbol;
@@ -27,10 +25,9 @@ public class GeneItem {
     public GeneItem() {
     }
 
-    public GeneItem(String geneId, String geneSymbol, String accessionNumber) {
+    public GeneItem(String geneId, String geneSymbol) {
         this.geneId = geneId;
         this.geneSymbol = geneSymbol;
-        this.accessionNumber = accessionNumber;
     }
 
     public String getId() {
