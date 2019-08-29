@@ -1,3 +1,4 @@
+
 [<img src=https://user-images.githubusercontent.com/6883670/31999264-976dfb86-b98a-11e7-9432-0316345a72ea.png height=75 />](https://reactome.org)
 
 # Reactome Disease Digester
@@ -36,44 +37,46 @@ disease-digester api [usage:]
 
 - [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=desc]()
 
-    and response body should something be like:
-    ```json
+and response body should something be like:
+```json
+{
+  "pageNumber": 2,
+  "pageSize": 40,
+  "sortBy": "diseaseName",
+  "orderBy": "asc",
+  "totalCount": 20284,
+  "diseaseItems": [
     {
-      "pageNumber": 2,
-      "pageSize": 40,
-      "totalCount": 20284,
-      "diseaseItems": [
+      "diseaseId": "C0751594",
+      "diseaseName": "Zellweger_Like_Syndrome",
+      "diseaseClass": "Congenital, Hereditary, and Neonatal Diseases and Abnormalities",
+      "geneItems": [
         {
-          "diseaseId": "C0751594",
-          "diseaseName": "Zellweger_Like_Syndrome",
-          "diseaseClass": "Congenital, Hereditary, and Neonatal Diseases and Abnormalities",
-          "geneItems": [
-            {
-              "geneId": "55670",
-              "geneSymbol": "PEX26",
-              "accessionNumber": "Q7Z412"
-            },
-            {
-              "geneId": "5194",
-              "geneSymbol": "PEX13",
-              "accessionNumber": "Q92968"
-            }]
+          "geneId": "55670",
+          "geneSymbol": "PEX26",
+          "accessionNumber": "Q7Z412"
         },
         {
-          "diseaseId": "C1839615",
-          "diseaseName": "X_linked_myopathy_with_excessive_autophagy",
-          "diseaseClass": "Nervous System Diseases",
-          "geneItems": [
-            {
-              "geneId": "203547",
-              "geneSymbol": "VMA21",
-              "accessionNumber": "Q3ZAQ7"
-            }
-          ]
+          "geneId": "5194",
+          "geneSymbol": "PEX13",
+          "accessionNumber": "Q92968"
+        }]
+    },
+    {
+      "diseaseId": "C1839615",
+      "diseaseName": "X_linked_myopathy_with_excessive_autophagy",
+      "diseaseClass": "Nervous System Diseases",
+      "geneItems": [
+        {
+          "geneId": "203547",
+          "geneSymbol": "VMA21",
+          "accessionNumber": "Q3ZAQ7"
         }
       ]
     }
-    ```
+  ]
+}
+```
 
 
 

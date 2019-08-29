@@ -35,7 +35,7 @@ public class DiseaseItemRepositoryCustomImpl implements DiseaseItemRepositoryCus
         countQuery.select(criteriaBuilder.count(countQuery.from(DiseaseItem.class)));
         Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
 
-        return new PaginationResult(pageNumber, pageSize, totalCount, typedQuery.getResultList());
+        return new PaginationResult(pageNumber, pageSize, totalCount, sortBy, orderBy, typedQuery.getResultList());
     }
 
 
@@ -67,7 +67,7 @@ public class DiseaseItemRepositoryCustomImpl implements DiseaseItemRepositoryCus
         typedQuery.setFirstResult((pageNumber - 1) * pageSize);
         typedQuery.setMaxResults(pageSize);
         long totalCount = resultList.size();
-        return new PaginationResult(pageNumber, pageSize, totalCount, typedQuery.getResultList());
+        return new PaginationResult(pageNumber, pageSize, totalCount, sortBy, orderBy, typedQuery.getResultList());
     }
 
     private TypedQuery<DiseaseItem> sortAndOrderBy(String sortBy, String orderBy, CriteriaBuilder criteriaBuilder, Root<DiseaseItem> diseaseItem, CriteriaQuery<DiseaseItem> select) {
