@@ -7,7 +7,7 @@ To represent the disease-gene binary relationship with a REACTOME overlay
 
 digester-importer [usage:]
 
-- use maven plugin to package/install codes into executable jar file, remember to change the database configuration in 
+- use maven plugin to package/install codes into executable jar file, remember to change the **database configuration** in 
 location: `org.reactome.server.tools.Importer.java` before you run command
 
 - download raw data [curated_gene_disease_associations.tsv.gz](http://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz) 
