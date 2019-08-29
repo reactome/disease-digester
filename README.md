@@ -28,52 +28,52 @@ disease-digester api [usage:]
 
 - [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=desc]()
 
-- [/disease-digester/findByDiseaseName?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=asc]()
+- [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=asc]()
 
-- [/disease-digester/findByDiseaseName?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=asc]()
+- [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=asc]()
 
-- [/disease-digester/findByDiseaseName?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=desc]()
+- [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=desc]()
 
-- [/disease-digester/findByDiseaseName?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=desc]()
+- [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=desc]()
 
-and response body should something be like:
-```json
-{
-  "pageNumber": 2,
-  "pageSize": 40,
-  "totalCount": 20284,
-  "diseaseItems": [
+    and response body should something be like:
+    ```json
     {
-      "diseaseId": "C0751594",
-      "diseaseName": "Zellweger_Like_Syndrome",
-      "diseaseClass": "Congenital, Hereditary, and Neonatal Diseases and Abnormalities",
-      "geneItems": [
+      "pageNumber": 2,
+      "pageSize": 40,
+      "totalCount": 20284,
+      "diseaseItems": [
         {
-          "geneId": "55670",
-          "geneSymbol": "PEX26",
-          "accessionNumber": "Q7Z412"
+          "diseaseId": "C0751594",
+          "diseaseName": "Zellweger_Like_Syndrome",
+          "diseaseClass": "Congenital, Hereditary, and Neonatal Diseases and Abnormalities",
+          "geneItems": [
+            {
+              "geneId": "55670",
+              "geneSymbol": "PEX26",
+              "accessionNumber": "Q7Z412"
+            },
+            {
+              "geneId": "5194",
+              "geneSymbol": "PEX13",
+              "accessionNumber": "Q92968"
+            }]
         },
         {
-          "geneId": "5194",
-          "geneSymbol": "PEX13",
-          "accessionNumber": "Q92968"
-        }]
-    },
-    {
-      "diseaseId": "C1839615",
-      "diseaseName": "X_linked_myopathy_with_excessive_autophagy",
-      "diseaseClass": "Nervous System Diseases",
-      "geneItems": [
-        {
-          "geneId": "203547",
-          "geneSymbol": "VMA21",
-          "accessionNumber": "Q3ZAQ7"
+          "diseaseId": "C1839615",
+          "diseaseName": "X_linked_myopathy_with_excessive_autophagy",
+          "diseaseClass": "Nervous System Diseases",
+          "geneItems": [
+            {
+              "geneId": "203547",
+              "geneSymbol": "VMA21",
+              "accessionNumber": "Q3ZAQ7"
+            }
+          ]
         }
       ]
     }
-  ]
-}
-```
+    ```
 
 
 
