@@ -83,14 +83,12 @@ class DiseaseParser {
         /* grouping disease with disease id */
         Map<Map<String, String>, List<String>> byDiseaseId = table.stream()
                 .collect(Collectors.groupingBy(m -> diseaseFields.stream()
-                                .collect(toMap(Function.identity(), m::get)),
-                        mapping(n -> n.get("geneId"), toList())));
+                                .collect(toMap(Function.identity(), m::get)),mapping(n -> n.get("geneId"), toList())));
 
         /* grouping gene with gene id */
         Map<Map<String, String>, List<String>> byGeneId = table.stream()
                 .collect(Collectors.groupingBy(m -> geneFields.stream()
-                                .collect(toMap(Function.identity(), m::get)),
-                        mapping(n -> n.get("diseaseId"), toList())));
+                                .collect(toMap(Function.identity(), m::get)),mapping(n -> n.get("diseaseId"), toList())));
 
         /* record mapping relationship */
         Map<String, List<String>> diseaseIdMap = new HashMap<>();

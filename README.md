@@ -4,7 +4,7 @@
 To represent the disease-gene binary relationship with a REACTOME overlay           
 ---
 
-disease-import [usage:]
+digester-importer [usage:]
 
 - use maven plugin to package/install codes into executable jar file, remember to change the database configuration in 
 location: `org.reactome.server.tools.Importer.java` before you run command
@@ -13,6 +13,68 @@ location: `org.reactome.server.tools.Importer.java` before you run command
 from [DisGeNET](http://www.disgenet.org) , and unzip it release the `curated_gene_disease_associations.tsv` file as input          
 
 - java -jar ${classpath}/digester-importer-jar-with-dependencies.jar -f ${location}/curated_gene_disease_associations.tsv
+
+disease-digester api [usage:]
+
+- [/disease-digester/findAll?pageNumber=2&pageSize=40&sortBy=diseaseName&orderBy=asc]()
+
+- [/disease-digester/findAll?pageNumber=2&pageSize=40&sortBy=geneNumber&orderBy=asc]()
+
+- [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=asc]()
+
+- [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=asc]()
+
+- [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=desc]()
+
+- [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=desc]()
+
+- [/disease-digester/findByDiseaseName?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=asc]()
+
+- [/disease-digester/findByDiseaseName?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=asc]()
+
+- [/disease-digester/findByDiseaseName?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=desc]()
+
+- [/disease-digester/findByDiseaseName?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=desc]()
+
+and response body should something be like:
+```json
+{
+  "pageNumber": 2,
+  "pageSize": 40,
+  "totalCount": 20284,
+  "diseaseItems": [
+    {
+      "diseaseId": "C0751594",
+      "diseaseName": "Zellweger_Like_Syndrome",
+      "diseaseClass": "Congenital, Hereditary, and Neonatal Diseases and Abnormalities",
+      "geneItems": [
+        {
+          "geneId": "55670",
+          "geneSymbol": "PEX26",
+          "accessionNumber": "Q7Z412"
+        },
+        {
+          "geneId": "5194",
+          "geneSymbol": "PEX13",
+          "accessionNumber": "Q92968"
+        }]
+    },
+    {
+      "diseaseId": "C1839615",
+      "diseaseName": "X_linked_myopathy_with_excessive_autophagy",
+      "diseaseClass": "Nervous System Diseases",
+      "geneItems": [
+        {
+          "geneId": "203547",
+          "geneSymbol": "VMA21",
+          "accessionNumber": "Q3ZAQ7"
+        }
+      ]
+    }
+  ]
+}
+```
+
 
 
 ## Task list, ordered in descending importance: 

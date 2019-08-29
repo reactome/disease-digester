@@ -1,14 +1,16 @@
 package org.reactome.server.repository;
 
 import org.reactome.server.domain.DiseaseItem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 
 @Repository
 public interface DiseaseItemRepository extends JpaRepository<DiseaseItem, String> {
-    public List<DiseaseItem> findDiseaseItemsByDiseaseClassContaining(String diseaseClass);
+    // TODO: 19-8-29 the performance of use spring data jpa vs criteria api
+    Page<DiseaseItem> findDiseaseItemsByDiseaseClassContaining(String diseaseClass, Pageable pageable);
 
-    public List<DiseaseItem> findDiseaseItemsByDiseaseNameContaining(String diseaseName);
+    Page<DiseaseItem> findDiseaseItemsByDiseaseNameContaining(String diseaseName, Pageable pageable);
 }

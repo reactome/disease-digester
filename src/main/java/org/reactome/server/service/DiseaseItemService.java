@@ -1,61 +1,37 @@
 package org.reactome.server.service;
 
-import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.PaginationResult;
-import org.reactome.server.repository.DiseaseItemRepository;
+import org.reactome.server.repository.DiseaseItemRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.util.List;
 
 @Service
-@Transactional
 public class DiseaseItemService {
-
-    private final DiseaseItemRepository diseaseItemRepository;
-    private final EntityManager entityManager;
+    private final DiseaseItemRepositoryCustom repositoryCustom;
 
     @Autowired
-    public DiseaseItemService(DiseaseItemRepository diseaseItemRepository, EntityManager entityManager) {
-        this.diseaseItemRepository = diseaseItemRepository;
-        this.entityManager = entityManager;
+    public DiseaseItemService(DiseaseItemRepositoryCustom repositoryCustom) {
+        this.repositoryCustom = repositoryCustom;
     }
 
-    public List<DiseaseItem> findAll() {
-        return diseaseItemRepository.findAll();
+    public PaginationResult findAll(Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
+        return repositoryCustom.getPaginationResult(pageNumber, pageSize, sortBy, orderBy);
     }
 
-    public List<DiseaseItem> findDiseaseItemsByDiseaseNameContaining(String diseaseName) {
-        return diseaseItemRepository.findDiseaseItemsByDiseaseNameContaining(diseaseName);
+    public PaginationResult findDiseaseItemsByDiseaseName(String diseaseName, Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
+        /* filtering malicious query */
+        diseaseName = diseaseName.replaceAll("[^\\w]+", "");
+        if (null == pageNumber) pageNumber = 1;
+        if (null == pageSize) pageSize = 50;
+        return repositoryCustom.getPaginationResultByDiseaseName(diseaseName, pageNumber, pageSize, sortBy, orderBy);
     }
 
-    public List<DiseaseItem> findDiseaseItemsByDiseaseClassContaining(String diseaseClass) {
-        return diseaseItemRepository.findDiseaseItemsByDiseaseClassContaining(diseaseClass);
-    }
 
-    public DiseaseItem save(DiseaseItem diseaseItem) {
-        diseaseItemRepository.save(diseaseItem);
-        return diseaseItem;
-    }
-
-    public PaginationResult getPaginationResult(Integer pageNumber, Integer pageSize, String sortBy) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<DiseaseItem> query = criteriaBuilder.createQuery(DiseaseItem.class);
-        Root<DiseaseItem> from = query.from(DiseaseItem.class);
-        CriteriaQuery<DiseaseItem> select = query.select(from);
-        TypedQuery<DiseaseItem> typedQuery = entityManager.createQuery(select);
-        typedQuery.setFirstResult((pageNumber - 1) * pageSize);
-        typedQuery.setMaxResults(pageSize);
-
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        countQuery.select(criteriaBuilder.count(countQuery.from(DiseaseItem.class)));
-        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
-        return new PaginationResult(pageNumber, pageSize, totalCount, typedQuery.getResultList());
+    public PaginationResult findDiseaseItemsByDiseaseClass(String diseaseClass, Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
+        /* filtering malicious query */
+        diseaseClass = diseaseClass.replaceAll("[^\\w]+", "");
+        if (null == pageNumber) pageNumber = 1;
+        if (null == pageSize) pageSize = 50;
+        return repositoryCustom.getPaginationResultByDiseaseClass(diseaseClass, pageNumber, pageSize, sortBy, orderBy);
     }
 }
