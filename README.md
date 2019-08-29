@@ -13,7 +13,7 @@ location: `org.reactome.server.tools.Importer.java` before you run command
 - download raw data [curated_gene_disease_associations.tsv.gz](http://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz) 
 from [DisGeNET](http://www.disgenet.org) , and unzip it release the `curated_gene_disease_associations.tsv` file as input          
 
-- java -jar ${classpath}/digester-importer-jar-with-dependencies.jar -f ${location}/curated_gene_disease_associations.tsv
+- `java -jar ${classpath}/digester-importer-jar-with-dependencies.jar -f ${location}/curated_gene_disease_associations.tsv`
 
 disease-digester api [usage:]
 
