@@ -17,6 +17,8 @@ from [DisGeNET](http://www.disgenet.org) , and unzip it release the `curated_gen
 
 disease-digester api [usage:]
 
+- run: `mvn tomcat7:run-war`
+
 - [/disease-digester/findAll?pageNumber=2&pageSize=40&sortBy=diseaseName&orderBy=asc]()
 
 - [/disease-digester/findAll?pageNumber=2&pageSize=40&sortBy=geneNumber&orderBy=asc]()
@@ -113,9 +115,11 @@ class" column should also be searchable and auto-completable.  This is
 not for now, just as a heads-up. Please note that there is an n:m mapping. If you have more than one disease class, 
 then duplicate the row, one row for each disease class. 
 
-### 2. interactor overlay:
 
- - Reformat the table above to be suitable as input table for user-provided interactor overlay.
+### 2. interactor overlay:
+**this task should be another part which different from task one(not include in task one)**
+
+ - Reformat the table above to be suitable as input table for user-provided **interactor overlay**.
  
  - Desirable additional features of interactor overlay
      - Provide target URL for linking to external data resource for Entity
@@ -123,4 +127,4 @@ then duplicate the row, one row for each disease class.
      - Colour overlay boxes differently for different types of Entity
      - Provide different visual cues in pathway viewer for different types of Entity, for example “blue bubble in top 
      right corner of protein”.
-     - Allow more than one interactor overlay type at the same time.Perhaps limit to four, one for each corner
+     - Allow more than one interactor overlay type at the same time. Perhaps limit to four, one for each corner

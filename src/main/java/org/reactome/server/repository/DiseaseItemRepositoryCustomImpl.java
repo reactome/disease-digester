@@ -14,7 +14,6 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
-@Transactional
 public class DiseaseItemRepositoryCustomImpl implements DiseaseItemRepositoryCustom {
     // TODO: 19-8-29 dont know the performance vs Spring Data JPA repository one
     @PersistenceContext
@@ -31,6 +30,7 @@ public class DiseaseItemRepositoryCustomImpl implements DiseaseItemRepositoryCus
         typedQuery.setFirstResult((pageNumber - 1) * pageSize);
         typedQuery.setMaxResults(pageSize);
 
+        // if this query can be cached?
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         countQuery.select(criteriaBuilder.count(countQuery.from(DiseaseItem.class)));
         Long totalCount = entityManager.createQuery(countQuery).getSingleResult();

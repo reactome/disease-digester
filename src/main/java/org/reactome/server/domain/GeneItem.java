@@ -1,23 +1,20 @@
 package org.reactome.server.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "gene")
 public class GeneItem {
     @Id
     @JsonIgnore
-    @Column(name = "id", nullable = false, length = 32, unique = true)
-    @GenericGenerator(name = "idGenerator", strategy = "uuid.hex")
-    @GeneratedValue(generator = "idGenerator")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @JsonIgnore
     @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems", fetch = FetchType.EAGER)
-    private List<DiseaseItem> diseaseItems;
+    private Set<DiseaseItem> diseaseItems;
     private String geneId;
     private String geneSymbol;
     private String accessionNumber;
@@ -30,19 +27,19 @@ public class GeneItem {
         this.geneSymbol = geneSymbol;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public List<DiseaseItem> getDiseaseItems() {
+    public Set<DiseaseItem> getDiseaseItems() {
         return diseaseItems;
     }
 
-    public void setDiseaseItems(List<DiseaseItem> diseaseItems) {
+    public void setDiseaseItems(Set<DiseaseItem> diseaseItems) {
         this.diseaseItems = diseaseItems;
     }
 

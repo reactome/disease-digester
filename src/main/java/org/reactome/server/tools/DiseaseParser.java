@@ -1,6 +1,5 @@
 package org.reactome.server.tools;
 
-import com.martiansoftware.jsap.JSAPResult;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.GeneItem;
 
@@ -18,12 +17,12 @@ class DiseaseParser {
      */
 
     private List<DiseaseItem> diseaseItems;
-
+    private static final String DELIMITER = "\t";
     private final InputStream GENEID_4_UNIPROT = this.getClass().getClassLoader().getResourceAsStream("geneid_4_uniprot.tsv");
     private final InputStream DISEASE_CLASS = this.getClass().getClassLoader().getResourceAsStream("disease-class.properties");
 
-    DiseaseParser(JSAPResult config) throws Exception {
-        setDiseaseItems(loadDiseaseItemsFromFile(config));
+    DiseaseParser(BufferedReader file) throws Exception {
+        setDiseaseItems(loadDiseaseItems(file));
     }
 
     List<DiseaseItem> getDiseaseItems() {
@@ -34,37 +33,29 @@ class DiseaseParser {
         this.diseaseItems = diseaseItems;
     }
 
-    private List<DiseaseItem> loadDiseaseItemsFromFile(JSAPResult config) throws Exception {
-        return loadDiseaseItemsFromFile(config.getString("fileName"));
-    }
-
-    private List<DiseaseItem> loadDiseaseItemsFromFile(String fileName) throws Exception {
-
-        BufferedReader TSVFile = new BufferedReader(new FileReader(fileName));
-        String delimiter = fileName.endsWith(".tsv") ? "\t" : ",";
-
+    private List<DiseaseItem> loadDiseaseItems(BufferedReader file) throws Exception {
 //      <-- read table header start -->
-        String headerLine = TSVFile.readLine(); // Read header line.
-        List<String> headers = Arrays.asList(Objects.requireNonNull(headerLine.split(delimiter)));
+        String headerLine = file.readLine(); // Read header line.
+        List<String> headers = Arrays.asList(Objects.requireNonNull(headerLine.split(DELIMITER)));
 //      <-- read table header end -->
 
         List<Map<String, String>> table = new ArrayList<>();
 
 
 //      <-- read content start -->
-        String line = TSVFile.readLine(); // Read first data row.
+        String line = file.readLine(); // Read first data row.
         while (line != null) {
-            List<String> rowData = Arrays.asList(line.split(delimiter));
+            List<String> rowData = Arrays.asList(line.split(DELIMITER));
             Map<String, String> newRow = new LinkedHashMap<>();
             assert headers.size() == rowData.size();
             for (int i = 0; i < headers.size(); i++) {
                 newRow.put(headers.get(i), rowData.get(i).trim());
             }
             table.add(newRow);
-            line = TSVFile.readLine(); // Read next line of data.
+            line = file.readLine(); // Read next line of data.
         }
         //      <-- read content end -->
-        TSVFile.close();
+        file.close();
 //        return cleavage(transferTable2DiseaseItems(table));
         return abbreviatedAttributeMapping(transferTable2DiseaseItems(table));
     }
@@ -83,12 +74,12 @@ class DiseaseParser {
         /* grouping disease with disease id */
         Map<Map<String, String>, List<String>> byDiseaseId = table.stream()
                 .collect(Collectors.groupingBy(m -> diseaseFields.stream()
-                                .collect(toMap(Function.identity(), m::get)),mapping(n -> n.get("geneId"), toList())));
+                        .collect(toMap(Function.identity(), m::get)), mapping(n -> n.get("geneId"), toList())));
 
         /* grouping gene with gene id */
         Map<Map<String, String>, List<String>> byGeneId = table.stream()
                 .collect(Collectors.groupingBy(m -> geneFields.stream()
-                                .collect(toMap(Function.identity(), m::get)),mapping(n -> n.get("diseaseId"), toList())));
+                        .collect(toMap(Function.identity(), m::get)), mapping(n -> n.get("diseaseId"), toList())));
 
         /* record mapping relationship */
         Map<String, List<String>> diseaseIdMap = new HashMap<>();
@@ -106,10 +97,10 @@ class DiseaseParser {
         byGeneId.keySet().forEach(m -> geneItems.add(new GeneItem(m.get("geneId"), m.get("geneSymbol"))));
 
 //        geneItems.forEach(geneItem -> geneItem.setDiseaseItems(uniqueDiseaseItems.stream().filter(diseaseItem -> geneIdMap.get(geneItem.getGeneId()).contains(diseaseItem.getDiseaseId())).collect(toList())));
-        Collections.synchronizedList(geneItems).parallelStream().forEach(geneItem -> geneItem.setDiseaseItems(uniqueDiseaseItems.stream().filter(diseaseItem -> geneIdMap.get(geneItem.getGeneId()).contains(diseaseItem.getDiseaseId())).collect(toList())));
+        Collections.synchronizedList(geneItems).parallelStream().forEach(geneItem -> geneItem.setDiseaseItems(uniqueDiseaseItems.stream().filter(diseaseItem -> geneIdMap.get(geneItem.getGeneId()).contains(diseaseItem.getDiseaseId())).collect(toSet())));
 
 //        uniqueDiseaseItems.forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toList())));
-        Collections.synchronizedList(uniqueDiseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toList())));
+        Collections.synchronizedList(uniqueDiseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toSet())));
 
         return uniqueDiseaseItems;
     }
@@ -137,12 +128,12 @@ class DiseaseParser {
         /* load gene id ot UniProtKB mapping paris */
         Map<String, String> geneIdMap = new HashMap<>();
         BufferedReader TSVFile = new BufferedReader(new InputStreamReader(Objects.requireNonNull(GENEID_4_UNIPROT)));
-        String delimiter = "\t";
+        String DELIMITER = "\t";
         try {
             TSVFile.readLine(); // Read header line.
             String line = TSVFile.readLine(); // Read first data row.
             while (line != null) {
-                String[] split = line.split(delimiter);
+                String[] split = line.split(DELIMITER);
                 assert 2 == split.length;
                 geneIdMap.put(split[1], split[0]);
                 line = TSVFile.readLine();

@@ -1,11 +1,11 @@
 package org.reactome.server.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -14,15 +14,14 @@ import java.util.stream.Collectors;
 public class DiseaseItem {
     @Id
     @JsonIgnore
-    @Column(name = "id", nullable = false, length = 32, unique = true)
-    @GenericGenerator(name = "idGenerator", strategy = "uuid.hex")
-    @GeneratedValue(generator = "idGenerator")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String diseaseId;
     private String diseaseName;
     private String diseaseClass;
-    @ManyToMany(targetEntity = GeneItem.class,fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    private List<GeneItem> geneItems;
+    @ManyToMany(targetEntity = GeneItem.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    // TODO: 19-8-30 use join table setting to reduce the query time
+    private Set<GeneItem> geneItems;
 
     public DiseaseItem() {
     }
@@ -47,11 +46,11 @@ public class DiseaseItem {
                 }).collect(Collectors.toList());
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -79,11 +78,11 @@ public class DiseaseItem {
         this.diseaseClass = diseaseClass;
     }
 
-    public List<GeneItem> getGeneItems() {
+    public Set<GeneItem> getGeneItems() {
         return geneItems;
     }
 
-    public void setGeneItems(List<GeneItem> geneItems) {
+    public void setGeneItems(Set<GeneItem> geneItems) {
         this.geneItems = geneItems;
     }
 
