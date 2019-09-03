@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class DiseaseDigesterController {
 
-
     private static final Logger logger = LoggerFactory.getLogger(DiseaseDigesterController.class);
     private DiseaseItemService diseaseItemService;
-
 
     @Autowired
     public DiseaseDigesterController(DiseaseItemService diseaseItemService) {

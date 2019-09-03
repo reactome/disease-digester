@@ -59,7 +59,7 @@ public class Importer {
                 DiseaseParser.class.getName(),
                 "Read, transfer and save disease-gene association table data from file to database.",
                 new Parameter[]{
-                        new FlaggedOption("url", JSAP.URL_PARSER, DOWNLOAD_LINK, JSAP.REQUIRED, 'd', "url", "The disease overlay table data in tsv/csv format with columns: 'diseaseId', 'diseaseName' and 'geneSymbol' from DisGeNet"),
+                        new FlaggedOption("url", JSAP.URL_PARSER, DOWNLOAD_LINK, JSAP.REQUIRED, 'd', "url", "[Optional] The disease overlay table data in tsv/csv format with columns: 'diseaseId', 'diseaseName' and 'geneSymbol' from DisGeNet"),
                 }
         );
 
@@ -77,7 +77,7 @@ public class Importer {
         diseaseItems.forEach(session::save);
         transaction.commit();
         session.close();
-        System.out.println("Load: " + diseaseItems.size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
+        logger.info("Load: " + diseaseItems.size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
         System.exit(0);
     }
 
