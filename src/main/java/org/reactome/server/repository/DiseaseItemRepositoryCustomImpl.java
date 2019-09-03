@@ -3,7 +3,6 @@ package org.reactome.server.repository;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.PaginationResult;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,12 +12,15 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
+/**
+ * @author Byron
+ */
 @Repository
 public class DiseaseItemRepositoryCustomImpl implements DiseaseItemRepositoryCustom {
-    // TODO: 19-8-29 dont know the performance vs Spring Data JPA repository one
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Override
     public PaginationResult getPaginationResult(Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DiseaseItem> query = criteriaBuilder.createQuery(DiseaseItem.class);
@@ -39,6 +41,7 @@ public class DiseaseItemRepositoryCustomImpl implements DiseaseItemRepositoryCus
     }
 
 
+    @Override
     public PaginationResult getPaginationResultByDiseaseClass(String diseaseClass, Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DiseaseItem> query = criteriaBuilder.createQuery(DiseaseItem.class);
@@ -49,6 +52,7 @@ public class DiseaseItemRepositoryCustomImpl implements DiseaseItemRepositoryCus
         return createQuery(pageNumber, pageSize, sortBy, orderBy, criteriaBuilder, diseaseItem, select);
     }
 
+    @Override
     public PaginationResult getPaginationResultByDiseaseName(String diseaseName, Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DiseaseItem> query = criteriaBuilder.createQuery(DiseaseItem.class);
@@ -63,11 +67,11 @@ public class DiseaseItemRepositoryCustomImpl implements DiseaseItemRepositoryCus
         TypedQuery<DiseaseItem> typedQuery = sortAndOrderBy(sortBy, orderBy, criteriaBuilder, diseaseItem, select);
         // TODO: 19-8-29 here the every time will check all results and but only return partition and discard the surplus which is not effective
         //  but dont know if those query results can br cached
-        List<DiseaseItem> resultList = typedQuery.getResultList();
         typedQuery.setFirstResult((pageNumber - 1) * pageSize);
         typedQuery.setMaxResults(pageSize);
+        List<DiseaseItem> resultList = typedQuery.getResultList();
         long totalCount = resultList.size();
-        return new PaginationResult(pageNumber, pageSize, totalCount, sortBy, orderBy, typedQuery.getResultList());
+        return new PaginationResult(pageNumber, pageSize, totalCount, sortBy, orderBy, resultList);
     }
 
     private TypedQuery<DiseaseItem> sortAndOrderBy(String sortBy, String orderBy, CriteriaBuilder criteriaBuilder, Root<DiseaseItem> diseaseItem, CriteriaQuery<DiseaseItem> select) {

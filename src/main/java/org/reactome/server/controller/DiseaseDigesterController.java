@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class DiseaseDigesterController {
 
+
     private static final Logger logger = LoggerFactory.getLogger(DiseaseDigesterController.class);
     private DiseaseItemService diseaseItemService;
+
 
     @Autowired
     public DiseaseDigesterController(DiseaseItemService diseaseItemService) {
@@ -57,6 +59,7 @@ public class DiseaseDigesterController {
             @RequestParam("pageSize") Integer pageSize,
             @RequestParam(value = "sortBy", required = false) String sortBy,
             @RequestParam(value = "orderBy", required = false) String orderBy) {
+
         return diseaseItemService.findAll(pageNumber, pageSize, sortBy, orderBy);
     }
 }
