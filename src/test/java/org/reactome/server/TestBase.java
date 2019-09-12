@@ -15,6 +15,5 @@ import org.springframework.transaction.annotation.Transactional;
 public class TestBase {
     @Test
     public void noTest() {
-
     }
 }

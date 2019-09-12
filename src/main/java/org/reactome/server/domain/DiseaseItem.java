@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
 @Entity
+//@Table(name = "disease", indexes = {@Index(name = "disease_id_index", columnList = "id")})
 @Table(name = "disease")
 public class DiseaseItem {
     @Id
@@ -19,9 +19,8 @@ public class DiseaseItem {
     private String diseaseId;
     private String diseaseName;
     private String diseaseClass;
-    @ManyToMany(targetEntity = GeneItem.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    // TODO: 19-8-30 use join table setting to reduce the query time
-    private Set<GeneItem> geneItems;
+    @ManyToMany(targetEntity = GeneItem.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<GeneItem> geneItems;
 
     public DiseaseItem() {
     }
@@ -30,6 +29,13 @@ public class DiseaseItem {
         this.diseaseId = diseaseId;
         this.diseaseName = diseaseName;
         this.diseaseClass = diseaseClass;
+    }
+
+    public DiseaseItem(String diseaseId, String diseaseName, String diseaseClass, List<GeneItem> geneItems) {
+        this.diseaseId = diseaseId;
+        this.diseaseName = diseaseName;
+        this.diseaseClass = diseaseClass;
+        this.geneItems = geneItems;
     }
 
     private DiseaseItem(DiseaseItem diseaseItem) {
@@ -78,18 +84,19 @@ public class DiseaseItem {
         this.diseaseClass = diseaseClass;
     }
 
-    public Set<GeneItem> getGeneItems() {
+    public List<GeneItem> getGeneItems() {
         return geneItems;
     }
 
-    public void setGeneItems(Set<GeneItem> geneItems) {
+    public void setGeneItems(List<GeneItem> geneItems) {
         this.geneItems = geneItems;
     }
+
 
     @Override
     public String toString() {
         return "DiseaseItem{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", diseaseId='" + diseaseId + '\'' +
                 ", diseaseName='" + diseaseName + '\'' +
                 ", diseaseClass='" + diseaseClass + '\'' +

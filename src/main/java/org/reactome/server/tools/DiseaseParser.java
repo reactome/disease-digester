@@ -3,7 +3,10 @@ package org.reactome.server.tools;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.GeneItem;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Function;
@@ -100,7 +103,7 @@ class DiseaseParser {
         Collections.synchronizedList(geneItems).parallelStream().forEach(geneItem -> geneItem.setDiseaseItems(uniqueDiseaseItems.stream().filter(diseaseItem -> geneIdMap.get(geneItem.getGeneId()).contains(diseaseItem.getDiseaseId())).collect(toSet())));
 
 //        uniqueDiseaseItems.forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toList())));
-        Collections.synchronizedList(uniqueDiseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toSet())));
+        Collections.synchronizedList(uniqueDiseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toList())));
 
         return uniqueDiseaseItems;
     }

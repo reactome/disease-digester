@@ -56,7 +56,7 @@ and response body should something be like:
           "accessionNumber": "Q7Z412"
         },
         {
-          "geneId": "5194",
+          "geneId": "5194", 
           "geneSymbol": "PEX13",
           "accessionNumber": "Q92968"
         }]
@@ -76,8 +76,6 @@ and response body should something be like:
   ]
 }
 ```
-
-
 
 ## Task list, ordered in descending importance: 
 
@@ -125,3 +123,6 @@ then duplicate the row, one row for each disease class.
      - Provide different visual cues in pathway viewer for different types of Entity, for example “blue bubble in top 
      right corner of protein”.
      - Allow more than one interactor overlay type at the same time. Perhaps limit to four, one for each corner
+
+the hard part is that you want to know how many there have the results, but you also want to use the limit predicate to improve the query clause performance;
+    and also sort by the number of genes which is hard in hql/jpql since when something is relative to join is time waste;

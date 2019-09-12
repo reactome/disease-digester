@@ -13,7 +13,7 @@ public class GeneItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JsonIgnore
-    @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems", fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems")
     private Set<DiseaseItem> diseaseItems;
     private String geneId;
     private String geneSymbol;

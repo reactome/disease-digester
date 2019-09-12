@@ -44,6 +44,8 @@ class JpaConfig {
     private String formatSql;
     @Value("${hibernate.use_sql_comments}")
     private String useSqlComments;
+    @Value("${hibernate.use_second_level_cache}")
+    private String use_second_level_cache;
 
     @Bean
     public DataSource dataSource() {
@@ -74,6 +76,7 @@ class JpaConfig {
         jpaProperties.put(Environment.FORMAT_SQL, formatSql);
         jpaProperties.put(Environment.USE_SQL_COMMENTS, useSqlComments);
         jpaProperties.put(Environment.HBM2DDL_DELIMITER, ";");
+//        jpaProperties.put(Environment.USE_SECOND_LEVEL_CACHE, use_second_level_cache);
         System.setProperty("hibernate.dialect.storage_engine", "innodb");
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
         return entityManagerFactoryBean;

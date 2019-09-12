@@ -2,7 +2,6 @@ package org.reactome.server.service;
 
 
 import org.reactome.server.domain.AnalysisResult;
-import org.reactome.server.domain.GeneItem;
 import org.reactome.server.exception.EmptyGeneAnalysisResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +26,8 @@ public class GeneAnalysisService {
     }
 
     // todo: use reactome analysis-service component instead of request data via API from network
-    public String checkGeneListAnalysisResult(List<GeneItem> geneItems) throws EmptyGeneAnalysisResultException {
-        String payload = geneItems.stream().map(GeneItem::getGeneSymbol).reduce(" ", String::concat);
+    public String checkGeneListAnalysisResult(List<String> genes) throws EmptyGeneAnalysisResultException {
+        String payload = genes.stream().reduce(" ", String::concat);
         AnalysisResult result = restTemplate.postForObject(ANALYSIS_SERVICE, payload, AnalysisResult.class);
         String token;
         if (result != null) {
