@@ -39,41 +39,59 @@ disease-digester api [usage:]
 and response body should something be like:
 ```json
 {
-  "page": 2,
-  "size": 40,
-  "sort": "diseaseName",
-  "order": "asc",
-  "totalCount": 20284,
-  "diseaseItems": [
+  "content": [
     {
-      "diseaseId": "C0751594",
-      "diseaseName": "Zellweger_Like_Syndrome",
-      "class": "Congenital, Hereditary, and Neonatal Diseases and Abnormalities",
+      "diseaseId": "C0342302",
+      "diseaseName": "Brittle_diabetes",
+      "diseaseClass": "Immune System Diseases",
       "geneItems": [
         {
-          "geneId": "55670",
-          "geneSymbol": "PEX26",
-          "accessionNumber": "Q7Z412"
+          "geneId": "1356",
+          "geneSymbol": "CP",
+          "accessionNumber": "P00450"
         },
         {
-          "geneId": "5194", 
-          "geneSymbol": "PEX13",
-          "accessionNumber": "Q92968"
-        }]
+          "geneId": "23274",
+          "geneSymbol": "CLEC16A",
+          "accessionNumber": "Q2KHT3"
+        }
+      ]
     },
     {
-      "diseaseId": "C1839615",
-      "diseaseName": "X_linked_myopathy_with_excessive_autophagy",
-      "class": "Nervous System Diseases",
+      "diseaseId": "C0014518",
+      "diseaseName": "Toxic_Epidermal_Necrolysis",
+      "diseaseClass": "Immune System Diseases",
       "geneItems": [
         {
-          "geneId": "203547",
-          "geneSymbol": "VMA21",
-          "accessionNumber": "Q3ZAQ7"
+          "geneId": "857",
+          "geneSymbol": "CAV1",
+          "accessionNumber": "Q03135"
         }
       ]
     }
-  ]
+  ],
+  "pageable": {
+    "sort": {
+      "sorted": false,
+      "unsorted": true
+    },
+    "offset": 20,
+    "pageNumber": 1,
+    "pageSize": 20,
+    "paged": true,
+    "unpaged": false
+  },
+  "last": false,
+  "totalPages": 19,
+  "totalElements": 364,
+  "number": 1,
+  "size": 20,
+  "sort": {
+    "sorted": false,
+    "unsorted": true
+  },
+  "first": false,
+  "numberOfElements": 20
 }
 ```
 
