@@ -16,39 +16,39 @@ disease-digester api [usage:]
 
 - run: `mvn tomcat7:run-war`
 
-- [/disease-digester/findAll?pageNumber=2&pageSize=40&sortBy=diseaseName&orderBy=asc]()
+- [/disease-digester/findAll?page=2&size=40&sort=disease&order=asc]()
 
-- [/disease-digester/findAll?pageNumber=2&pageSize=40&sortBy=geneNumber&orderBy=asc]()
+- [/disease-digester/findAll?page=2&size=40&sort=gene&order=asc]()
 
-- [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=asc]()
+- [/disease-digester/findByDiseaseClass?class=immune&page=1&size=40&sort=disease&order=asc]()
 
-- [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=asc]()
+- [/disease-digester/findByDiseaseClass?class=immune&page=1&size=40&sort=gene&order=asc]()
 
-- [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=desc]()
+- [/disease-digester/findByDiseaseClass?class=immune&page=1&size=40&sort=disease&order=desc]()
 
-- [/disease-digester/findByDiseaseClass?diseaseClass=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=desc]()
+- [/disease-digester/findByDiseaseClass?class=immune&page=1&size=40&sort=gene&order=desc]()
 
-- [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=asc]()
+- [/disease-digester/findByDiseaseName?name=immune&page=1&size=40&sort=disease&order=asc]()
 
-- [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=asc]()
+- [/disease-digester/findByDiseaseName?name=immune&page=1&size=40&sort=gene&order=asc]()
 
-- [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=diseaseName&orderBy=desc]()
+- [/disease-digester/findByDiseaseName?name=immune&page=1&size=40&sort=disease&order=desc]()
 
-- [/disease-digester/findByDiseaseName?diseaseName=immune&pageNumber=1&pageSize=40&sortBy=geneNumber&orderBy=desc]()
+- [/disease-digester/findByDiseaseName?name=immune&page=1&size=40&sort=gene&order=desc]()
 
 and response body should something be like:
 ```json
 {
-  "pageNumber": 2,
-  "pageSize": 40,
-  "sortBy": "diseaseName",
-  "orderBy": "asc",
+  "page": 2,
+  "size": 40,
+  "sort": "diseaseName",
+  "order": "asc",
   "totalCount": 20284,
   "diseaseItems": [
     {
       "diseaseId": "C0751594",
       "diseaseName": "Zellweger_Like_Syndrome",
-      "diseaseClass": "Congenital, Hereditary, and Neonatal Diseases and Abnormalities",
+      "class": "Congenital, Hereditary, and Neonatal Diseases and Abnormalities",
       "geneItems": [
         {
           "geneId": "55670",
@@ -64,7 +64,7 @@ and response body should something be like:
     {
       "diseaseId": "C1839615",
       "diseaseName": "X_linked_myopathy_with_excessive_autophagy",
-      "diseaseClass": "Nervous System Diseases",
+      "class": "Nervous System Diseases",
       "geneItems": [
         {
           "geneId": "203547",
@@ -112,7 +112,7 @@ then duplicate the row, one row for each disease class.
 
 
 ### 2. interactor overlay:
-**this task should be another part which different from task one(not include in task one)**
+**this task should be another code repo which different from task one(and not include in task one)**
 
  - Reformat the table above to be suitable as input table for user-provided **interactor overlay**.
  
@@ -123,6 +123,3 @@ then duplicate the row, one row for each disease class.
      - Provide different visual cues in pathway viewer for different types of Entity, for example “blue bubble in top 
      right corner of protein”.
      - Allow more than one interactor overlay type at the same time. Perhaps limit to four, one for each corner
-
-the hard part is that you want to know how many there have the results, but you also want to use the limit predicate to improve the query clause performance;
-    and also sort by the number of genes which is hard in hql/jpql since when something is relative to join is time waste;
