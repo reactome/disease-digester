@@ -12,9 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DiseaseItemRepository extends JpaRepository<DiseaseItem, Long> {
 
-    Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseName(String diseaseClass, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseClass LIKE %:diseaseClass%")
+    Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseName(@Param("diseaseClass") String diseaseClass, Pageable pageable);
 
-    Page<DiseaseItem> findByDiseaseNameContainingOrderByDiseaseName(String diseaseName, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseName LIKE %:diseaseName%")
+    Page<DiseaseItem> findByDiseaseNameContainingOrderByDiseaseName(@Param("diseaseName") String diseaseName, Pageable pageable);
 
     @Query(value = "SELECT d FROM DiseaseItem d GROUP BY d.diseaseId ORDER BY d.geneItems.size DESC")
     Page<DiseaseItem> findAllOrderByGeneItemsDesc(Pageable pageable);
@@ -45,5 +47,4 @@ public interface DiseaseItemRepository extends JpaRepository<DiseaseItem, Long> 
             "GROUP BY d.diseaseId " +
             "ORDER BY d.geneItems.size DESC")
     Page<DiseaseItem> findByDiseaseNameContainingOrderByGeneItemsDesc(@Param("diseaseName") String diseaseName, Pageable pageable);
-
 }

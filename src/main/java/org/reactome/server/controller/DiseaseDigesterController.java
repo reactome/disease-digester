@@ -44,7 +44,6 @@ public class DiseaseDigesterController {
             @RequestParam("size") int size,
             @RequestParam(value = "sort", required = false) String sortBy,
             @RequestParam(value = "order", required = false) String orderBy) {
-
         return diseaseItemService.findAll(page, size, sortBy, orderBy);
     }
 

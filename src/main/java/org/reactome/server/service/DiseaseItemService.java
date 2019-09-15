@@ -34,50 +34,52 @@ public class DiseaseItemService {
     }
 
     public Page<DiseaseItem> findByDiseaseClass(String diseaseClass, Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
-        if (null != sortBy && sortBy.contains("disease")) {
-            return diseaseItemRepository.findByDiseaseClassContainingOrderByDiseaseName(diseaseClass, createPageRequest(pageNumber, pageSize, sortBy, orderBy));
-        } else {
+        if (null != sortBy && sortBy.contains("gene")) {
             if (null != orderBy && orderBy.contains("desc")) {
                 return diseaseItemRepository.findByDiseaseClassContainingOrderByGeneItemsDesc(diseaseClass, createPageRequest(pageNumber, pageSize));
             } else {
                 return diseaseItemRepository.findByDiseaseClassContainingOrderByGeneItemsAsc(diseaseClass, createPageRequest(pageNumber, pageSize));
             }
+        } else {
+            return diseaseItemRepository.findByDiseaseClassContainingOrderByDiseaseName(diseaseClass, createPageRequest(pageNumber, pageSize, sortBy, orderBy));
         }
     }
 
     public Page<DiseaseItem> findByDiseaseName(String diseaseName, Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
-        if (null != sortBy && sortBy.contains("disease")) {
-            return diseaseItemRepository.findByDiseaseNameContainingOrderByDiseaseName(diseaseName, createPageRequest(pageNumber, pageSize, sortBy, orderBy));
-        } else {
+        if (null != sortBy && sortBy.contains("gene")) {
             if (null != orderBy && orderBy.contains("desc")) {
                 return diseaseItemRepository.findByDiseaseNameContainingOrderByGeneItemsDesc(diseaseName, createPageRequest(pageNumber, pageSize));
             } else {
                 return diseaseItemRepository.findByDiseaseNameContainingOrderByGeneItemsAsc(diseaseName, createPageRequest(pageNumber, pageSize));
             }
+        } else {
+            return diseaseItemRepository.findByDiseaseNameContainingOrderByDiseaseName(diseaseName, createPageRequest(pageNumber, pageSize, sortBy, orderBy));
         }
     }
 
     private Pageable createPageRequest(Integer pageNumber, Integer pageSize) {
+        return createPageRequest(pageNumber, pageSize, null);
+    }
+
+    private Pageable createPageRequest(Integer pageNumber, Integer pageSize, Sort sort) {
         pageNumber = pageNumber == null ? 0 : pageNumber;
         pageSize = pageSize == null ? 50 : pageSize;
-        return PageRequest.of(pageNumber, pageSize);
+        if (null != sort) {
+            return PageRequest.of(pageNumber, pageSize, sort);
+        } else {
+            return PageRequest.of(pageNumber, pageSize);
+        }
     }
 
     private Pageable createPageRequest(Integer pageNumber, Integer pageSize, String sortBy, String orderBy) {
         Sort.Direction sortDirection = Sort.Direction.ASC;
         String sortProperty = "diseaseName";
-        if (null != sortBy) {
-            if (sortBy.contains("class")) {
-                sortProperty = "diseaseClass";
-            }
+        if (null != sortBy && sortBy.contains("class")) {
+            sortProperty = "diseaseClass";
         }
-        if (null != orderBy) {
-            if (orderBy.contains("desc")) {
-                sortDirection = Sort.Direction.DESC;
-            }
+        if (null != orderBy && orderBy.contains("desc")) {
+            sortDirection = Sort.Direction.DESC;
         }
-        pageNumber = pageNumber == null ? 0 : pageNumber;
-        pageSize = pageSize == null ? 50 : pageSize;
-        return PageRequest.of(pageNumber, pageSize, Sort.by(sortDirection, sortProperty));
+        return createPageRequest(pageNumber, pageSize, Sort.by(sortDirection, sortProperty));
     }
 }
