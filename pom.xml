@@ -221,7 +221,6 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
@@ -249,6 +248,11 @@
 
             <!-- Generate jar with dependencies -->
             <plugin>
+                <groupId>org.apache.maven.plugins
+
+
+
+                </groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
