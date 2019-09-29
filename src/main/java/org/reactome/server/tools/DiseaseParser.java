@@ -1,5 +1,7 @@
 package org.reactome.server.tools;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.GeneItem;
 
@@ -93,7 +95,8 @@ class DiseaseParser {
         List<DiseaseItem> diseaseItems = new ArrayList<>();
         List<GeneItem> geneItems = new ArrayList<>();
 
-        byDiseaseId.keySet().forEach(m -> diseaseItems.add(new DiseaseItem(m.get("diseaseId"), m.get("diseaseName").replaceAll("[^\\w]+", "_"), m.get("diseaseClass"))));
+//        byDiseaseId.keySet().forEach(m -> diseaseItems.add(new DiseaseItem(m.get("diseaseId"), m.get("diseaseName").trim().replaceAll("[^\\w]+", "_"), m.get("diseaseClass"))));
+        byDiseaseId.keySet().forEach(m -> diseaseItems.add(new DiseaseItem(m.get("diseaseId"), trimDiseaseName(m.get("diseaseName")), m.get("diseaseClass"))));
 
         List<DiseaseItem> uniqueDiseaseItems = cleavageDiseaseItemsByDiseaseClass(diseaseItems);
 
@@ -108,6 +111,20 @@ class DiseaseParser {
         return uniqueDiseaseItems;
     }
 
+    /**
+     * trim disease name: replace all non-word character with underscore, trim and capitalize
+     *
+     * @param diseaseName
+     * @return trimmed disease name
+     */
+    private String trimDiseaseName(String diseaseName) {
+        return Arrays.stream(diseaseName.split("[^\\w]"))
+                .filter(name -> name.matches("\\w+"))
+                .map(String::trim)
+                .map(String::toLowerCase)
+                .map(StringUtils::capitalize)
+                .collect(Collectors.joining("_"));
+    }
 
     private List<DiseaseItem> abbreviatedAttributeMapping(List<DiseaseItem> diseaseItems) {
         Map<String, String> diseaseClassMap = loadDiseaseClass2TopDiseaseClassMap();
