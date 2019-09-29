@@ -1,7 +1,6 @@
 package org.reactome.server.tools;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.GeneItem;
 
