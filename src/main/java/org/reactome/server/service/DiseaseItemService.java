@@ -62,7 +62,7 @@ public class DiseaseItemService {
     }
 
     private Pageable createPageRequest(Integer pageNumber, Integer pageSize, Sort sort) {
-        pageNumber = pageNumber == null ? 0 : pageNumber;
+        pageNumber = pageNumber == null ? 0 : pageNumber - 1; // the spring jpa page start from zero
         pageSize = pageSize == null ? 50 : pageSize;
         if (null != sort) {
             return PageRequest.of(pageNumber, pageSize, sort);

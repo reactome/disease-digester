@@ -1,10 +1,21 @@
-package org.reactome.server.service;
-
-import org.reactome.server.TestBase;
-
-
-public class DiseaseItemServiceTest extends TestBase {
-
+//package org.reactome.server.service;
+//
+//import org.junit.After;
+//import org.junit.Before;
+//import org.junit.Test;
+//import org.reactome.server.TestBase;
+//import org.reactome.server.domain.DiseaseItem;
+//import org.reactome.server.repository.DiseaseItemRepository;
+//import org.springframework.beans.factory.annotation.Autowired;
+//
+//import java.util.Arrays;
+//import java.util.List;
+//
+//import static org.junit.Assert.assertEquals;
+//
+//
+//public class DiseaseItemServiceTest extends TestBase {
+//
 //    @Autowired
 //    DiseaseItemService diseaseItemService;
 //    @Autowired
@@ -69,4 +80,4 @@ public class DiseaseItemServiceTest extends TestBase {
 //        DiseaseItem diseaseItem = paginationResult.getDiseaseItems().get(0);
 //        assertEquals(diseaseClass, diseaseItem.getDiseaseClass());
 //    }
-}
+//}
