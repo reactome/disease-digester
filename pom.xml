@@ -16,8 +16,10 @@
         <deploymentPath>/</deploymentPath>
         <spring.version>5.0.5.RELEASE</spring.version>
         <mysql.connector.version>8.0.11</mysql.connector.version>
-        <hibernate.version>5.4.1.Final</hibernate.version>
-        <hibernate.validator.version>6.0.9.Final</hibernate.validator.version>
+        <!-- https://hibernate.atlassian.net/browse/HHH-13260 -->
+        <!-- We should keep 5.3.7 until we update to Tomcat8 or 9 in our servers -->
+        <hibernate.version>5.3.7.Final</hibernate.version>
+        <hibernate.validator.version>6.0.17.Final</hibernate.validator.version>
         <spring.data.jpa.version>2.0.6.RELEASE</spring.data.jpa.version>
         <hikari.version>3.1.0</hikari.version>
         <jackson.version>2.9.4</jackson.version>
@@ -54,12 +56,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.0.4.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.0.4.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <!-- Persistence -->
         <dependency>
@@ -249,11 +251,7 @@
 
             <!-- Generate jar with dependencies -->
             <plugin>
-                <groupId>org.apache.maven.plugins
-
-
-
-                </groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
