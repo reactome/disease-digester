@@ -13,6 +13,7 @@
     <!-- Standard xml based mvc config-->
     <mvc:annotation-driven/>
     <mvc:resources mapping="/resources/**" location="resources/" />
+    <mvc:view-controller path="/" view-name="index"/>
 
     <tx:annotation-driven/>
 
