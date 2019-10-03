@@ -15,11 +15,10 @@
     <properties>
         <deploymentPath>/</deploymentPath>
         <spring.version>5.0.5.RELEASE</spring.version>
-        <mysql.connector.version>8.0.17</mysql.connector.version>
-        <!-- https://hibernate.atlassian.net/browse/HHH-13260 -->
-        <!-- We should keep 5.3.7 until we update to Tomcat8 or 9 in our servers -->
+        <mysql.connector.version>8.0.11</mysql.connector.version>
+<!--        <hibernate.version>5.4.1.Final</hibernate.version>-->
         <hibernate.version>5.3.7.Final</hibernate.version>
-        <hibernate.validator.version>6.0.17.Final</hibernate.validator.version>
+        <hibernate.validator.version>6.0.9.Final</hibernate.validator.version>
         <spring.data.jpa.version>2.0.6.RELEASE</spring.data.jpa.version>
         <hikari.version>3.1.0</hikari.version>
         <jackson.version>2.9.4</jackson.version>
@@ -56,12 +55,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>${spring.version}</version>
+            <version>5.0.4.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>${spring.version}</version>
+            <version>5.0.4.RELEASE</version>
         </dependency>
         <!-- Persistence -->
         <dependency>
@@ -84,12 +83,6 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
-            <exclusions>
-            <exclusion>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-            </exclusion>
-        </exclusions>
         </dependency>
         <!-- lightweight and lightning fast JDBC connection pooling framework -->
         <dependency>
