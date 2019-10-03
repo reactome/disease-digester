@@ -15,7 +15,7 @@
     <properties>
         <deploymentPath>/</deploymentPath>
         <spring.version>5.0.5.RELEASE</spring.version>
-        <mysql.connector.version>8.0.11</mysql.connector.version>
+        <mysql.connector.version>8.0.17</mysql.connector.version>
         <!-- https://hibernate.atlassian.net/browse/HHH-13260 -->
         <!-- We should keep 5.3.7 until we update to Tomcat8 or 9 in our servers -->
         <hibernate.version>5.3.7.Final</hibernate.version>
