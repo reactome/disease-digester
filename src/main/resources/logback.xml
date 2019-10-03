@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<configuration scan="true" scanPeriod="3 seconds">
+<configuration scan="true">
     <contextName>disease</contextName>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -10,7 +10,6 @@
         </encoder>
     </appender>
 
-    <jmxConfigurator/>
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
@@ -18,7 +17,6 @@
     <logger name="org.springframework" level="ERROR"/>
     <logger name="org.hibernate" level="ERROR"/>
     <logger name="com.zaxxer" level="ERROR"/>
-    <logger name="net.sf.uadetector" level="ERROR"/>
 
     <logger name="org.reactome.server" level="ALL"/>
 </configuration>
