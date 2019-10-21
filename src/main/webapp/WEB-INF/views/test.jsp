@@ -29,7 +29,7 @@ overlay. Slides to explain the idea are
                 <button @click="sortByDiseaseName">{{order}}</button>
                 <br><input @change="searchDiseaseName" type="text"
                            placeholder="Disease name filter"
-                           v-bind:v-bind:value="name"></th>
+                           v-bind:value="name"></th>
             <th>Disease class<br><input @change="searchDiseaseClass" type="text" placeholder="Disease class filter"
                                         v-bind:value="clzss">
             </th>
