@@ -62,7 +62,8 @@ overlay. Slides to explain the idea are
         <button @click="nextPage">Next</button>
         <button @click="goto(totalPages)" v-if="!last">Last</button>
         <br>
-        Showing: {{offset}} - {{offset+size}} of {{totalElements}} records &nbsp;&nbsp;&nbsp;
+        Showing: {{offset+1}} - {{((offset+size)>totalElements)?totalElements:offset+size}} of {{totalElements}}
+        records &nbsp;&nbsp;&nbsp;
         Page:<input @change="gotoPage" type="text" v-bind:value="pageNumber"/> of {{totalPages}} with page size
         <select @change="changeSize">
             <option value="20">20</option>
@@ -77,7 +78,7 @@ overlay. Slides to explain the idea are
 </body>
 <script src="${pageContext.request.contextPath}/resources/js/vue.js"></script>
 <script type="text/javascript">
-    var app = new Vue({
+    let app = new Vue({
         el: '#app',
         data: {
             diseases: [],
@@ -121,6 +122,7 @@ overlay. Slides to explain the idea are
                 } else {
                     var url = '${pageContext.request.contextPath}' + func + '&page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
                 }
+                console.log(url);
                 fetch(url)
                     .then(res => res.json())
                     .then(res => this.setData(res))
@@ -138,7 +140,7 @@ overlay. Slides to explain the idea are
                 }
             },
             getGeneList(geneItems, separator = ', ') {
-                var geneList = [];
+                let geneList = [];
                 for (let i = 0; i < geneItems.length; i++) {
                     geneList.push(geneItems[i].geneSymbol);
                 }
@@ -148,8 +150,9 @@ overlay. Slides to explain the idea are
                 window.location.href = '${pageContext.request.contextPath}/analyze?genes=' + this.getGeneList(geneItems, '&');
             },
             changeSize(event) {
-                var size = event.target.value;
-                this.loadData('/findAll', this.pageNumber, size, this.sort, this.order);
+                let size = event.target.value;
+                let page = size > this.size ? 1 : this.pageNumber;
+                this.loadData('/findAll', page, size, this.sort, this.order);
             },
             revertOrderAndLoadData() {
                 if (this.order === 'asc') {
@@ -171,19 +174,19 @@ overlay. Slides to explain the idea are
                 this.loadDataByFunc(page);
             },
             gotoPage(event) {
-                var page = event.target.value;
+                let page = event.target.value;
                 if (page <= this.totalPages) {
                     this.goto(page);
                 }
             },
             searchDiseaseName(event) {
-                var name = event.target.value;
+                let name = event.target.value;
                 this.name = name;
                 this.clzss = null;
                 this.loadData('/findByDiseaseName?name=' + name, 1, this.size, this.sort, this.order);
             },
             searchDiseaseClass(event) {
-                var clzss = event.target.value;
+                let clzss = event.target.value;
                 this.clzss = clzss;
                 this.name = null;
                 this.loadData('/findByDiseaseClass?class=' + clzss, 1, this.size, this.sort, this.order);
