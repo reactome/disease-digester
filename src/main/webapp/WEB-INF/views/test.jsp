@@ -27,6 +27,7 @@ overlay. Slides to explain the idea are
         <tr>
             <th>Disease name
                 <button @click="sortByDiseaseName">{{order}}</button>
+                <%--TODO: input box auto-completing--%>
                 <br><input @change="searchDiseaseName" type="text"
                            placeholder="Disease name filter"
                            v-bind:value="name"></th>
@@ -144,7 +145,7 @@ overlay. Slides to explain the idea are
                 for (let i = 0; i < geneItems.length; i++) {
                     geneList.push(geneItems[i].geneSymbol);
                 }
-                return geneList.join(separator);
+                return geneList.sort().join(separator);
             },
             analyze(geneItems) {
                 window.location.href = '${pageContext.request.contextPath}/analyze?genes=' + this.getGeneList(geneItems, '&');

@@ -110,15 +110,15 @@ features about this table:
 
 - table data from DisGeNet is a binary data about 'Entity - Molecule', This is reformatted to aggregate all molecules 
 related to one entity: Clicking the last column named 'Analysis' in each row link will execute pathway analysis for all 
-proteins associated with Entity. and redirect to the analysis result in Pathway Browser page
+genes associated with Entity. and redirect to the analysis result in Pathway Browser page
 
 - allow to order by Disease name and Number of genes, ascending and
-descending, (sort whole table, so that the subsequent retrieved results still keep the same order) 
+descending, (sort whole table, so that the subsequent retrieved results still keep the same order) **Done √**
 
 - pagination **Done √**
 
 - ★ Make the column "Disease name" searchable with an auto-completing field
-shown above the column (searchable against whole data from database with pagination) 
+shown above the column (searchable against whole data from database with pagination) **Done √**
 
 - within each box, order the gene names alphabetically **Done √**
 
@@ -126,7 +126,7 @@ shown above the column (searchable against whole data from database with paginat
 a mapping file from "Disease ID" to "Disease Class". The new "Disease
 class" column should also be searchable and auto-completable.  This is
 not for now, just as a heads-up. Please note that there is an n:m mapping. If you have more than one disease class, 
-then duplicate the row, one row for each disease class. 
+then duplicate the row, one row for each disease class. **Done √**
 
 
 ### 2. interactor overlay:
