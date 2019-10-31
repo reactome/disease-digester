@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class GeneAnalysisService {
@@ -26,8 +26,8 @@ public class GeneAnalysisService {
     }
 
     // todo: use reactome analysis-service component instead of request data via API from network
-    public String checkGeneListAnalysisResult(List<String> genes) throws EmptyGeneAnalysisResultException {
-        String payload = genes.stream().reduce(" ", String::concat);
+    public String checkGeneListAnalysisResult(String[] genes) throws EmptyGeneAnalysisResultException {
+        String payload = Stream.of(genes).reduce(" ", String::concat);
         AnalysisResult result = restTemplate.postForObject(ANALYSIS_SERVICE, payload, AnalysisResult.class);
         String token;
         if (result != null) {

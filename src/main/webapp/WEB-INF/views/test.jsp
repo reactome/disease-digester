@@ -50,7 +50,10 @@ overlay. Slides to explain the idea are
             <td>{{getGeneList(disease.geneItems)}}</td>
             <td>{{disease.diseaseId}}</td>
             <td>
-                <button @click="analyze(disease.geneItems)">Analyze</button>
+                <form action="${pageContext.request.contextPath}/analyze" method="post">
+                    <input type="hidden" v-bind:value="genes">
+                    <button type="submit" @click="analyze(disease.geneItems)">Analyze</button>
+                </form>
             </td>
         </tr>
         </tbody>
@@ -95,6 +98,7 @@ overlay. Slides to explain the idea are
             totalElements: null,
             sort: 'disease',
             order: 'asc',
+            genes: null,
         },
         created: function () {
             fetch('${pageContext.request.contextPath}/findAll?page=1&size=40&sort=disease&order=asc')
@@ -148,7 +152,8 @@ overlay. Slides to explain the idea are
                 return geneList.sort().join(separator);
             },
             analyze(geneItems) {
-                window.location.href = '${pageContext.request.contextPath}/analyze?genes=' + this.getGeneList(geneItems, '&');
+                this.genes = this.getGeneList(geneItems, '&');
+                console.log(this.genes);
             },
             changeSize(event) {
                 let size = event.target.value;
