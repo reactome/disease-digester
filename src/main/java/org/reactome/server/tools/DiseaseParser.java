@@ -22,6 +22,9 @@ class DiseaseParser {
 
     private List<DiseaseItem> diseaseItems;
     private static final String DELIMITER = "\t";
+    // !Notice that rhe char `Ν` in word `Νot` is a Greek Capital Letter Nu, not a English Capital Letter N,
+    // so that this class can be always ascending sorted after the one which has class
+    private static final String NOT_CLASSIFIED = "Νot Classified";
     private final InputStream GENEID_4_UNIPROT = this.getClass().getClassLoader().getResourceAsStream("geneid_4_uniprot.tsv");
     private final InputStream DISEASE_CLASS = this.getClass().getClassLoader().getResourceAsStream("disease-class.properties");
 
@@ -129,7 +132,7 @@ class DiseaseParser {
         Map<String, String> diseaseClassMap = loadDiseaseClass2TopDiseaseClassMap();
         Map<String, String> geneId2AccNumMap = loadGeneId2AccNumMap();
 
-        Collections.synchronizedList(diseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setDiseaseClass(diseaseClassMap.get(diseaseItem.getDiseaseClass())));
+        Collections.synchronizedList(diseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setDiseaseClass(Optional.ofNullable(diseaseClassMap.get(diseaseItem.getDiseaseClass())).orElse(NOT_CLASSIFIED)));
         Collections.synchronizedList(diseaseItems).parallelStream().forEach(
                 diseaseItem -> diseaseItem.getGeneItems().forEach(
                         geneItem -> geneItem.setAccessionNumber(geneId2AccNumMap.get(geneItem.getGeneId()))));
