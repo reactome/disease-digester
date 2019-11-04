@@ -47,15 +47,12 @@ overlay. Slides to explain the idea are
         <tbody>
         <tr v-for="disease in diseases">
             <td>
-                <form action="${pageContext.request.contextPath}/analyze" method="post">
-                    <input type="hidden" v-bind:value="genes">
-                    <button type="submit" @click="analyze(disease.geneItems)">Analyze</button>
-                </form>
+                <button @click="analyze(disease.geneItems)">Analyze</button>
             </td>
             <td>{{disease.diseaseName}}</td>
             <td>{{disease.diseaseClass}}</td>
             <td>{{disease.geneItems.length}}</td>
-            <td>{{getGeneList(disease.geneItems)}}</td>
+            <td>{{getGeneList(disease.geneItems,', ')}}</td>
             <td>{{disease.diseaseId}}</td>
         </tr>
         </tbody>
@@ -83,8 +80,8 @@ overlay. Slides to explain the idea are
 </div>
 </body>
 <script src="${pageContext.request.contextPath}/resources/js/vue.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/axios.js"></script>
 <script type="text/javascript">
-    import axois from "axios";
     let app = new Vue({
         el: '#app',
         data: {
@@ -104,9 +101,9 @@ overlay. Slides to explain the idea are
             genes: null,
         },
         created: function () {
-            fetch('${pageContext.request.contextPath}/findAll?page=1&size=40&sort=disease&order=asc')
-                .then(res => res.json())
-                .then(res => this.setData(res));
+            axios.get('${pageContext.request.contextPath}/findAll?page=1&size=40&sort=disease&order=asc')
+                .then(res => this.setData(res.data))
+                .catch(err => console.log(err));
         },
         methods: {
             setData: function (data) {
@@ -125,15 +122,14 @@ overlay. Slides to explain the idea are
                 }
             },
             loadData: function (func = '/findAll', page = 1, size = 40, sort = 'disease', order = 'asc') {
+                let url = null;
                 if (func.match('/findAll')) {
-                    var url = '${pageContext.request.contextPath}' + func + '?page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
+                    url = '${pageContext.request.contextPath}' + func + '?page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
                 } else {
-                    var url = '${pageContext.request.contextPath}' + func + '&page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
+                    url = '${pageContext.request.contextPath}' + func + '&page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
                 }
                 console.log(url);
-                fetch(url)
-                    .then(res => res.json())
-                    .then(res => this.setData(res))
+                axios.get(url).then(res => this.setData(res.data))
                     .catch(function (error) {
                         console.log(error);
                     });
@@ -147,23 +143,37 @@ overlay. Slides to explain the idea are
                     this.loadData('/findAll', page, this.size, this.sort, this.order)
                 }
             },
-            getGeneList(geneItems, separator = ', ') {
+            getGeneList(geneItems, separator) {
                 let geneList = [];
                 for (let i = 0; i < geneItems.length; i++) {
                     geneList.push(geneItems[i].geneSymbol);
                 }
-                return geneList.sort().join(separator);
+                if (separator != null) {
+                    return geneList.sort().join(separator);
+                }
+                return geneList;
             },
             analyze(geneItems) {
-                this.genes = this.getGeneList(geneItems, '&');
-                console.log(this.genes);
+                this.genes = this.getGeneList(geneItems);
+                let data = {"genes": this.genes};
+                console.log(data);
+                <%--axios.post('${pageContext.request.contextPath}/analyze', payload)--%>
+                axios.post('http://localhost:8080/disease-digester/analyze', data)
+                    .then(res => window.open(res.data, replace = true))
+                    .catch(err => {
+                        console.log(err)
+                    });
             },
             changeSize(event) {
                 let size = event.target.value;
                 let page = size > this.size ? 1 : this.pageNumber;
-                this.loadData('/findAll', page, size, this.sort, this.order);
+                this.size = size;
+                if (this.clzss == null && this.name == null) {
+                    this.loadData('/findAll', page, this.size, this.sort, this.order);
+                }
+                this.loadDataByFunc(page);
             },
-            revertOrderAndLoadData() {
+            reverseOrderAndLoadData() {
                 if (this.order === 'asc') {
                     this.order = 'desc';
                 } else {
@@ -173,15 +183,15 @@ overlay. Slides to explain the idea are
             },
             sortByDiseaseName() {
                 this.sort = 'disease';
-                this.revertOrderAndLoadData();
+                this.reverseOrderAndLoadData();
             },
             sortByDiseaseClass() {
                 this.sort = 'class';
-                this.revertOrderAndLoadData();
+                this.reverseOrderAndLoadData();
             },
             sortByGeneNumber() {
                 this.sort = 'gene';
-                this.revertOrderAndLoadData();
+                this.reverseOrderAndLoadData();
             },
             goto(page) {
                 this.loadDataByFunc(page);
