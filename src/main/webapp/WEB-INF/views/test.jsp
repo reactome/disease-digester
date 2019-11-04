@@ -25,36 +25,38 @@ overlay. Slides to explain the idea are
     <table align="center">
         <thead>
         <tr>
+            <th>Check in Pathway Browser</th>
             <th>Disease name
                 <button @click="sortByDiseaseName">{{order}}</button>
                 <%--TODO: input box auto-completing--%>
                 <br><input @change="searchDiseaseName" type="text"
                            placeholder="Disease name filter"
                            v-bind:value="name"></th>
-            <th>Disease class<br><input @change="searchDiseaseClass" type="text" placeholder="Disease class filter"
-                                        v-bind:value="clzss">
+            <th>Disease class
+                <button @click="sortByDiseaseClass">{{order}}</button>
+                <br><input @change="searchDiseaseClass" type="text" placeholder="Disease class filter"
+                           v-bind:value="clzss">
             </th>
             <th>Number of genes
                 <button @click="sortByGeneNumber">{{order}}</button>
             </th>
             <th>Gene list</th>
             <th>Disease id</th>
-            <th>Check in Pathway Browser</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="disease in diseases">
-            <td>{{disease.diseaseName}}</td>
-            <td>{{disease.diseaseClass}}</td>
-            <td>{{disease.geneItems.length}}</td>
-            <td>{{getGeneList(disease.geneItems)}}</td>
-            <td>{{disease.diseaseId}}</td>
             <td>
                 <form action="${pageContext.request.contextPath}/analyze" method="post">
                     <input type="hidden" v-bind:value="genes">
                     <button type="submit" @click="analyze(disease.geneItems)">Analyze</button>
                 </form>
             </td>
+            <td>{{disease.diseaseName}}</td>
+            <td>{{disease.diseaseClass}}</td>
+            <td>{{disease.geneItems.length}}</td>
+            <td>{{getGeneList(disease.geneItems)}}</td>
+            <td>{{disease.diseaseId}}</td>
         </tr>
         </tbody>
     </table>
@@ -82,6 +84,7 @@ overlay. Slides to explain the idea are
 </body>
 <script src="${pageContext.request.contextPath}/resources/js/vue.js"></script>
 <script type="text/javascript">
+    import axois from "axios";
     let app = new Vue({
         el: '#app',
         data: {
@@ -170,6 +173,10 @@ overlay. Slides to explain the idea are
             },
             sortByDiseaseName() {
                 this.sort = 'disease';
+                this.revertOrderAndLoadData();
+            },
+            sortByDiseaseClass() {
+                this.sort = 'class';
                 this.revertOrderAndLoadData();
             },
             sortByGeneNumber() {

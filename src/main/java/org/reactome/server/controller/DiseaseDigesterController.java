@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.List;
+
 @RestController
 public class DiseaseDigesterController {
 
@@ -72,7 +74,7 @@ public class DiseaseDigesterController {
     }
 
     @PostMapping(value = "/analyze")
-    public ModelAndView showPathway(@RequestBody String[] genes) throws EmptyGeneAnalysisResultException {
+    public ModelAndView showPathway(@RequestBody List<String> genes) throws EmptyGeneAnalysisResultException {
         return new ModelAndView(new RedirectView(geneAnalysisService.checkGeneListAnalysisResult(genes)));
     }
 

@@ -15,8 +15,14 @@ public interface DiseaseItemRepository extends JpaRepository<DiseaseItem, Long> 
     @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseClass LIKE %:diseaseClass%")
     Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseName(@Param("diseaseClass") String diseaseClass, Pageable pageable);
 
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseClass LIKE %:diseaseClass%")
+    Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseClass(@Param("diseaseClass") String diseaseClass, Pageable pageable);
+
     @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseName LIKE %:diseaseName%")
     Page<DiseaseItem> findByDiseaseNameContainingOrderByDiseaseName(@Param("diseaseName") String diseaseName, Pageable pageable);
+
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseName LIKE %:diseaseName%")
+    Page<DiseaseItem> findByDiseaseNameContainingOrderByDiseaseClass(@Param("diseaseName") String diseaseName, Pageable pageable);
 
     @Query(value = "SELECT d FROM DiseaseItem d ORDER BY d.geneItems.size DESC")
     Page<DiseaseItem> findAllOrderByGeneItemsDesc(Pageable pageable);
