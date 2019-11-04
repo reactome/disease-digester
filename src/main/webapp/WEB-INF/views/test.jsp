@@ -25,33 +25,35 @@ overlay. Slides to explain the idea are
     <table align="center">
         <thead>
         <tr>
+            <th>Check in Pathway Browser</th>
             <th>Disease name
                 <button @click="sortByDiseaseName">{{order}}</button>
                 <%--TODO: input box auto-completing--%>
                 <br><input @change="searchDiseaseName" type="text"
                            placeholder="Disease name filter"
                            v-bind:value="name"></th>
-            <th>Disease class<br><input @change="searchDiseaseClass" type="text" placeholder="Disease class filter"
-                                        v-bind:value="clzss">
+            <th>Disease class
+                <button @click="sortByDiseaseClass">{{order}}</button>
+                <br><input @change="searchDiseaseClass" type="text" placeholder="Disease class filter"
+                           v-bind:value="clzss">
             </th>
             <th>Number of genes
                 <button @click="sortByGeneNumber">{{order}}</button>
             </th>
             <th>Gene list</th>
             <th>Disease id</th>
-            <th>Check in Pathway Browser</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="disease in diseases">
-            <td>{{disease.diseaseName}}</td>
-            <td>{{disease.diseaseClass}}</td>
-            <td>{{disease.geneItems.length}}</td>
-            <td>{{getGeneList(disease.geneItems)}}</td>
-            <td>{{disease.diseaseId}}</td>
             <td>
                 <button @click="analyze(disease.geneItems)">Analyze</button>
             </td>
+            <td>{{disease.diseaseName}}</td>
+            <td>{{disease.diseaseClass}}</td>
+            <td>{{disease.geneItems.length}}</td>
+            <td>{{getGeneList(disease.geneItems,', ')}}</td>
+            <td>{{disease.diseaseId}}</td>
         </tr>
         </tbody>
     </table>
@@ -78,6 +80,7 @@ overlay. Slides to explain the idea are
 </div>
 </body>
 <script src="${pageContext.request.contextPath}/resources/js/vue.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/axios.js"></script>
 <script type="text/javascript">
     let app = new Vue({
         el: '#app',
@@ -95,11 +98,12 @@ overlay. Slides to explain the idea are
             totalElements: null,
             sort: 'disease',
             order: 'asc',
+            genes: null,
         },
         created: function () {
-            fetch('${pageContext.request.contextPath}/findAll?page=1&size=40&sort=disease&order=asc')
-                .then(res => res.json())
-                .then(res => this.setData(res));
+            axios.get('${pageContext.request.contextPath}/findAll?page=1&size=40&sort=disease&order=asc')
+                .then(res => this.setData(res.data))
+                .catch(err => console.log(err));
         },
         methods: {
             setData: function (data) {
@@ -118,15 +122,14 @@ overlay. Slides to explain the idea are
                 }
             },
             loadData: function (func = '/findAll', page = 1, size = 40, sort = 'disease', order = 'asc') {
+                let url = null;
                 if (func.match('/findAll')) {
-                    var url = '${pageContext.request.contextPath}' + func + '?page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
+                    url = '${pageContext.request.contextPath}' + func + '?page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
                 } else {
-                    var url = '${pageContext.request.contextPath}' + func + '&page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
+                    url = '${pageContext.request.contextPath}' + func + '&page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
                 }
                 console.log(url);
-                fetch(url)
-                    .then(res => res.json())
-                    .then(res => this.setData(res))
+                axios.get(url).then(res => this.setData(res.data))
                     .catch(function (error) {
                         console.log(error);
                     });
@@ -140,22 +143,37 @@ overlay. Slides to explain the idea are
                     this.loadData('/findAll', page, this.size, this.sort, this.order)
                 }
             },
-            getGeneList(geneItems, separator = ', ') {
+            getGeneList(geneItems, separator) {
                 let geneList = [];
                 for (let i = 0; i < geneItems.length; i++) {
                     geneList.push(geneItems[i].geneSymbol);
                 }
-                return geneList.sort().join(separator);
+                if (separator != null) {
+                    return geneList.sort().join(separator);
+                }
+                return geneList;
             },
             analyze(geneItems) {
-                window.location.href = '${pageContext.request.contextPath}/analyze?genes=' + this.getGeneList(geneItems, '&');
+                this.genes = this.getGeneList(geneItems);
+                let data = {"genes": this.genes};
+                console.log(data);
+                <%--axios.post('${pageContext.request.contextPath}/analyze', payload)--%>
+                axios.post('http://localhost:8080/disease-digester/analyze', data)
+                    .then(res => window.open(res.data, replace = true))
+                    .catch(err => {
+                        console.log(err)
+                    });
             },
             changeSize(event) {
                 let size = event.target.value;
                 let page = size > this.size ? 1 : this.pageNumber;
-                this.loadData('/findAll', page, size, this.sort, this.order);
+                this.size = size;
+                if (this.clzss == null && this.name == null) {
+                    this.loadData('/findAll', page, this.size, this.sort, this.order);
+                }
+                this.loadDataByFunc(page);
             },
-            revertOrderAndLoadData() {
+            reverseOrderAndLoadData() {
                 if (this.order === 'asc') {
                     this.order = 'desc';
                 } else {
@@ -165,11 +183,15 @@ overlay. Slides to explain the idea are
             },
             sortByDiseaseName() {
                 this.sort = 'disease';
-                this.revertOrderAndLoadData();
+                this.reverseOrderAndLoadData();
+            },
+            sortByDiseaseClass() {
+                this.sort = 'class';
+                this.reverseOrderAndLoadData();
             },
             sortByGeneNumber() {
                 this.sort = 'gene';
-                this.revertOrderAndLoadData();
+                this.reverseOrderAndLoadData();
             },
             goto(page) {
                 this.loadDataByFunc(page);

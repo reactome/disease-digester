@@ -41,6 +41,10 @@ public class DiseaseItemService {
                 return diseaseItemRepository.findByDiseaseClassContainingOrderByGeneItemsAsc(diseaseClass, createPageRequest(pageNumber, pageSize));
             }
         } else {
+            if (null != orderBy && orderBy.contains("class")) {
+                diseaseClass = diseaseClass.toLowerCase().contains("not") ? "Νot" : diseaseClass;
+                return diseaseItemRepository.findByDiseaseClassContainingOrderByDiseaseClass(diseaseClass, createPageRequest(pageNumber, pageSize, sortBy, orderBy));
+            }
             return diseaseItemRepository.findByDiseaseClassContainingOrderByDiseaseName(diseaseClass, createPageRequest(pageNumber, pageSize, sortBy, orderBy));
         }
     }
@@ -53,6 +57,9 @@ public class DiseaseItemService {
                 return diseaseItemRepository.findByDiseaseNameContainingOrderByGeneItemsAsc(diseaseName, createPageRequest(pageNumber, pageSize));
             }
         } else {
+            if (null != orderBy && orderBy.contains("class")) {
+                return diseaseItemRepository.findByDiseaseNameContainingOrderByDiseaseClass(diseaseName, createPageRequest(pageNumber, pageSize, sortBy, orderBy));
+            }
             return diseaseItemRepository.findByDiseaseNameContainingOrderByDiseaseName(diseaseName, createPageRequest(pageNumber, pageSize, sortBy, orderBy));
         }
     }
