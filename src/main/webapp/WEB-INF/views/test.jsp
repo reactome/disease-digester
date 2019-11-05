@@ -174,7 +174,7 @@ overlay. Slides to explain the idea are
             analyze(geneItems) {
                 this.genes = this.getGeneList(geneItems);
                 let data = {"genes": this.genes};
-                axios.post('/disease-digester/analyze', data)
+                axios.post('${pageContext.request.contextPath}/analyze', data)
                     .then(res => {
                         // window.open(res.data, replace = true).focus();
                         window.open(res.data).focus();
