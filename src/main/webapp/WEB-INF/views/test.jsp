@@ -28,14 +28,21 @@ overlay. Slides to explain the idea are
             <th>Check in Pathway Browser</th>
             <th>Disease name
                 <button @click="sortByDiseaseName">{{order}}</button>
-                <%--TODO: input box auto-completing--%>
-                <br><input @change="searchDiseaseName" type="text"
-                           placeholder="Disease name filter"
-                           v-bind:value="name"></th>
+                <br>
+                <input type="text" placeholder="Disease name filter" v-model="nameKeyword" list="nameKeywords"
+                       @change="searchDiseaseName($event.target.value)">
+                <datalist id="nameKeywords">
+                    <option v-for="nameKeyword in nameKeywords">{{nameKeyword}}</option>
+                </datalist>
+            </th>
             <th>Disease class
                 <button @click="sortByDiseaseClass">{{order}}</button>
-                <br><input @change="searchDiseaseClass" type="text" placeholder="Disease class filter"
-                           v-bind:value="clzss">
+                <br>
+                <input type="text" placeholder="Disease class filter" v-model="classKeyword" list="classKeywords"
+                       @change="searchDiseaseClass($event.target.value)">
+                <datalist id="classKeywords">
+                    <option v-for="classKeyword in classKeywords">{{classKeyword}}</option>
+                </datalist>
             </th>
             <th>Number of genes
                 <button @click="sortByGeneNumber">{{order}}</button>
@@ -67,8 +74,9 @@ overlay. Slides to explain the idea are
         <br>
         Showing: {{offset+1}} - {{((offset+size)>totalElements)?totalElements:offset+size}} of {{totalElements}}
         records &nbsp;&nbsp;&nbsp;
-        Page:<input @change="gotoPage" type="text" v-bind:value="pageNumber"/> of {{totalPages}} with page size
-        <select @change="changeSize">
+        Page:<input @change="gotoPage($event.target.value)" type="text" v-bind:value="pageNumber"/> of {{totalPages}}
+        with page size
+        <select @change="changeSize($event.target.value)">
             <option value="20">20</option>
             <option value="30">30</option>
             <option value="40" selected="selected">40</option>
@@ -78,7 +86,6 @@ overlay. Slides to explain the idea are
         </select>
     </p>
 </div>
-</body>
 <script src="${pageContext.request.contextPath}/resources/js/vue.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/axios.js"></script>
 <script type="text/javascript">
@@ -86,8 +93,10 @@ overlay. Slides to explain the idea are
         el: '#app',
         data: {
             diseases: [],
-            name: null,
-            clzss: null,
+            nameKeyword: null,
+            nameKeywords: null,
+            classKeyword: null,
+            classKeywords: null,
             first: null,
             last: null,
             size: 40,
@@ -103,6 +112,16 @@ overlay. Slides to explain the idea are
         created: function () {
             axios.get('${pageContext.request.contextPath}/findAll?page=1&size=40&sort=disease&order=asc')
                 .then(res => this.setData(res.data))
+                .catch(err => console.log(err));
+            axios.get('${pageContext.request.contextPath}/diseaseNameHintWord')
+                .then(res => {
+                    this.nameKeywords = res.data.keywords;
+                })
+                .catch(err => console.log(err));
+            axios.get('${pageContext.request.contextPath}/diseaseClassHintWord')
+                .then(res => {
+                    this.classKeywords = res.data.keywords;
+                })
                 .catch(err => console.log(err));
         },
         methods: {
@@ -128,17 +147,16 @@ overlay. Slides to explain the idea are
                 } else {
                     url = '${pageContext.request.contextPath}' + func + '&page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
                 }
-                console.log(url);
                 axios.get(url).then(res => this.setData(res.data))
                     .catch(function (error) {
                         console.log(error);
                     });
             },
             loadDataByFunc(page) {
-                if (this.name != null) {
-                    this.loadData('/findByDiseaseName?name=' + this.name, page, this.size, this.sort, this.order);
-                } else if (this.clzss != null) {
-                    this.loadData('/findByDiseaseClass?class=' + this.clzss, page, this.size, this.sort, this.order)
+                if (this.nameKeyword != null) {
+                    this.loadData('/findByDiseaseName?name=' + this.nameKeyword, page, this.size, this.sort, this.order);
+                } else if (this.classKeyword != null) {
+                    this.loadData('/findByDiseaseClass?class=' + this.classKeyword, page, this.size, this.sort, this.order)
                 } else {
                     this.loadData('/findAll', page, this.size, this.sort, this.order)
                 }
@@ -156,19 +174,18 @@ overlay. Slides to explain the idea are
             analyze(geneItems) {
                 this.genes = this.getGeneList(geneItems);
                 let data = {"genes": this.genes};
-                console.log(data);
-                <%--axios.post('${pageContext.request.contextPath}/analyze', payload)--%>
-                axios.post('http://localhost:8080/disease-digester/analyze', data)
-                    .then(res => window.open(res.data, replace = true))
-                    .catch(err => {
-                        console.log(err)
-                    });
+                axios.post('/disease-digester/analyze', data)
+                    .then(res => {
+                        // window.open(res.data, replace = true).focus();
+                        window.open(res.data).focus();
+                    }).catch(err => {
+                    console.log(err)
+                });
             },
-            changeSize(event) {
-                let size = event.target.value;
+            changeSize(size) {
                 let page = size > this.size ? 1 : this.pageNumber;
                 this.size = size;
-                if (this.clzss == null && this.name == null) {
+                if (this.classKeyword == null && this.nameKeyword == null) {
                     this.loadData('/findAll', page, this.size, this.sort, this.order);
                 }
                 this.loadDataByFunc(page);
@@ -196,23 +213,20 @@ overlay. Slides to explain the idea are
             goto(page) {
                 this.loadDataByFunc(page);
             },
-            gotoPage(event) {
-                let page = event.target.value;
+            gotoPage(page) {
                 if (page <= this.totalPages) {
                     this.goto(page);
                 }
             },
-            searchDiseaseName(event) {
-                let name = event.target.value;
-                this.name = name;
-                this.clzss = null;
-                this.loadData('/findByDiseaseName?name=' + name, 1, this.size, this.sort, this.order);
+            searchDiseaseName(nameKeyword) {
+                this.nameKeyword = nameKeyword;
+                this.classKeyword = null;
+                this.loadData('/findByDiseaseName?name=' + this.nameKeyword, 1, this.size, this.sort, this.order);
             },
-            searchDiseaseClass(event) {
-                let clzss = event.target.value;
-                this.clzss = clzss;
-                this.name = null;
-                this.loadData('/findByDiseaseClass?class=' + clzss, 1, this.size, this.sort, this.order);
+            searchDiseaseClass(classKeyword) {
+                this.classKeyword = classKeyword;
+                this.nameKeyword = null;
+                this.loadData('/findByDiseaseClass?class=' + this.classKeyword, 1, this.size, this.sort, this.order);
             },
             sortBy(sort) {
                 this.sort = sort;
@@ -233,4 +247,5 @@ overlay. Slides to explain the idea are
         },
     })
 </script>
+</body>
 </html>
