@@ -6,7 +6,16 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AnalysisGeneList {
+    private String analysisParameter;
     private List<String> genes;
+
+    public String getAnalysisParameter() {
+        return analysisParameter;
+    }
+
+    public void setAnalysisParameter(String analysisParameter) {
+        this.analysisParameter = analysisParameter;
+    }
 
     public List<String> getGenes() {
         return genes;
@@ -19,7 +28,8 @@ public class AnalysisGeneList {
     @Override
     public String toString() {
         return "AnalysisGeneList{" +
-                "genes=" + genes +
+                "analyzeParameter='" + analysisParameter + '\'' +
+                ", genes=" + genes +
                 '}';
     }
 }

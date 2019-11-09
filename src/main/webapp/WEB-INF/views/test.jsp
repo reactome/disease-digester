@@ -22,69 +22,87 @@ overlay. Slides to explain the idea are
 <br>
 <br>
 <div id="app">
-    <table align="center">
-        <thead>
-        <tr>
-            <th>Check in Pathway Browser</th>
-            <th>Disease name
-                <button @click="sortByDiseaseName">{{order}}</button>
-                <br>
-                <input type="text" placeholder="Disease name filter" v-model="nameKeyword" list="nameKeywords"
-                       @change="searchDiseaseName($event.target.value)">
-                <datalist id="nameKeywords">
-                    <option v-for="nameKeyword in nameKeywords">{{nameKeyword}}</option>
-                </datalist>
-            </th>
-            <th>Disease class
-                <button @click="sortByDiseaseClass">{{order}}</button>
-                <br>
-                <input type="text" placeholder="Disease class filter" v-model="classKeyword" list="classKeywords"
-                       @change="searchDiseaseClass($event.target.value)">
-                <datalist id="classKeywords">
-                    <option v-for="classKeyword in classKeywords">{{classKeyword}}</option>
-                </datalist>
-            </th>
-            <th>Number of genes
-                <button @click="sortByGeneNumber">{{order}}</button>
-            </th>
-            <th>Gene list</th>
-            <th>Disease id</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="disease in diseases">
-            <td>
-                <button @click="analyze(disease.geneItems)">Analyze</button>
-            </td>
-            <td>{{disease.diseaseName}}</td>
-            <td>{{disease.diseaseClass}}</td>
-            <td>{{disease.geneItems.length}}</td>
-            <td>{{getGeneList(disease.geneItems,', ')}}</td>
-            <td>{{disease.diseaseId}}</td>
-        </tr>
-        </tbody>
-    </table>
-    <p align="center">
-        <button @click="goto(1)" v-if="!first">First</button>
-        <button @click="prevPage" v-if="!first">Prev</button>
-        <button @click="goto(page)" v-for="page in showPageNumber.slice(pageNumber-1,pageNumber+5)">{{page}}
-        </button>
-        <button @click="nextPage">Next</button>
-        <button @click="goto(totalPages)" v-if="!last">Last</button>
-        <br>
-        Showing: {{offset+1}} - {{((offset+size)>totalElements)?totalElements:offset+size}} of {{totalElements}}
-        records &nbsp;&nbsp;&nbsp;
-        Page:<input @change="gotoPage($event.target.value)" type="text" v-bind:value="pageNumber"/> of {{totalPages}}
-        with page size
-        <select @change="changeSize($event.target.value)">
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="40" selected="selected">40</option>
-            <option value="50">50</option>
-            <option value="60">60</option>
-            <option value="70">70</option>
-        </select>
-    </p>
+    <div align="center">
+        <p>Minimum number of genes/disease:
+            <input id="geneNUmberInputId" type="range" min="1" max="maxGeneNumber" v-model="geneNumberParameter"
+                   @change="changeTest">
+            <output>{{geneNumberParameter}}</output>
+        </p>
+        <p>
+            Analyze parameter:
+            <input type="radio" name="analysisParameters" checked @change="changeAnalysisParameter('projection')">Project
+            to human &nbsp;
+            <input type="radio" name="analysisParameters" @change="changeAnalysisParameter()">Include interactors
+        </p>
+    </div>
+    <div>
+        <table align="center">
+            <thead>
+            <tr>
+                <th>Check in Pathway Browser</th>
+                <th>Disease name
+                    <button @click="sortByDiseaseName">{{order}}</button>
+                    <br>
+                    <input type="text" placeholder="Disease name filter" v-model="nameKeyword" list="nameKeywords"
+                           @change="searchDiseaseName($event.target.value)">
+                    <datalist id="nameKeywords">
+                        <option v-for="nameKeyword in nameKeywords">{{nameKeyword}}</option>
+                    </datalist>
+                </th>
+                <th>Disease class
+                    <button @click="sortByDiseaseClass">{{order}}</button>
+                    <br>
+                    <input type="text" placeholder="Disease class filter" v-model="classKeyword" list="classKeywords"
+                           @change="searchDiseaseClass($event.target.value)">
+                    <datalist id="classKeywords">
+                        <option v-for="classKeyword in classKeywords">{{classKeyword}}</option>
+                    </datalist>
+                </th>
+                <th>Number of genes
+                    <button @click="sortByGeneNumber">{{order}}</button>
+                </th>
+                <th>Gene list</th>
+                <th>Disease id</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="disease in diseases">
+                <td>
+                    <button @click="analyze(disease.geneItems)">Analyze</button>
+                </td>
+                <td>{{disease.diseaseName}}</td>
+                <td>{{disease.diseaseClass}}</td>
+                <td>{{disease.geneItems.length}}</td>
+                <td>{{getGeneList(disease.geneItems,', ')}}</td>
+                <td>{{disease.diseaseId}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <p align="center">
+            <button @click="goto(1)" v-if="!first">First</button>
+            <button @click="prevPage" v-if="!first">Prev</button>
+            <button @click="goto(page)" v-for="page in pages">{{page}}
+            </button>
+            <button @click="nextPage">Next</button>
+            <button @click="goto(totalPages)" v-if="!last">Last</button>
+            <br>
+            Showing: {{offset+1}} - {{((offset+size)>totalElements)?totalElements:offset+size}} of {{totalElements}}
+            records &nbsp;&nbsp;&nbsp;
+            Page:<input @change="gotoPage($event.target.value)" type="text" v-bind:value="pageNumber"/> of
+            {{totalPages}}
+            with page size
+            <select @change="changeSize($event.target.value)">
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40" selected="selected">40</option>
+                <option value="50">50</option>
+                <option value="60">60</option>
+                <option value="70">70</option>
+            </select>
+        </p>
+    </div>
 </div>
 <script src="${pageContext.request.contextPath}/resources/js/vue.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/axios.js"></script>
@@ -93,6 +111,9 @@ overlay. Slides to explain the idea are
         el: '#app',
         data: {
             diseases: [],
+            geneNumberParameter: 1,
+            maxGeneNumber: 100,
+            analysisParameter: 'projection',
             nameKeyword: null,
             nameKeywords: null,
             classKeyword: null,
@@ -123,6 +144,15 @@ overlay. Slides to explain the idea are
                     this.classKeywords = res.data.keywords;
                 })
                 .catch(err => console.log(err));
+        },
+        computed: {
+            pages: function () {
+                return this.showPageNumber.slice(this.pageNumber - 1, this.pageNumber + 5);
+            },
+            // geneNumberLists: function () {
+            //     // console.log(this.maxGeneNumber.slice());
+            //     return this.geneNumberList.slice(1, this.maxGeneNumber);
+            // }
         },
         methods: {
             setData: function (data) {
@@ -173,7 +203,8 @@ overlay. Slides to explain the idea are
             },
             analyze(geneItems) {
                 this.genes = this.getGeneList(geneItems);
-                let data = {"genes": this.genes};
+                let data = {"analysisParameter": this.analysisParameter, "genes": this.genes};
+                // console.log(data);
                 axios.post('${pageContext.request.contextPath}/analyze', data)
                     .then(res => {
                         // window.open(res.data, replace = true).focus();
@@ -182,6 +213,10 @@ overlay. Slides to explain the idea are
                     console.log(err)
                 });
             },
+            changeTest() {
+                // alert(this.geneNumberParameter);
+                console.log(this.geneNumberParameter);
+            },
             changeSize(size) {
                 let page = size > this.size ? 1 : this.pageNumber;
                 this.size = size;
@@ -189,6 +224,9 @@ overlay. Slides to explain the idea are
                     this.loadData('/findAll', page, this.size, this.sort, this.order);
                 }
                 this.loadDataByFunc(page);
+            },
+            changeAnalysisParameter(parameter) {
+                this.analysisParameter = parameter;
             },
             reverseOrderAndLoadData() {
                 if (this.order === 'asc') {

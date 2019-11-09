@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DiseaseItemRepository extends JpaRepository<DiseaseItem, Long> {
 
+    // TODO: 2019/11/8 add the filter by the size of geneItems
     @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseClass LIKE %:diseaseClass%")
     Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseName(@Param("diseaseClass") String diseaseClass, Pageable pageable);
 
