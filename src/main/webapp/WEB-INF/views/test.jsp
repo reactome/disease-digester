@@ -24,9 +24,9 @@ overlay. Slides to explain the idea are
 <div id="app">
     <div align="center">
         <p>Minimum number of genes/disease:
-            <input id="geneNUmberInputId" type="range" min="1" max="maxGeneNumber" v-model="geneNumberParameter"
-                   @change="changeTest">
-            <output>{{geneNumberParameter}}</output>
+            <input type="range" min="1" v-bind:max="maxGeneSize" v-model="geneSize"
+                   @change="changeMinGeneSize">
+            <output>{{geneSize}}</output>
         </p>
         <p>
             Analyze parameter:
@@ -88,12 +88,13 @@ overlay. Slides to explain the idea are
             <button @click="nextPage">Next</button>
             <button @click="goto(totalPages)" v-if="!last">Last</button>
             <br>
-            Showing: {{offset+1}} - {{((offset+size)>totalElements)?totalElements:offset+size}} of {{totalElements}}
+            Showing: {{offset+1}} - {{((offset+pageSize)>totalElements)?totalElements:offset+pageSize}} of
+            {{totalElements}}
             records &nbsp;&nbsp;&nbsp;
             Page:<input @change="gotoPage($event.target.value)" type="text" v-bind:value="pageNumber"/> of
             {{totalPages}}
             with page size
-            <select @change="changeSize($event.target.value)">
+            <select @change="changePageSize($event.target.value)">
                 <option value="20">20</option>
                 <option value="30">30</option>
                 <option value="40" selected="selected">40</option>
@@ -111,8 +112,8 @@ overlay. Slides to explain the idea are
         el: '#app',
         data: {
             diseases: [],
-            geneNumberParameter: 1,
-            maxGeneNumber: 100,
+            geneSize: 1,
+            maxGeneSize: null,
             analysisParameter: 'projection',
             nameKeyword: null,
             nameKeywords: null,
@@ -120,7 +121,7 @@ overlay. Slides to explain the idea are
             classKeywords: null,
             first: null,
             last: null,
-            size: 40,
+            pageSize: 40,
             offset: null,
             pageNumber: null,
             showPageNumber: [],
@@ -131,7 +132,7 @@ overlay. Slides to explain the idea are
             genes: null,
         },
         created: function () {
-            axios.get('${pageContext.request.contextPath}/findAll?page=1&size=40&sort=disease&order=asc')
+            axios.get('${pageContext.request.contextPath}/findAll?pageNumber=1&pageSize=40&geneSize=1&sort=disease&order=asc')
                 .then(res => this.setData(res.data))
                 .catch(err => console.log(err));
             axios.get('${pageContext.request.contextPath}/diseaseNameHintWord')
@@ -144,51 +145,51 @@ overlay. Slides to explain the idea are
                     this.classKeywords = res.data.keywords;
                 })
                 .catch(err => console.log(err));
+            axios.get('${pageContext.request.contextPath}/getMaxGeneSize')
+                .then(res => {
+                    this.maxGeneSize = res.data;
+                })
+                .catch(err => console.log(err));
         },
         computed: {
             pages: function () {
-                return this.showPageNumber.slice(this.pageNumber - 1, this.pageNumber + 5);
+                let pages = [];
+                for (let i = this.pageNumber; i < this.pageNumber + 7; i++) {
+                    pages.push(i);
+                }
+                return pages;
             },
-            // geneNumberLists: function () {
-            //     // console.log(this.maxGeneNumber.slice());
-            //     return this.geneNumberList.slice(1, this.maxGeneNumber);
-            // }
         },
         methods: {
             setData: function (data) {
-                // console.log(data);
                 this.diseases = data.content;
                 this.first = data.first;
                 this.last = data.last;
-                this.size = data.size;
+                this.pageSize = data.size;
                 this.offset = data.pageable.offset;
                 this.pageNumber = data.number + 1;
                 this.totalPages = data.totalPages;
                 this.totalElements = data.totalElements;
-                this.showPageNumber = [];
-                for (let i = 0; i < this.totalPages; i++) {
-                    this.showPageNumber.push(i + 1);
-                }
             },
-            loadData: function (func = '/findAll', page = 1, size = 40, sort = 'disease', order = 'asc') {
+            loadData: function (func = '/findAll', pageNumber = 1, pageSize = 40, geneSize, sort = 'disease', order = 'asc') {
                 let url = null;
                 if (func.match('/findAll')) {
-                    url = '${pageContext.request.contextPath}' + func + '?page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
+                    url = '${pageContext.request.contextPath}' + func + '?pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&sort=' + sort + '&order=' + order;
                 } else {
-                    url = '${pageContext.request.contextPath}' + func + '&page=' + page + '&size=' + size + '&sort=' + sort + '&order=' + order;
+                    url = '${pageContext.request.contextPath}' + func + '&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&sort=' + sort + '&order=' + order;
                 }
                 axios.get(url).then(res => this.setData(res.data))
                     .catch(function (error) {
                         console.log(error);
                     });
             },
-            loadDataByFunc(page) {
+            loadDataByFunc(pageNumber) {
                 if (this.nameKeyword != null) {
-                    this.loadData('/findByDiseaseName?name=' + this.nameKeyword, page, this.size, this.sort, this.order);
+                    this.loadData('/findByDiseaseName?name=' + this.nameKeyword, pageNumber, this.pageSize, this.geneSize, this.sort, this.order);
                 } else if (this.classKeyword != null) {
-                    this.loadData('/findByDiseaseClass?class=' + this.classKeyword, page, this.size, this.sort, this.order)
+                    this.loadData('/findByDiseaseClass?class=' + this.classKeyword, pageNumber, this.pageSize, this.geneSize, this.sort, this.order)
                 } else {
-                    this.loadData('/findAll', page, this.size, this.sort, this.order)
+                    this.loadData('/findAll', pageNumber, this.pageSize, this.geneSize, this.sort, this.order)
                 }
             },
             getGeneList(geneItems, separator) {
@@ -214,15 +215,18 @@ overlay. Slides to explain the idea are
                 });
             },
             changeTest() {
-                // alert(this.geneNumberParameter);
-                console.log(this.geneNumberParameter);
+                // alert(this.geneSize);
+                // console.log(this.geneSize);
             },
-            changeSize(size) {
-                let page = size > this.size ? 1 : this.pageNumber;
-                this.size = size;
-                if (this.classKeyword == null && this.nameKeyword == null) {
-                    this.loadData('/findAll', page, this.size, this.sort, this.order);
-                }
+            changeMinGeneSize() {
+                this.loadDataByFunc(this.pageNumber);
+            },
+            changePageSize(pageSize) {
+                let page = pageSize > this.pageSize ? 1 : this.pageNumber;
+                this.pageSize = pageSize;
+                // if (this.classKeyword == null && this.nameKeyword == null) {
+                //     this.loadData('/findAll', page, this.pageSize, this.sort, this.order);
+                // }
                 this.loadDataByFunc(page);
             },
             changeAnalysisParameter(parameter) {
@@ -248,8 +252,8 @@ overlay. Slides to explain the idea are
                 this.sort = 'gene';
                 this.reverseOrderAndLoadData();
             },
-            goto(page) {
-                this.loadDataByFunc(page);
+            goto(pageNumber) {
+                this.loadDataByFunc(pageNumber);
             },
             gotoPage(page) {
                 if (page <= this.totalPages) {
@@ -259,12 +263,12 @@ overlay. Slides to explain the idea are
             searchDiseaseName(nameKeyword) {
                 this.nameKeyword = nameKeyword;
                 this.classKeyword = null;
-                this.loadData('/findByDiseaseName?name=' + this.nameKeyword, 1, this.size, this.sort, this.order);
+                this.loadData('/findByDiseaseName?name=' + this.nameKeyword, 1, this.pageSize, this.geneSize, this.sort, this.order);
             },
             searchDiseaseClass(classKeyword) {
                 this.classKeyword = classKeyword;
                 this.nameKeyword = null;
-                this.loadData('/findByDiseaseClass?class=' + this.classKeyword, 1, this.size, this.sort, this.order);
+                this.loadData('/findByDiseaseClass?class=' + this.classKeyword, 1, this.pageSize, this.geneSize, this.sort, this.order);
             },
             sortBy(sort) {
                 this.sort = sort;
