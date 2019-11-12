@@ -22,6 +22,7 @@ overlay. Slides to explain the idea are
 <br>
 <br>
 <div id="app">
+    <%--    the parameter div--%>
     <div align="center">
         <p>Minimum number of genes/disease:
             <input type="range" min="1" v-bind:max="maxGeneSize" v-model="geneSize"
@@ -35,6 +36,7 @@ overlay. Slides to explain the idea are
             <input type="radio" name="analysisParameters" @change="changeAnalysisParameter()">Include interactors
         </p>
     </div>
+    <%--    the table div--%>
     <div>
         <table align="center">
             <thead>
@@ -79,6 +81,7 @@ overlay. Slides to explain the idea are
             </tbody>
         </table>
     </div>
+    <%--        the table footer div--%>
     <div>
         <p align="center">
             <button @click="goto(1)" v-if="!first">First</button>
@@ -107,6 +110,7 @@ overlay. Slides to explain the idea are
 </div>
 <script src="${pageContext.request.contextPath}/resources/js/vue.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/axios.js"></script>
+<%--todo move javascript code to some XXX.js file--%>
 <script type="text/javascript">
     let app = new Vue({
         el: '#app',
@@ -205,7 +209,6 @@ overlay. Slides to explain the idea are
             analyze(geneItems) {
                 this.genes = this.getGeneList(geneItems);
                 let data = {"analysisParameter": this.analysisParameter, "genes": this.genes};
-                // console.log(data);
                 axios.post('${pageContext.request.contextPath}/analyze', data)
                     .then(res => {
                         // window.open(res.data, replace = true).focus();
@@ -214,19 +217,12 @@ overlay. Slides to explain the idea are
                     console.log(err)
                 });
             },
-            changeTest() {
-                // alert(this.geneSize);
-                // console.log(this.geneSize);
-            },
             changeMinGeneSize() {
                 this.loadDataByFunc(this.pageNumber);
             },
             changePageSize(pageSize) {
                 let page = pageSize > this.pageSize ? 1 : this.pageNumber;
                 this.pageSize = pageSize;
-                // if (this.classKeyword == null && this.nameKeyword == null) {
-                //     this.loadData('/findAll', page, this.pageSize, this.sort, this.order);
-                // }
                 this.loadDataByFunc(page);
             },
             changeAnalysisParameter(parameter) {

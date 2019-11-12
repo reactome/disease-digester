@@ -22,6 +22,7 @@ public class DiseaseItemService {
     }
 
     public Page<DiseaseItem> findAll(Integer pageNumber, Integer pageSize, Integer geneSize, String sortBy, String orderBy) {
+        // TODO: 2019/11/12 the if condition loop may instead by some switch case with Enum class
         if (null != sortBy && sortBy.contains("gene")) {
             if (orderBy.contains("desc")) {
                 return diseaseItemRepository.findAllOrderByGeneItemsDesc(geneSize, createPageRequest(pageNumber, pageSize));
@@ -65,6 +66,7 @@ public class DiseaseItemService {
     }
 
     public Integer getMaxGeneSize() {
+        // TODO: 2019/11/12 cache this number in some where/class to save the resource
         return diseaseItemRepository.findMaxGeneSize();
     }
 
