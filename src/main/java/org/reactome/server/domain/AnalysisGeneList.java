@@ -6,15 +6,24 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AnalysisGeneList {
-    private String analysisParameter;
+    private boolean projectToHuman;
+    private boolean includeInteractors;
     private List<String> genes;
 
-    public String getAnalysisParameter() {
-        return analysisParameter;
+    public Boolean isProjectToHuman() {
+        return projectToHuman;
     }
 
-    public void setAnalysisParameter(String analysisParameter) {
-        this.analysisParameter = analysisParameter;
+    public void setProjectToHuman(Boolean projectToHuman) {
+        this.projectToHuman = projectToHuman;
+    }
+
+    public Boolean isIncludeInteractors() {
+        return includeInteractors;
+    }
+
+    public void setIncludeInteractors(Boolean includeInteractors) {
+        this.includeInteractors = includeInteractors;
     }
 
     public List<String> getGenes() {
@@ -28,7 +37,8 @@ public class AnalysisGeneList {
     @Override
     public String toString() {
         return "AnalysisGeneList{" +
-                "analyzeParameter='" + analysisParameter + '\'' +
+                "projectionToHuman=" + projectToHuman +
+                ", includeInteractors=" + includeInteractors +
                 ", genes=" + genes +
                 '}';
     }

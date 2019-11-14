@@ -18,11 +18,11 @@ public class GeneAnalysisService {
     @Value("${reactome.pathway.browser}")
     private String PATHWAY_BROWSER;
 
-    @Value("${reactome.analysis.service.with.interactors}")
-    private String ANALYSIS_SERVICE_WITH_INTERACTORS;
+    @Value("${reactome.analysis.service}")
+    private String ANALYSIS_SERVICE;
 
-    @Value("${reactome.analysis.service.with.projection}")
-    private String ANALYSIS_SERVICE_WITH_PROJECTION;
+    @Value("${reactome.analysis.service.placeholder}")
+    private String PLACEHOLDER;
 
     @Autowired
     public GeneAnalysisService(RestTemplate restTemplate) {
@@ -32,13 +32,11 @@ public class GeneAnalysisService {
     // todo: use reactome analysis-service component instead of request data via API from network
     public String checkGeneListAnalysisResult(AnalysisGeneList geneList) throws EmptyGeneAnalysisResultException {
         String payload = String.join(" ", geneList.getGenes());
-        AnalysisResult result;
-        // TODO: 2019/11/8 the condition loop should be more generic
-        if (StringUtils.containsIgnoreCase(geneList.getAnalysisParameter(), DEFAULT_ANALYSIS_PARAMETER)) {
-            result = restTemplate.postForObject(ANALYSIS_SERVICE_WITH_PROJECTION, payload, AnalysisResult.class);
-        } else {
-            result = restTemplate.postForObject(ANALYSIS_SERVICE_WITH_INTERACTORS, payload, AnalysisResult.class);
-        }
+        String analysisService = geneList.isProjectToHuman() ?
+                StringUtils.replaceFirst(ANALYSIS_SERVICE, PLACEHOLDER, DEFAULT_ANALYSIS_PARAMETER) :
+                StringUtils.replaceFirst(ANALYSIS_SERVICE, PLACEHOLDER, "");
+        analysisService = StringUtils.replaceFirst(analysisService, PLACEHOLDER, geneList.isIncludeInteractors().toString());
+        AnalysisResult result = restTemplate.postForObject(analysisService, payload, AnalysisResult.class);
         String token;
         if (result != null) {
             token = result.getSummary().getToken();
