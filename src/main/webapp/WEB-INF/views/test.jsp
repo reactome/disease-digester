@@ -35,6 +35,9 @@ overlay. Slides to explain the idea are
             <input type="checkbox" name="analysisParameters" checked @change="switchIfProjectToHuman">Project
             to human &nbsp;
             <input type="checkbox" name="analysisParameters" @change="switchIfIncludeInteractors">Include interactors
+            <br>
+            <input type="radio" name="analysisParameters" checked @change="switchIfRedirectToReacFoam">ReacFoam &nbsp;
+            <input type="radio" name="analysisParameters" @change="switchIfRedirectToReacFoam">Fireworks
         </p>
     </div>
     <%--    the table div--%>
@@ -120,6 +123,7 @@ overlay. Slides to explain the idea are
             analysisParameter: 'projection',
             projectToHuman: true,
             includeInteractors: false,
+            redirectToReacFoam: true,
             nameKeyword: null,
             nameKeywords: null,
             classKeyword: null,
@@ -228,6 +232,7 @@ overlay. Slides to explain the idea are
                 let data = {
                     "projectToHuman": this.projectToHuman,
                     "includeInteractors": this.includeInteractors,
+                    "redirectToReacFoam": this.redirectToReacFoam,
                     "genes": this.genes
                 };
                 axios.post('${pageContext.request.contextPath}/analyze', data)
@@ -273,6 +278,10 @@ overlay. Slides to explain the idea are
             switchIfIncludeInteractors() {
                 this.includeInteractors = !this.includeInteractors;
                 console.log(this.projectToHuman + ' : ' + this.includeInteractors);
+            },
+            switchIfRedirectToReacFoam() {
+                this.redirectToReacFoam = !this.redirectToReacFoam;
+                console.log(this.redirectToReacFoam);
             },
             reverseOrderAndLoadData() {
                 if (this.order === 'asc') {

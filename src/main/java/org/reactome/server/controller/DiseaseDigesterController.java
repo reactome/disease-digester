@@ -1,6 +1,6 @@
 package org.reactome.server.controller;
 
-import org.reactome.server.domain.AnalysisGeneList;
+import org.reactome.server.domain.AnalysisRequestData;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.HintWord;
 import org.reactome.server.exception.EmptyGeneAnalysisResultException;
@@ -77,9 +77,9 @@ public class DiseaseDigesterController {
     @ResponseStatus(value = HttpStatus.OK)
 //    public ModelAndView showPathway(@RequestBody AnalysisGeneList geneList) throws EmptyGeneAnalysisResultException {
     public @ResponseBody
-    String showPathway(@RequestBody AnalysisGeneList geneList) throws EmptyGeneAnalysisResultException {
+    String showPathway(@RequestBody AnalysisRequestData requestData) throws EmptyGeneAnalysisResultException {
 //        return new ModelAndView(new RedirectView(geneAnalysisService.checkGeneListAnalysisResult(geneList)));
-        return geneAnalysisService.checkGeneListAnalysisResult(geneList);
+        return geneAnalysisService.checkGeneListAnalysisResult(requestData);
     }
 
     @GetMapping(value = "/diseaseNameHintWord")

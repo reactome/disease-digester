@@ -2,7 +2,7 @@ package org.reactome.server.service;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.reactome.server.domain.AnalysisGeneList;
+import org.reactome.server.domain.AnalysisRequestData;
 import org.reactome.server.domain.AnalysisResult;
 import org.reactome.server.exception.EmptyGeneAnalysisResultException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,10 @@ public class GeneAnalysisService {
     private final RestTemplate restTemplate;
     private static final String DEFAULT_ANALYSIS_PARAMETER = "projection";
 
-    @Value("${reactome.pathway.browser}")
-    private String PATHWAY_BROWSER;
+    @Value("${reactome.pathway.browser.fireworks}")
+    private String PATHWAY_BROWSER_FIREWORKS;
+    @Value("${reactome.pathway.browser.reacfoam}")
+    private String PATHWAY_BROWSER_REACFOAM;
 
     @Value("${reactome.analysis.service}")
     private String ANALYSIS_SERVICE;
@@ -30,12 +32,12 @@ public class GeneAnalysisService {
     }
 
     // todo: use reactome analysis-service component instead of request data via API from network
-    public String checkGeneListAnalysisResult(AnalysisGeneList geneList) throws EmptyGeneAnalysisResultException {
-        String payload = String.join(" ", geneList.getGenes());
-        String analysisService = geneList.isProjectToHuman() ?
+    public String checkGeneListAnalysisResult(AnalysisRequestData requestData) throws EmptyGeneAnalysisResultException {
+        String payload = String.join(" ", requestData.getGenes());
+        String analysisService = requestData.isProjectToHuman() ?
                 StringUtils.replaceFirst(ANALYSIS_SERVICE, PLACEHOLDER, DEFAULT_ANALYSIS_PARAMETER) :
                 StringUtils.replaceFirst(ANALYSIS_SERVICE, PLACEHOLDER, "");
-        analysisService = StringUtils.replaceFirst(analysisService, PLACEHOLDER, geneList.isIncludeInteractors().toString());
+        analysisService = StringUtils.replaceFirst(analysisService, PLACEHOLDER, requestData.isIncludeInteractors().toString());
         AnalysisResult result = restTemplate.postForObject(analysisService, payload, AnalysisResult.class);
         String token;
         if (result != null) {
@@ -43,6 +45,8 @@ public class GeneAnalysisService {
         } else {
             throw new EmptyGeneAnalysisResultException(payload);
         }
-        return PATHWAY_BROWSER.concat(token);
+        return requestData.isRedirectToReacfoam()
+                ? StringUtils.replaceFirst(PATHWAY_BROWSER_REACFOAM, PLACEHOLDER, token)
+                : StringUtils.replaceFirst(PATHWAY_BROWSER_FIREWORKS, PLACEHOLDER, token);
     }
 }
