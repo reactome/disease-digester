@@ -1,6 +1,6 @@
 package org.reactome.server.controller;
 
-import org.reactome.server.domain.AnalysisGeneList;
+import org.reactome.server.domain.AnalysisRequestData;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.HintWord;
 import org.reactome.server.exception.EmptyGeneAnalysisResultException;
@@ -41,42 +41,45 @@ public class DiseaseDigesterController {
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Page<DiseaseItem> findAll(
-            @RequestParam("page") int page,
-            @RequestParam("size") int size,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize,
+            @RequestParam("geneSize") Integer geneSize,
             @RequestParam(value = "sort", required = false) String sortBy,
             @RequestParam(value = "order", required = false) String orderBy) {
-        return diseaseItemService.findAll(page, size, sortBy, orderBy);
+        return diseaseItemService.findAll(pageNumber, pageSize, geneSize, sortBy, orderBy);
     }
 
     @GetMapping(value = "/findByDiseaseName")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Page<DiseaseItem> findByDiseaseName(@RequestParam("name") String diseaseName,
-                                        @RequestParam(value = "page", required = false) Integer pageNumber,
-                                        @RequestParam(value = "size", required = false) Integer pageSize,
+                                        @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+                                        @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                        @RequestParam(value = "geneSize", required = false) Integer geneSize,
                                         @RequestParam(value = "sort", required = false) String sortBy,
                                         @RequestParam(value = "order", required = false) String orderBy) {
-        return diseaseItemService.findByDiseaseName(diseaseName, pageNumber, pageSize, sortBy, orderBy);
+        return diseaseItemService.findByDiseaseName(diseaseName, pageNumber, pageSize, geneSize, sortBy, orderBy);
     }
 
     @GetMapping(value = "/findByDiseaseClass")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Page<DiseaseItem> findByDiseaseClass(@RequestParam("class") String diseaseClass,
-                                         @RequestParam(value = "page", required = false) Integer pageNumber,
-                                         @RequestParam(value = "size", required = false) Integer pageSize,
+                                         @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+                                         @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                         @RequestParam(value = "geneSize", required = false) Integer geneSize,
                                          @RequestParam(value = "sort", required = false) String sortBy,
                                          @RequestParam(value = "order", required = false) String orderBy) {
-        return diseaseItemService.findByDiseaseClass(diseaseClass, pageNumber, pageSize, sortBy, orderBy);
+        return diseaseItemService.findByDiseaseClass(diseaseClass, pageNumber, pageSize, geneSize, sortBy, orderBy);
     }
 
     @PostMapping(value = "/analyze")
     @ResponseStatus(value = HttpStatus.OK)
 //    public ModelAndView showPathway(@RequestBody AnalysisGeneList geneList) throws EmptyGeneAnalysisResultException {
     public @ResponseBody
-    String showPathway(@RequestBody AnalysisGeneList geneList) throws EmptyGeneAnalysisResultException {
+    String showPathway(@RequestBody AnalysisRequestData requestData) throws EmptyGeneAnalysisResultException {
 //        return new ModelAndView(new RedirectView(geneAnalysisService.checkGeneListAnalysisResult(geneList)));
-        return geneAnalysisService.checkGeneListAnalysisResult(geneList);
+        return geneAnalysisService.checkGeneListAnalysisResult(requestData);
     }
 
     @GetMapping(value = "/diseaseNameHintWord")
@@ -91,5 +94,12 @@ public class DiseaseDigesterController {
     public @ResponseBody
     HintWord getDiseaseClassHintWord() {
         return hintWordService.getDiseaseClassHintWord();
+    }
+
+    @GetMapping(value = "/getMaxGeneSize")
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    Integer getMaxGeneSize() {
+        return diseaseItemService.getMaxGeneSize();
     }
 }

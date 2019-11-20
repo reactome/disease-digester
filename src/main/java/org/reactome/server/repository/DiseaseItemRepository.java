@@ -12,33 +12,39 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DiseaseItemRepository extends JpaRepository<DiseaseItem, Long> {
 
-    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseClass LIKE %:diseaseClass%")
-    Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseName(@Param("diseaseClass") String diseaseClass, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.geneItems.size >= :geneSize")
+    Page<DiseaseItem> findAllLimitedByGeneSize(@Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseClass LIKE %:diseaseClass%")
-    Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseClass(@Param("diseaseClass") String diseaseClass, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseClass LIKE %:diseaseClass% AND d.geneItems.size >= :geneSize")
+    Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseName(@Param("diseaseClass") String diseaseClass, @Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseName LIKE %:diseaseName%")
-    Page<DiseaseItem> findByDiseaseNameContainingOrderByDiseaseName(@Param("diseaseName") String diseaseName, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseClass LIKE %:diseaseClass% AND d.geneItems.size >= :geneSize")
+    Page<DiseaseItem> findByDiseaseClassContainingOrderByDiseaseClass(@Param("diseaseClass") String diseaseClass, @Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseName LIKE %:diseaseName%")
-    Page<DiseaseItem> findByDiseaseNameContainingOrderByDiseaseClass(@Param("diseaseName") String diseaseName, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseName LIKE %:diseaseName% AND d.geneItems.size >= :geneSize")
+    Page<DiseaseItem> findByDiseaseNameContainingOrderByDiseaseName(@Param("diseaseName") String diseaseName, @Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem d ORDER BY d.geneItems.size DESC")
-    Page<DiseaseItem> findAllOrderByGeneItemsDesc(Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem  d WHERE d.diseaseName LIKE %:diseaseName% AND d.geneItems.size >= :geneSize")
+    Page<DiseaseItem> findByDiseaseNameContainingOrderByDiseaseClass(@Param("diseaseName") String diseaseName, @Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem d ORDER BY d.geneItems.size ASC")
-    Page<DiseaseItem> findAllOrderByGeneItemsAsc(Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.geneItems.size >= :geneSize ORDER BY d.geneItems.size DESC")
+    Page<DiseaseItem> findAllOrderByGeneItemsDesc(@Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.diseaseClass LIKE %:diseaseClass% ORDER BY d.geneItems.size ASC")
-    Page<DiseaseItem> findByDiseaseClassContainingOrderByGeneItemsAsc(@Param("diseaseClass") String diseaseClass, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.geneItems.size >= :geneSize ORDER BY d.geneItems.size ASC")
+    Page<DiseaseItem> findAllOrderByGeneItemsAsc(@Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.diseaseClass LIKE %:diseaseClass% ORDER BY d.geneItems.size DESC")
-    Page<DiseaseItem> findByDiseaseClassContainingOrderByGeneItemsDesc(@Param("diseaseClass") String diseaseClass, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.diseaseClass LIKE %:diseaseClass%  AND d.geneItems.size >= :geneSize ORDER BY d.geneItems.size ASC")
+    Page<DiseaseItem> findByDiseaseClassContainingOrderByGeneItemsAsc(@Param("diseaseClass") String diseaseClass, @Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.diseaseName LIKE %:diseaseName% ORDER BY d.geneItems.size ASC")
-    Page<DiseaseItem> findByDiseaseNameContainingOrderByGeneItemsAsc(@Param("diseaseName") String diseaseName, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.diseaseClass LIKE %:diseaseClass% AND d.geneItems.size >= :geneSize ORDER BY d.geneItems.size DESC")
+    Page<DiseaseItem> findByDiseaseClassContainingOrderByGeneItemsDesc(@Param("diseaseClass") String diseaseClass, @Param("geneSize") Integer geneSize, Pageable pageable);
 
-    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.diseaseName LIKE %:diseaseName% ORDER BY d.geneItems.size DESC")
-    Page<DiseaseItem> findByDiseaseNameContainingOrderByGeneItemsDesc(@Param("diseaseName") String diseaseName, Pageable pageable);
+    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.diseaseName LIKE %:diseaseName% AND d.geneItems.size >= :geneSize ORDER BY d.geneItems.size ASC")
+    Page<DiseaseItem> findByDiseaseNameContainingOrderByGeneItemsAsc(@Param("diseaseName") String diseaseName, @Param("geneSize") Integer geneSize, Pageable pageable);
+
+    @Query(value = "SELECT d FROM DiseaseItem d WHERE d.diseaseName LIKE %:diseaseName% AND d.geneItems.size >= :geneSize ORDER BY d.geneItems.size DESC")
+    Page<DiseaseItem> findByDiseaseNameContainingOrderByGeneItemsDesc(@Param("diseaseName") String diseaseName, @Param("geneSize") Integer geneSize, Pageable pageable);
+
+    @Query(value = "SELECT MAX(d.geneItems.size) FROM DiseaseItem d")
+    Integer findMaxGeneSize();
 }
