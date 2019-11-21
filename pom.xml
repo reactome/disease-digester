@@ -13,7 +13,7 @@
     </organization>
 
     <properties>
-        <deploymentPath>/overlay/disgenet</deploymentPath>
+        <deploymentPath>/</deploymentPath>
         <spring.version>5.0.5.RELEASE</spring.version>
         <mysql.connector.version>8.0.17</mysql.connector.version>
         <!-- https://hibernate.atlassian.net/browse/HHH-13260 -->
@@ -190,6 +190,13 @@
             <artifactId>jstl</artifactId>
             <version>${jstl.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.reactome.server.utils</groupId>
+            <artifactId>reactome-utils</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -220,7 +227,7 @@
     </repositories>
 
     <build>
-        <finalName>disease-digester</finalName>
+        <finalName>overlay</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
