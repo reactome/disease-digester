@@ -51,7 +51,7 @@ public class HeaderFooterCacher extends Thread {
 
     private static final String SCRIPT_FOOTER_CLOSE = "</body>";
     private static final String SCRIPT_FOOTER_REPLACE = "<script src=\"/overlay/resources/js/vue.js?v=0.1\"></script>\n " +
-                                                        "<script src=\"${pageContext.request.contextPath}/resources/js/axios.js?v=0.1\"></script>\n " +
+                                                        "<script src=\"/overlay/resources/js/axios.js?v=0.1\"></script>\n " +
                                                         "<script type=\"module\" src=\"/overlay/resources/js/disease_digester.js?v=0.1\"></script>\n</body>";
 
     private static final Integer MINUTES = 15;
