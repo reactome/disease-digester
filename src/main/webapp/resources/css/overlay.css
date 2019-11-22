@@ -1,0 +1,15 @@
+input[type="range"] {
+    display: inline-block;
+    width: 20%;
+}
+
+input[type="number"] {
+    height: 2.0em;
+    width: 50px;
+    padding: 0 0 0 15px;
+}
+
+.td-text-overflow {
+    overflow: auto;
+    max-height: 75px;
+}

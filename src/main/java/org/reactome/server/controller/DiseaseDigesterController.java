@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 public class DiseaseDigesterController {
 
     private static final Logger logger = LoggerFactory.getLogger(DiseaseDigesterController.class);
@@ -29,15 +30,21 @@ public class DiseaseDigesterController {
         this.hintWordService = hintWordService;
     }
 
-    @GetMapping(value = "/{blackHole}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public @ResponseBody
-    String spit(@PathVariable String blackHole) {
-        logger.info("catch unknown guy: " + blackHole);
-        return "Alien: " + blackHole;
+//    @GetMapping(value = "/{blackHole}")
+//    @ResponseStatus(value = HttpStatus.OK)
+//    public @ResponseBody
+//    String spit(@PathVariable String blackHole) {
+//        logger.info("catch unknown guy: " + blackHole);
+//        return "Alien: " + blackHole;
+//    }
+
+    @RequestMapping(value = "/disgenet", method = RequestMethod.GET)
+    public String disgenet() {
+        // When we load the schema page, DatabaseObject is loaded by default, then we redirect to it
+        return "index";
     }
 
-    @GetMapping(value = "/findAll")
+    @GetMapping(value = "/disgenet/findAll")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Page<DiseaseItem> findAll(
@@ -49,7 +56,7 @@ public class DiseaseDigesterController {
         return diseaseItemService.findAll(pageNumber, pageSize, geneSize, sortBy, orderBy);
     }
 
-    @GetMapping(value = "/findByDiseaseName")
+    @GetMapping(value = "/disgenet/findByDiseaseName")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Page<DiseaseItem> findByDiseaseName(@RequestParam("name") String diseaseName,
@@ -61,7 +68,7 @@ public class DiseaseDigesterController {
         return diseaseItemService.findByDiseaseName(diseaseName, pageNumber, pageSize, geneSize, sortBy, orderBy);
     }
 
-    @GetMapping(value = "/findByDiseaseClass")
+    @GetMapping(value = "/disgenet/findByDiseaseClass")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Page<DiseaseItem> findByDiseaseClass(@RequestParam("class") String diseaseClass,
@@ -73,7 +80,7 @@ public class DiseaseDigesterController {
         return diseaseItemService.findByDiseaseClass(diseaseClass, pageNumber, pageSize, geneSize, sortBy, orderBy);
     }
 
-    @PostMapping(value = "/analyze")
+    @PostMapping(value = "/disgenet/analyze")
     @ResponseStatus(value = HttpStatus.OK)
 //    public ModelAndView showPathway(@RequestBody AnalysisGeneList geneList) throws EmptyGeneAnalysisResultException {
     public @ResponseBody
@@ -82,21 +89,21 @@ public class DiseaseDigesterController {
         return geneAnalysisService.checkGeneListAnalysisResult(requestData);
     }
 
-    @GetMapping(value = "/diseaseNameHintWord")
+    @GetMapping(value = "/disgenet/diseaseNameHintWord")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     HintWord getDiseaseNameHintWord() {
         return hintWordService.getDiseaseNameHintWord();
     }
 
-    @GetMapping(value = "/diseaseClassHintWord")
+    @GetMapping(value = "/disgenet/diseaseClassHintWord")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     HintWord getDiseaseClassHintWord() {
         return hintWordService.getDiseaseClassHintWord();
     }
 
-    @GetMapping(value = "/getMaxGeneSize")
+    @GetMapping(value = "/disgenet/getMaxGeneSize")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Integer getMaxGeneSize() {

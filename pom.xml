@@ -183,6 +183,13 @@
             <artifactId>jstl</artifactId>
             <version>${jstl.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.reactome.server.utils</groupId>
+            <artifactId>reactome-utils</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -213,7 +220,7 @@
     </repositories>
 
     <build>
-        <finalName>disease-digester</finalName>
+        <finalName>overlay</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -226,7 +233,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
-                    <path>${deploymentPath}${project.build.finalName}</path>
+                    <path>${deploymentPath}</path>
                     <port>8080</port>
                 </configuration>
             </plugin>
