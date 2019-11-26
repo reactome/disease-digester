@@ -1,15 +1,44 @@
+/*@media screen and(min-width: 1280px) {*/
+/*    .container {*/
+/*        width: 1280px;*/
+/*    }*/
+/*}*/
+
 input[type="range"] {
-    display: inline-block;
-    width: 20%;
+    float: left;
+    width: 60%;
 }
 
 input[type="number"] {
+    float: right;
+    text-align: center;
     height: 2.0em;
-    width: 50px;
-    padding: 0 0 0 15px;
+    width: 40%;
+    padding: 0;
+    margin: 0;
+}
+
+input[type="checkbox"] {
+    margin: 0 5px 1px;
+}
+
+input[type="radio"] {
+    margin: 0 5px 1px;
+    height: 50%;
 }
 
 .td-text-overflow {
     overflow: auto;
     max-height: 75px;
 }
+
+.p input {
+    vertical-align: middle;
+}
+
+.btn-sort {
+    /*border-radius: 5px;*/
+    /*float: right;*/
+    color: #777777;
+}
+
