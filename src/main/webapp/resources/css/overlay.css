@@ -24,7 +24,7 @@ input[type="checkbox"] {
 
 input[type="radio"] {
     margin: 0 5px 1px;
-    height: 50%;
+    height: 1em;
 }
 
 .td-text-overflow {
