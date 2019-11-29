@@ -9,19 +9,14 @@
     <div>
         <h2>DisGeNET overlay of gene-disease associations</h2>
 
-        <a href="http://www.disgenet.org/" target="_blank">DisGeNET </a>(<a
-            href="https://www.ncbi.nlm.nih.gov/pubmed/31680165" target="_blank">Pinero J, et al, Nucleic Acids Res.
-        2019</a>) is a
-        database
-        of gene-disease
-        associations.
-        We have pre-processed DisGeNET curated gene-disease associations (Release v6.0) for overlay onto
-        Reactome.
-        For each disease, clicking on the "Analysis" button will show the results of Reactome pathway analysis with the
-        set of
-        genes associated with that disease.
-        If you are interested in overlaying other data sources onto Reactome in a similar manner, please <a
-            href="mailto:help@reactome.org">contact us</a>.
+        <a href="http://www.disgenet.org/" target="_blank">DisGeNET </a>
+        (<a href="https://www.ncbi.nlm.nih.gov/pubmed/31680165" target="_blank">Pinero J, et al, Nucleic Acids Res.
+        2019</a>) is a database of gene-disease associations.
+        We have pre-processed DisGeNET curated gene-disease associations (Release v6.0) for overlay onto Reactome.
+        For each disease, clicking on the "Analysis" button will show the results of Reactome pathway analysis with
+        the set of genes associated with that disease.
+        If you are interested in overlaying other data sources onto Reactome in a similar manner, please
+        <a href="mailto:help@reactome.org">contact us</a>.
     </div>
 
     <div id="disease_digester">
@@ -31,18 +26,18 @@
                 <caption>Parameters</caption>
                 <thead>
                 <tr>
-                    <th scope="col">Parameter</th>
-                    <th scope="col">Option</th>
-                    <th scope="col">Description</th>
+                    <th width="20%">Parameter</th>
+                    <th width="20%">Option</th>
+                    <th width="70%">Description</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>Minimum number of genes per disease</td>
                     <td>
-                        <input type="range" min="1" v-bind:max="maxGeneSize" v-model="geneSize"
+                        <input type="range" min="1" :max="maxGeneSize" v-model="geneSize"
                                @change="changeMinGeneSize($event.target.value)">
-                        <input type="number" min="1" v-bind:max="maxGeneSize" v-model="geneSize"
+                        <input type="number" min="1" :max="maxGeneSize" v-model="geneSize"
                                @change="changeMinGeneSize($event.target.value)">
                     </td>
                     <td>The Reactome pathway analysis presented here only makes sense for multiple genes.
@@ -83,7 +78,10 @@
                 <tr>
                     <th scope="col">Check in Pathway Browser</th>
                     <th scope="col">Disease name
-                        <button class="btn-sort" @click="sortByDiseaseName">{{order}}</button>
+                        <button class="btn-sort" @change="sortByDiseaseName">
+                            <span class="fa fa-angle-up"></span>
+                            <span class="fa fa-angle-down"></span>
+                        </button>
                         <br>
                         <input type="text" placeholder="Disease name filter" v-model="nameKeyword" list="nameKeywords"
                                @change="searchDiseaseName($event.target.value)">
@@ -92,7 +90,9 @@
                         </datalist>
                     </th>
                     <th scope="col">Disease class
-                        <button class="btn-sort" @click="sortByDiseaseClass">{{order}}</button>
+                        <button class="btn-sort" @change="sortByDiseaseClass">
+                            <span class="fa fa-angle-up"></span>
+                            <span class="fa fa-angle-down"></span></button>
                         <br>
                         <input type="text" placeholder="Disease class filter" v-model="classKeyword"
                                list="classKeywords"
@@ -102,7 +102,9 @@
                         </datalist>
                     </th>
                     <th scope="col">Number of genes
-                        <button class="btn-sort" @click="sortByGeneNumber">{{order}}</button>
+                        <button class="btn-sort" @change="sortByGeneNumber">
+                            <span class="fa fa-angle-up"></span>
+                            <span class="fa fa-angle-down"></span></button>
                     </th>
                     <th scope="col">Gene list</th>
                     <th scope="col">Disease id</th>
@@ -126,31 +128,20 @@
         </div>
         <%--        the table footer div--%>
         <div>
-            <div id="pagination" class="pagination">
-                <ul class="pagination-list">
-                    <li class="active"><a class="pagenav" @click="goto(1)" v-if="!first">First</a></li>
-                    <li><a class="pagenav" @click="prevPage" v-if="!first">Prev</a></li>
-                    <ul v-for="page in pages">
-                        <li><a class="pagenav" @click="goto(page)">{{page}}</a></li>
-                    </ul>
-                    <li><a class="pagenav" @click="nextPage" v-if="!last">Next</a></li>
-                    <li><a class="pagenav" @click="goto(totalPages)" v-if="pageNumber !== totalPages">Last</a></li>
-                </ul>
-            </div>
-            <span>
-                Showing: {{offset+1}} - {{((offset+pageSize)>totalElements)?totalElements:offset+pageSize}} of
-                {{totalElements}}
-                records &nbsp;&nbsp;&nbsp;
-                Page:<input type="number" min="1" v-bind:max="totalPages" @change="goto($event.target.value)"
-                            v-bind:value="pageNumber"/> of
-                {{totalPages}}
-                with page size
+            <pagination v-model:page-number="pageNumber" :total="totalPage"></pagination>
+            <p>Showing: {{offset+1}} - {{((offset+pageSize)>totalElements)?totalElements:offset+pageSize}} of
+                {{totalElements}} records</p>
+            <label for="pageSize">Page:</label>
+            <input id="pageSize" type="number" min="1" :max="totalPage" @change="pageNumber=$event.target.value"
+                   :value="pageNumber"/> of
+            <label>
+                <span> {{totalPage}} with page size</span>
                 <select @change="changePageSize($event.target.value)">
                     <option value="10">10</option>
                     <option value="50" selected="selected">50</option>
                     <option value="100">100</option>
                 </select>
-            </span>
+            </label>
         </div>
     </div>
 </div>

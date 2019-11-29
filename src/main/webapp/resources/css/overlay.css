@@ -13,7 +13,7 @@ input[type="number"] {
     float: right;
     text-align: center;
     height: 2.0em;
-    width: 40%;
+    width: 60px;
     padding: 0;
     margin: 0;
 }
@@ -42,3 +42,21 @@ input[type="radio"] {
     color: #777777;
 }
 
+#fav-container .pagination ul > .active > a,
+#fav-container .pagination ul > .active > span {
+    background: #2F9EC2;
+    color: white;
+}
+
+#fav-container .pagination ul > li > a,
+#fav-container .pagination ul > li > span {
+    float: left;
+    line-height: 20px;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.pagination li.hide {
+    display: none;
+}
