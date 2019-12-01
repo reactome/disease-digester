@@ -40,6 +40,7 @@ input[type="radio"] {
     /*border-radius: 5px;*/
     /*float: right;*/
     color: #777777;
+    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, .17);
 }
 
 #fav-container .pagination ul > .active > a,
@@ -57,6 +58,11 @@ input[type="radio"] {
     border: 1px solid #ddd;
 }
 
-.pagination li.hide {
+ul.pagination-list > li.hide {
     display: none;
+}
+
+ul.pagination-list .favth-select {
+    width: 50px;
+    padding: 0;
 }
