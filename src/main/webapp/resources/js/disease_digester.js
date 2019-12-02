@@ -29,19 +29,21 @@ Vue.component('pagination', {
         // "<label>" +
         "<li><p class='pagenav'>Total: {{totalPage}} pages with page size: " +
         "<select class='favth-select' @change='size=$event.target.value'>" +
-        "<option value='10'>10</option>" +
-        "<option value='50' selected='selected'>50</option>" +
-        "<option value='100'>100</option>" +
+        "<option value=10>10</option>" +
+        "<option value=50 selected='selected'>50</option>" +
+        "<option value=100>100</option>" +
         "</select>" +
         "</label></p></li>" +
         "</ul>" +
         "</div>",
     watch: {
         index(index) {
-            this.$emit('change-page-number', index);
+            this.index = parseInt(index);
+            this.$emit('change-page-number', this.index);
         },
         size(size) {
-            this.$emit('change-page-size', size);
+            this.size = parseInt(size);
+            this.$emit('change-page-size', this.size);
         }
     },
     computed: {
@@ -96,7 +98,7 @@ let disease_digester = new Vue({
         classKeywords: null,
         first: null,
         last: null,
-        pageSize: 40,
+        pageSize: 50,
         offset: null,
         pageNumber: 1,
         showPageNumber: [],
@@ -107,7 +109,7 @@ let disease_digester = new Vue({
         genes: null,
     },
     created: function () {
-        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=40&geneSize=10&sort=disease&order=asc')
+        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&sort=disease&order=asc')
             .then(res => this.setData(res.data))
             .catch(err => console.log(err));
         axios.get('/overlay/disgenet/diseaseNameHintWord')
