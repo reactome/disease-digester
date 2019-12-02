@@ -40,9 +40,7 @@
                         <input class="gene" type="number" min="1" :max="maxGeneSize" v-model="geneSize"
                                @change="changeMinGeneSize($event.target.value)">
                     </td>
-                    <td data-label="Description">The Reactome pathway analysis presented here only makes sense for
-                        multiple genes.
-                        Diseases with less gene associations are not displayed in the table.
+                    <td data-label="Description">The Reactome pathway analysis presented here only makes sense for multiple genes. Diseases with less gene associations than this parameter are not displayed in the table.
                     </td>
                 </tr>
                 <tr>
@@ -57,8 +55,7 @@
                     <td data-label="Parameter">Include interactors</td>
                     <td data-label="Option"><input type="checkbox" name="analysisParameters"
                                                    @change="switchIfIncludeInteractors"></td>
-                    <td data-label="Description">Include interactors Tick box Include high confidence interactors from
-                        IntAct in Reactome.
+                    <td data-label="Description">Include high confidence interactors from IntAct in Reactome.
                     </td>
                 </tr>
                 <tr>
@@ -71,8 +68,7 @@
                             <input type="radio" name="analysisParameters" @change="switchIfRedirectToReacFoam">Fireworks
                         </div>
                     </td>
-                    <td data-label="Description">Default result view ReacFoam
-                        Fireworks Reactome provides two different options for the first view of the analysis results.
+                    <td data-label="Description">Reactome provides two different options for the first view of the analysis results. Choose your preference.
                     </td>
                 </tr>
                 </tbody>
