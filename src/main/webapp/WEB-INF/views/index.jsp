@@ -26,37 +26,41 @@
                 <caption>Parameters</caption>
                 <thead>
                 <tr>
-                    <th width="20%">Parameter</th>
-                    <th width="20%">Option</th>
-                    <th width="70%">Description</th>
+                    <th width="20%" scope="col">Parameter</th>
+                    <th width="20%" scope="col">Option</th>
+                    <th width="70%" scope="col">Description</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Minimum number of genes per disease</td>
-                    <td>
+                    <td data-label="Parameter">Minimum number of genes per disease</td>
+                    <td data-label="Option">
                         <input type="range" min="1" :max="maxGeneSize" v-model="geneSize"
                                @change="changeMinGeneSize($event.target.value)">
-                        <input type="number" min="1" :max="maxGeneSize" v-model="geneSize"
+                        <input class="gene" type="number" min="1" :max="maxGeneSize" v-model="geneSize"
                                @change="changeMinGeneSize($event.target.value)">
                     </td>
-                    <td>The Reactome pathway analysis presented here only makes sense for multiple genes.
-                        Diseases with less gene associations are not displayed in the table.
+                    <td data-label="Description">The Reactome pathway analysis presented here only makes sense for multiple genes. Diseases with less gene associations than this parameter are not displayed in the table.
                     </td>
                 </tr>
                 <tr>
-                    <td>Project to human</td>
-                    <td><input type="checkbox" name="analysisParameters" checked @change="switchIfProjectToHuman"></td>
-                    <td>All provided gene names are mapped to human orthologs, where possible.</td>
+                    <td data-label="Parameter">Project to human</td>
+                    <td data-label="Option"><input type="checkbox" name="analysisParameters" checked
+                                                   @change="switchIfProjectToHuman"></td>
+                    <td data-label="Description">All provided gene names are mapped to human orthologs, where
+                        possible.
+                    </td>
                 </tr>
                 <tr>
-                    <td>Include interactors</td>
-                    <td><input type="checkbox" name="analysisParameters" @change="switchIfIncludeInteractors"></td>
-                    <td>Include interactors Tick box Include high confidence interactors from IntAct in Reactome.</td>
+                    <td data-label="Parameter">Include interactors</td>
+                    <td data-label="Option"><input type="checkbox" name="analysisParameters"
+                                                   @change="switchIfIncludeInteractors"></td>
+                    <td data-label="Description">Include high confidence interactors from IntAct in Reactome.
+                    </td>
                 </tr>
                 <tr>
-                    <td>Default result view</td>
-                    <td>
+                    <td data-label="Parameter">Default result view</td>
+                    <td data-label="Option">
                         <div>
                             <input type="radio" name="analysisParameters" checked @change="switchIfRedirectToReacFoam">ReacFoam
                         </div>
@@ -64,25 +68,21 @@
                             <input type="radio" name="analysisParameters" @change="switchIfRedirectToReacFoam">Fireworks
                         </div>
                     </td>
-                    <td>Default result view ReacFoam
-                        Fireworks Reactome provides two different options for the first view of the analysis results.
+                    <td data-label="Description">Reactome provides two different options for the first view of the analysis results. Choose your preference.
                     </td>
                 </tr>
                 </tbody>
             </table>
-
-
             <table class="reactome">
                 <caption>Overlay Table</caption>
                 <thead>
                 <tr>
                     <th scope="col">Check in Pathway Browser</th>
                     <th scope="col">Disease name
-                        <button class="btn-sort" @change="sortByDiseaseName">
+                        <button class="btn-sort" @click="sortByDiseaseName">
                             <span class="fa fa-angle-up"></span>
                             <span class="fa fa-angle-down"></span>
                         </button>
-                        <br>
                         <input type="text" placeholder="Disease name filter" v-model="nameKeyword" list="nameKeywords"
                                @change="searchDiseaseName($event.target.value)">
                         <datalist id="nameKeywords">
@@ -90,10 +90,9 @@
                         </datalist>
                     </th>
                     <th scope="col">Disease class
-                        <button class="btn-sort" @change="sortByDiseaseClass">
+                        <button class="btn-sort" @click="sortByDiseaseClass">
                             <span class="fa fa-angle-up"></span>
                             <span class="fa fa-angle-down"></span></button>
-                        <br>
                         <input type="text" placeholder="Disease class filter" v-model="classKeyword"
                                list="classKeywords"
                                @change="searchDiseaseClass($event.target.value)">
@@ -102,7 +101,7 @@
                         </datalist>
                     </th>
                     <th scope="col">Number of genes
-                        <button class="btn-sort" @change="sortByGeneNumber">
+                        <button class="btn-sort" @click="sortByGeneNumber">
                             <span class="fa fa-angle-up"></span>
                             <span class="fa fa-angle-down"></span></button>
                     </th>
@@ -128,20 +127,8 @@
         </div>
         <%--        the table footer div--%>
         <div>
-            <pagination v-model:page-number="pageNumber" :total="totalPage"></pagination>
-            <p>Showing: {{offset+1}} - {{((offset+pageSize)>totalElements)?totalElements:offset+pageSize}} of
-                {{totalElements}} records</p>
-            <label for="pageSize">Page:</label>
-            <input id="pageSize" type="number" min="1" :max="totalPage" @change="pageNumber=$event.target.value"
-                   :value="pageNumber"/> of
-            <label>
-                <span> {{totalPage}} with page size</span>
-                <select @change="changePageSize($event.target.value)">
-                    <option value="10">10</option>
-                    <option value="50" selected="selected">50</option>
-                    <option value="100">100</option>
-                </select>
-            </label>
+            <pagination :page-number="pageNumber" :page-size="pageSize" :total-page="totalPage"
+                        @change-page-number="changePageNumber" @change-page-size="changePageSize"></pagination>
         </div>
     </div>
 </div>

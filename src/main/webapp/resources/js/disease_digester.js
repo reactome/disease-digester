@@ -4,42 +4,57 @@ Vue.component('pagination', {
             type: Number,
             default: 1,
         },
-        total: Number,
+        pageSize: {
+            type: Number,
+            default: 50,
+        },
+        totalPage: Number,
     },
     data: function () {
         return {
             index: this.pageNumber,
+            size: this.pageSize,
         }
     },
     template: "<div class='pagination'>" +
         "<ul  class='pagination-list'>" +
-        "<li :class='{active:index===1 || total===1}' ><a class='pagenav' @click='index=1'>First</a></li>" +
-        "<li :class='{hide:total<=2}'><a class='pagenav' @click='prevPage'>Prev</a></li>" +
-        "<li :class='{active:index===id,hide:total<=2}' v-for='id in ids' ><a class='pagenav' @click='index=id'>{{id}}</a></li>" +
-        "<li :class='{hide:total<=2}'><a class='pagenav' @click='nextPage'>Next</a></li>" +
-        "<li :class='{active:index===total,hide:total===1}' ><a class='pagenav' @click='index=total'>Last</a></li>" +
+        "<li :class='{active:index===1 || totalPage===1}' ><a class='pagenav' @click='index=1'>first</a></li>" +
+        "<li :class='{active:index===id,hide:totalPage<=2}' v-for='id in ids' ><a class='pagenav' @click='index=id'>{{id}}</a></li>" +
+        "<li :class='{active:index===totalPage,hide:totalPage===1}' ><a class='pagenav' @click='index=totalPage'>last</a></li>" +
         "</ul>" +
+        "<span>" +
+        "<p>Total: {{totalPage}} pages with page size: </p>" +
+        "<select @change='size=$event.target.value'>" +
+        "<option value=10>10</option>" +
+        "<option value=50 selected='selected'>50</option>" +
+        "<option value=100>100</option>" +
+        "</select>" +
+        "</span>" +
         "</div>",
     watch: {
-        index(value) {
-            this.index = value;
-            this.$emit("input", value);
+        index(index) {
+            this.index = parseInt(index);
+            this.$emit('change-page-number', this.index);
         },
+        size(size) {
+            this.size = parseInt(size);
+            this.$emit('change-page-size', this.size);
+        }
     },
     computed: {
         ids: function () {
             let width = 5;
             let half = parseInt(width / 2);
-            if (this.total <= 2) {
+            if (this.totalPage <= 2) {
                 return null;
-            } else if (this.total <= width) {
-                return this.range(2, this.total - 2);
-            } else if (this.total - width < 2) {
+            } else if (this.totalPage <= width) {
+                return this.range(2, this.totalPage - 2);
+            } else if (this.totalPage - width < 2) {
                 return this.range(2, width - 1);
             } else if (this.index <= half + 1) {
                 return this.range(2, width);
-            } else if (this.total - this.index <= half) {
-                return this.range(this.total - width, width);
+            } else if (this.totalPage - this.index <= half) {
+                return this.range(this.totalPage - width, width);
             } else {
                 return this.range(this.index - half, width);
             }
@@ -48,16 +63,6 @@ Vue.component('pagination', {
     methods: {
         range: function (startAt = 0, size) {
             return [...Array(size).keys()].map(i => i + startAt);
-        },
-        prevPage: function () {
-            if (this.index !== 1) {
-                this.index--;
-            }
-        },
-        nextPage: function () {
-            if (this.index !== this.total) {
-                this.index++;
-            }
         },
     }
 });
@@ -78,7 +83,7 @@ let disease_digester = new Vue({
         classKeywords: null,
         first: null,
         last: null,
-        pageSize: 40,
+        pageSize: 50,
         offset: null,
         pageNumber: 1,
         showPageNumber: [],
@@ -89,7 +94,7 @@ let disease_digester = new Vue({
         genes: null,
     },
     created: function () {
-        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=40&geneSize=10&sort=disease&order=asc')
+        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&sort=disease&order=asc')
             .then(res => this.setData(res.data))
             .catch(err => console.log(err));
         axios.get('/overlay/disgenet/diseaseNameHintWord')
@@ -109,10 +114,8 @@ let disease_digester = new Vue({
             })
             .catch(err => console.log(err));
     },
-    computed: {},
-    watch: {
-        pageNumber: 'refreshPageData',
-    },
+    // computed: {},
+    // watch: {},
     methods: {
         setData: function (data) {
             this.diseases = data.content;
@@ -194,9 +197,20 @@ let disease_digester = new Vue({
             }
             this.refreshPageData();
         },
+        changePageNumber(pageNumber) {
+            // pageNumber = parseInt(pageNumber);
+            // if (this.pageNumber < pageNumber && pageNumber < this.totalPage) {
+            this.pageNumber = pageNumber;
+            // } else if (pageNumber <= 1) {
+            //     this.pageNumber = 1;
+            // } else if (pageNumber >= this.totalPage) {
+            //     this.pageNumber = this.totalPage;
+            // }
+            this.refreshPageData();
+        },
         changePageSize(pageSize) {
             this.pageNumber = pageSize > this.pageSize ? 1 : this.pageNumber;
-            this.pageSize = parseInt(pageSize);
+            this.pageSize = pageSize;
             this.refreshPageData();
         },
         switchIfProjectToHuman() {
@@ -221,27 +235,19 @@ let disease_digester = new Vue({
         },
         sortByDiseaseName() {
             this.sort = 'disease';
+            console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
         sortByDiseaseClass() {
             this.sort = 'class';
+            console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
         sortByGeneNumber() {
             this.sort = 'gene';
+            console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
-        // goto(pageNumber) {
-        //     pageNumber = parseInt(pageNumber);
-        //     if (this.pageNumber < pageNumber && pageNumber < this.totalPage) {
-        //         this.pageNumber = pageNumber;
-        //     } else if (pageNumber <= 1) {
-        //         this.pageNumber = 1;
-        //     } else if (pageNumber >= this.totalPage) {
-        //         this.pageNumber = this.totalPage;
-        //     }
-        //     this.refreshPageData();
-        // },
         searchDiseaseName(nameKeyword) {
             this.nameKeyword = nameKeyword;
             this.classKeyword = null;
