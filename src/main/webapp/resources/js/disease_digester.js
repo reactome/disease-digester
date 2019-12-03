@@ -18,23 +18,18 @@ Vue.component('pagination', {
     },
     template: "<div class='pagination'>" +
         "<ul  class='pagination-list'>" +
-        "<li :class='{active:index===1 || totalPage===1}' ><a class='pagenav' @click='index=1'>First</a></li>" +
-        "<li :class='{hide:totalPage<=2}'><a class='pagenav' @click='prevPage'>Prev</a></li>" +
+        "<li :class='{active:index===1 || totalPage===1}' ><a class='pagenav' @click='index=1'>first</a></li>" +
         "<li :class='{active:index===id,hide:totalPage<=2}' v-for='id in ids' ><a class='pagenav' @click='index=id'>{{id}}</a></li>" +
-        "<li :class='{hide:totalPage<=2}'><a class='pagenav' @click='nextPage'>Next</a></li>" +
-        "<li :class='{active:index===totalPage,hide:totalPage===1}' ><a class='pagenav' @click='index=totalPage'>Last</a></li>" +
-
-        // "<label for='pageSize'>Page:</label>" +
-        // "<input id='pageSize' type='number' min='1' :max='totalPage' @change='index=$event.target.value' :value='index'/> of" +
-        // "<label>" +
-        "<li><p class='pagenav'>Total: {{totalPage}} pages with page size: " +
-        "<select class='favth-select' @change='size=$event.target.value'>" +
+        "<li :class='{active:index===totalPage,hide:totalPage===1}' ><a class='pagenav' @click='index=totalPage'>last</a></li>" +
+        "</ul>" +
+        "<span>" +
+        "<p>Total: {{totalPage}} pages with page size: </p>" +
+        "<select @change='size=$event.target.value'>" +
         "<option value=10>10</option>" +
         "<option value=50 selected='selected'>50</option>" +
         "<option value=100>100</option>" +
         "</select>" +
-        "</label></p></li>" +
-        "</ul>" +
+        "</span>" +
         "</div>",
     watch: {
         index(index) {
@@ -68,16 +63,6 @@ Vue.component('pagination', {
     methods: {
         range: function (startAt = 0, size) {
             return [...Array(size).keys()].map(i => i + startAt);
-        },
-        prevPage: function () {
-            if (this.index !== 1) {
-                this.index--;
-            }
-        },
-        nextPage: function () {
-            if (this.index !== this.total) {
-                this.index++;
-            }
         },
     }
 });

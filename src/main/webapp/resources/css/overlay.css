@@ -62,7 +62,15 @@ ul.pagination-list > li.hide {
     display: none;
 }
 
-ul.pagination-list .favth-select {
-    width: 50px;
-    padding: 0;
+
+div.pagination > span {
+    display: block;
+}
+
+div.pagination > span > p {
+    display: inline;
+}
+
+div.pagination > span > select {
+    width: 75px;
 }
