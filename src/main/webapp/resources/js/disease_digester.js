@@ -251,13 +251,13 @@ let disease_digester = new Vue({
         searchDiseaseName(nameKeyword) {
             this.nameKeyword = nameKeyword;
             this.classKeyword = null;
-            this.geneSize = 1;
+            // this.geneSize = 1;
             this.loadData('/findByDiseaseName?name=' + this.nameKeyword, 1, this.pageSize, this.geneSize, this.sort, this.order);
         },
         searchDiseaseClass(classKeyword) {
             this.classKeyword = classKeyword;
             this.nameKeyword = null;
-            this.geneSize = 1;
+            // this.geneSize = 1;
             //set the geneSize as one so that there can always have the results in the table when some entry may have less then the default geneSize
             this.loadData('/findByDiseaseClass?class=' + this.classKeyword, 1, this.pageSize, this.geneSize, this.sort, this.order);
         },
