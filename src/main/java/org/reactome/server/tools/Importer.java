@@ -1,9 +1,7 @@
 package org.reactome.server.tools;
 
-import com.martiansoftware.jsap.FlaggedOption;
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.Parameter;
-import com.martiansoftware.jsap.SimpleJSAP;
+import com.martiansoftware.jsap.*;
+import javassist.bytecode.Descriptor;
 import org.apache.commons.io.FileUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,9 +17,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 
@@ -62,13 +59,39 @@ public class Importer {
                         new FlaggedOption("url", JSAP.URL_PARSER, DOWNLOAD_LINK, JSAP.REQUIRED, 'd', "url", "[Optional] The disease overlay table data in tsv/csv format with columns: 'diseaseId', 'diseaseName' and 'geneSymbol' from DisGeNet"),
                 }
         );
-
+        JSAPResult jsapResult = jsap.parse(args);
         try {
-            BufferedReader bufferedReader = downloadFile(jsap.parse(args).getURL("url"));
-            saveDiseaseItems(new DiseaseParser(bufferedReader).getDiseaseItems());
+            BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
+            List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
+            saveDiseaseItems(diseaseItems);
+            saveDiseaseName2UniProtAccNumBinaryDataAsTSV(diseaseItems);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            System.exit(0);
         }
+    }
+
+    private static void saveDiseaseName2UniProtAccNumBinaryDataAsTSV(List<DiseaseItem> diseaseItems) {
+        long start = System.currentTimeMillis();
+        File file = new File("./DiseaseName_UniProtAccNum.tsv");
+        BufferedOutputStream outputStream;
+        List<DiseaseItem> sorted = diseaseItems.stream().sorted().distinct().collect(Collectors.toList());
+        try {
+            outputStream = new BufferedOutputStream(new FileOutputStream(file));
+            outputStream.write("#Disease\tUniProt\n".getBytes());
+            for (DiseaseItem diseaseItem : sorted) {
+                for (GeneItem geneItem : diseaseItem.getGeneItems()) {
+                    if (geneItem.getAccessionNumber() != null) {
+                        outputStream.write(diseaseItem.getDiseaseName().concat("\t").concat(geneItem.getAccessionNumber().concat("\n")).getBytes());
+                    }
+                }
+            }
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        logger.info("Load: " + diseaseItems.size() + " entry in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into " + file.getName());
     }
 
     private static void saveDiseaseItems(List<DiseaseItem> diseaseItems) {
@@ -78,7 +101,6 @@ public class Importer {
         transaction.commit();
         session.close();
         logger.info("Load: " + diseaseItems.size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
-        System.exit(0);
     }
 
     private static BufferedReader downloadFile(URL url) throws IOException {

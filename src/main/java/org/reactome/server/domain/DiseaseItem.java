@@ -5,13 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
 @Entity
 //@Table(name = "disease", indexes = {@Index(name = "disease_id_index", columnList = "id")})
 @Table(name = "disease")
-public class DiseaseItem {
+public class DiseaseItem implements Comparable{
     @Id
     @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,5 +103,24 @@ public class DiseaseItem {
                 ", diseaseClass='" + diseaseClass + '\'' +
                 ", geneItems=" + geneItems +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        DiseaseItem that = (DiseaseItem) o;
+        return diseaseName.compareTo(that.getDiseaseName());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DiseaseItem that = (DiseaseItem) o;
+        return Objects.equals(diseaseName, that.diseaseName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(diseaseName);
     }
 }

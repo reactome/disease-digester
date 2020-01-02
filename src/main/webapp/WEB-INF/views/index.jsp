@@ -71,6 +71,10 @@
                     <td data-label="Description">Reactome provides two different options for the first view of the analysis results. Choose your preference.
                     </td>
                 </tr>
+                <tr>
+                    <td data-label="Parameter">Reset the filters</td>
+                    <td data-label="Option"><button @click="resetKeyWord">Reset</button></td>
+                    <td data-label="Description">Clear all filters, and reset to default values.</td></tr>
                 </tbody>
             </table>
             <table class="reactome">

@@ -97,7 +97,6 @@ class DiseaseParser {
         List<DiseaseItem> diseaseItems = new ArrayList<>();
         List<GeneItem> geneItems = new ArrayList<>();
 
-//        byDiseaseId.keySet().forEach(m -> diseaseItems.add(new DiseaseItem(m.get("diseaseId"), m.get("diseaseName").trim().replaceAll("[^\\w]+", "_"), m.get("diseaseClass"))));
         byDiseaseId.keySet().forEach(m -> diseaseItems.add(new DiseaseItem(m.get("diseaseId"), trimDiseaseName(m.get("diseaseName")), m.get("diseaseClass"))));
 
         List<DiseaseItem> uniqueDiseaseItems = cleavageDiseaseItemsByDiseaseClass(diseaseItems);
