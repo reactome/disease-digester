@@ -155,7 +155,7 @@ public class Importer {
             // Open connection to the URL
             URLConnection connection = url.openConnection();
 
-            FileUtils.copyURLToFile(url, dest, 30 * 1000, 30 * 1000);
+            FileUtils.copyURLToFile(connection.getURL(), dest, 30 * 1000, 30 * 1000);
         } catch (Exception e) {
             logger.warn(e.getMessage());
             e.printStackTrace();
