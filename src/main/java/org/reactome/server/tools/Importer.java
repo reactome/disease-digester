@@ -1,7 +1,6 @@
 package org.reactome.server.tools;
 
 import com.martiansoftware.jsap.*;
-import javassist.bytecode.Descriptor;
 import org.apache.commons.io.FileUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,18 +13,27 @@ import org.reactome.server.domain.GeneItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 
 public class Importer {
     private static final Logger logger = LoggerFactory.getLogger(Importer.class);
-    private static final String FILE_NAME_GZIP = "curated_gene_disease_associations.tsv.gz";
-    private static final String DOWNLOAD_LINK = "http://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz";
+    private static final String RAW_ZIPPED_FILE_NAME = "curated_gene_disease_associations.tsv.gz";
+    private static final String EXPORT_BINARY_FILE_NAME = "DiseaseName_UniProtAccNum.tsv";
+    private static final String DOWNLOAD_LINK = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz";
     private static final String DB_NAME = "digester";
     private static final String DB_USER = "root";
     private static final String DB_PASS = "root";
@@ -66,7 +74,8 @@ public class Importer {
             saveDiseaseItems(diseaseItems);
             saveDiseaseName2UniProtAccNumBinaryDataAsTSV(diseaseItems);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.warn(e.getMessage());
+            e.printStackTrace();
         } finally {
             System.exit(0);
         }
@@ -74,7 +83,7 @@ public class Importer {
 
     private static void saveDiseaseName2UniProtAccNumBinaryDataAsTSV(List<DiseaseItem> diseaseItems) {
         long start = System.currentTimeMillis();
-        File file = new File("./DiseaseName_UniProtAccNum.tsv");
+        File file = new File(Paths.get("").toAbsolutePath().toString().concat(File.separator).concat(EXPORT_BINARY_FILE_NAME));
         BufferedOutputStream outputStream;
         List<DiseaseItem> sorted = diseaseItems.stream().sorted().distinct().collect(Collectors.toList());
         try {
@@ -104,18 +113,53 @@ public class Importer {
     }
 
     private static BufferedReader downloadFile(URL url) throws IOException {
-        String directory = "./";
-        File file = new File(directory, FILE_NAME_GZIP);
-        if (file.exists()) {
-            if (file.delete()) {
+        String directory = Paths.get("").toAbsolutePath().toString().concat(File.separator);
+        File rawZippedFile = new File(directory, RAW_ZIPPED_FILE_NAME);
+        if (rawZippedFile.exists()) {
+            if (rawZippedFile.delete()) {
                 logger.info("Found old data file exists, delete it and create new one.");
-                file = new File(directory, FILE_NAME_GZIP);
+                rawZippedFile = new File(directory, RAW_ZIPPED_FILE_NAME);
             }
         }
-        logger.info("Downloading Disease-gene Association File from: " + url);
-        FileUtils.copyURLToFile(url, file);
-        String fileLocation = file.getAbsolutePath();
-        logger.info("Saved file in location: " + fileLocation);
-        return new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(fileLocation)), StandardCharsets.UTF_8));
+        logger.info("Downloading Disease-gene Association raw zipped file from: " + url);
+        doHttpsDownload(url, rawZippedFile);
+        logger.info("Saved file in location: " + rawZippedFile.getAbsolutePath());
+        return new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(rawZippedFile)), StandardCharsets.UTF_8));
+    }
+
+    private static void doHttpsDownload(URL url, File dest) {
+        // code from https://zwbetz.com/download-a-file-over-https-using-apache-commons-fileutils-copyurltofile/
+        try {
+            // Create a new trust manager that trusts all certificates
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(
+                                java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(
+                                java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
+
+            // Activate the new trust manager
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Open connection to the URL
+            URLConnection connection = url.openConnection();
+
+            FileUtils.copyURLToFile(connection.getURL(), dest, 30 * 1000, 30 * 1000);
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+            e.printStackTrace();
+//            dest.delete();
+        }
     }
 }
