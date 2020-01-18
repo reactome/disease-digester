@@ -126,6 +126,11 @@ let disease_digester = new Vue({
             this.totalPage = data.totalPages;
             this.totalElements = data.totalElements;
             this.pageNumber = data.number + 1;
+            if (this.diseases.length === 0) {
+                window.alert('No entry in the query results has more than: ' + this.geneSize + ' genes( set as parameter in "Minimum number of genes per disease"), now this value will be set to one for showing the results!');
+                this.geneSize = 1;
+                this.refreshPageData();
+            }
         },
         loadData: function (func = '/findAll', pageNumber, pageSize, geneSize, sort = 'disease', order = 'asc') {
             let url = null;
