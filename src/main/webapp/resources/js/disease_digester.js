@@ -94,7 +94,7 @@ let disease_digester = new Vue({
         genes: null,
     },
     created: function () {
-        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&sort=disease&order=asc')
+        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&sort=gene&order=desc')
             .then(res => this.setData(res.data))
             .catch(err => console.log(err));
         axios.get('/overlay/disgenet/diseaseNameHintWord')
@@ -218,10 +218,10 @@ let disease_digester = new Vue({
             this.pageSize = pageSize;
             this.refreshPageData();
         },
-        switchIfProjectToHuman() {
-            this.projectToHuman = !this.projectToHuman;
-            // console.log(this.projectToHuman + ' : ' + this.includeInteractors);
-        },
+        // switchIfProjectToHuman() {
+        //     this.projectToHuman = !this.projectToHuman;
+        //     // console.log(this.projectToHuman + ' : ' + this.includeInteractors);
+        // },
         switchIfIncludeInteractors() {
             this.includeInteractors = !this.includeInteractors;
             // console.log(this.projectToHuman + ' : ' + this.includeInteractors);

@@ -40,17 +40,20 @@
                         <input class="gene" type="number" min="1" :max="maxGeneSize" v-model="geneSize"
                                @change="changeMinGeneSize($event.target.value)">
                     </td>
-                    <td data-label="Description">The Reactome pathway analysis presented here only makes sense for multiple genes. Diseases with less gene associations than this parameter are not displayed in the table.
+                    <td data-label="Description">The Reactome pathway analysis presented here only makes sense for
+                        multiple genes. Diseases with less gene associations than this parameter are not displayed in
+                        the table. For small numbers of genes, it might be helpful to switch from "pValue" to "coverage"
+                        at the bottom of the visualisation.
                     </td>
                 </tr>
-                <tr>
-                    <td data-label="Parameter">Project to human</td>
-                    <td data-label="Option"><input type="checkbox" name="analysisParameters" checked
-                                                   @change="switchIfProjectToHuman"></td>
-                    <td data-label="Description">All provided gene names are mapped to human orthologs, where
-                        possible.
-                    </td>
-                </tr>
+                <%--                <tr>--%>
+                <%--                    <td data-label="Parameter">Project to human</td>--%>
+                <%--                    <td data-label="Option"><input type="checkbox" name="analysisParameters" checked--%>
+                <%--                                                   @change="switchIfProjectToHuman"></td>--%>
+                <%--                    <td data-label="Description">All provided gene names are mapped to human orthologs, where--%>
+                <%--                        possible.--%>
+                <%--                    </td>--%>
+                <%--                </tr>--%>
                 <tr>
                     <td data-label="Parameter">Include interactors</td>
                     <td data-label="Option"><input type="checkbox" name="analysisParameters"
@@ -68,13 +71,17 @@
                             <input type="radio" name="analysisParameters" @change="switchIfRedirectToReacFoam">Fireworks
                         </div>
                     </td>
-                    <td data-label="Description">Reactome provides two different options for the first view of the analysis results. Choose your preference.
+                    <td data-label="Description">Reactome provides two different options for the first view of the
+                        analysis results. Choose your preference.
                     </td>
                 </tr>
                 <tr>
                     <td data-label="Parameter">Reset the filters</td>
-                    <td data-label="Option"><button @click="resetKeyWord">Reset</button></td>
-                    <td data-label="Description">Clear all filters, and reset to default values.</td></tr>
+                    <td data-label="Option">
+                        <button @click="resetKeyWord">Reset</button>
+                    </td>
+                    <td data-label="Description">Clear all filters, and reset to default values.</td>
+                </tr>
                 </tbody>
             </table>
             <table class="reactome">
