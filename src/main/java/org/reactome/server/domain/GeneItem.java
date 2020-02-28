@@ -15,8 +15,10 @@ public class GeneItem {
     @JsonIgnore
     @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems")
     private Set<DiseaseItem> diseaseItems;
+    @JsonIgnore
     private String geneId;
     private String geneSymbol;
+    @JsonIgnore
     private String accessionNumber;
 
     public GeneItem() {
