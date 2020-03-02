@@ -1,6 +1,9 @@
 package org.reactome.server.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.reactome.server.util.DiseaseItemSerializer;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -12,9 +15,10 @@ import java.util.stream.Collectors;
 @Entity
 //@Table(name = "disease", indexes = {@Index(name = "disease_id_index", columnList = "id")})
 @Table(name = "disease")
-public class DiseaseItem implements Comparable{
+@JsonSerialize(using = DiseaseItemSerializer.class)
+public class DiseaseItem implements Comparable {
     @Id
-    @JsonIgnore
+//    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String diseaseId;

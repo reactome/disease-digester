@@ -129,14 +129,14 @@
                     <td data-label="Disease class">{{disease.diseaseClass}}</td>
                     <td data-label="Number of genes">{{disease.geneItems.length}}</td>
                     <td data-label="Gene list">
-                        <div class="td-text-overflow">{{getGeneList(disease.geneItems,', ')}}</div>
+                        <div class="td-text-overflow">{{getGeneList(disease.geneItems)}}</div>
                     </td>
                     <td data-label="Disease id">{{disease.diseaseId}}</td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <%--        the table footer div--%>
+            <%--        the table footer div--%>
         <div>
             <pagination :page-number="pageNumber" :page-size="pageSize" :total-page="totalPage"
                         @change-page-number="changePageNumber" @change-page-size="changePageSize"></pagination>

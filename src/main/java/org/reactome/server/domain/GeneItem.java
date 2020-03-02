@@ -1,6 +1,6 @@
 package org.reactome.server.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -9,16 +9,16 @@ import java.util.Set;
 @Table(name = "gene")
 public class GeneItem {
     @Id
-    @JsonIgnore
+//    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonIgnore
+    //    @JsonIgnore
     @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems")
     private Set<DiseaseItem> diseaseItems;
-    @JsonIgnore
+    //    @JsonIgnore
     private String geneId;
     private String geneSymbol;
-    @JsonIgnore
+    //    @JsonIgnore
     private String accessionNumber;
 
     public GeneItem() {

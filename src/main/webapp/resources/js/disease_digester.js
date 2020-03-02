@@ -89,9 +89,8 @@ let disease_digester = new Vue({
         showPageNumber: [],
         totalPage: null,
         totalElements: null,
-        sort: 'disease',
-        order: 'asc',
-        genes: null,
+        sort: 'gene',
+        order: 'desc',
     },
     created: function () {
         axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&sort=gene&order=desc')
@@ -132,13 +131,14 @@ let disease_digester = new Vue({
                 this.refreshPageData();
             }
         },
-        loadData: function (func = '/findAll', pageNumber, pageSize, geneSize, sort = 'disease', order = 'asc') {
+        loadData: function (func = '/findAll', pageNumber, pageSize, geneSize, sort = 'gene', order = 'desc') {
             let url = null;
             if (func.match('/findAll')) {
                 url = '/overlay/disgenet' + func + '?pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&sort=' + sort + '&order=' + order;
             } else {
                 url = '/overlay/disgenet' + func + '&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&sort=' + sort + '&order=' + order;
             }
+            console.log(url);
             axios.get(url).then(res => this.setData(res.data))
                 .catch(function (error) {
                     console.log(error);
@@ -153,23 +153,20 @@ let disease_digester = new Vue({
                 this.loadData('/findAll', this.pageNumber, this.pageSize, this.geneSize, this.sort, this.order)
             }
         },
-        getGeneList(geneItems, separator) {
+        getGeneList(geneItems) {
+            //do not directly return the `geneItems.sort().join(', ')`,or the Vue will arose: You may have an infinite update loop in a component render function.
             let geneList = [];
             for (let i = 0; i < geneItems.length; i++) {
-                geneList.push(geneItems[i].geneSymbol);
+                geneList.push(geneItems[i]);
             }
-            if (separator != null) {
-                return geneList.sort().join(separator);
-            }
-            return geneList;
+            return geneList.sort().join(', ');
         },
         analyze(geneItems) {
-            this.genes = this.getGeneList(geneItems);
             let data = {
                 "projectToHuman": this.projectToHuman,
                 "includeInteractors": this.includeInteractors,
                 "redirectToReacFoam": this.redirectToReacFoam,
-                "genes": this.genes
+                "genes": geneItems
             };
             axios.post('/overlay/disgenet/analyze', data)
                 .then(res => {
