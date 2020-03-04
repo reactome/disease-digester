@@ -28,7 +28,10 @@ public class HintWordService {
     private static final InputStreamReader DISEASE_CLASS_STREAM = new InputStreamReader(Objects.requireNonNull(HintWordService.class.getClassLoader().getResourceAsStream(DISEASE_CLASS)));
 
     private void setDiseaseNameHintWord() {
-        Set<String> nameSet = diseaseItemRepository.findAll().stream().map(diseaseItem -> diseaseItem.getDiseaseName().split("_")).flatMap(Arrays::stream).filter(s -> s.length() > 3).collect(Collectors.toSet());
+        Set<String> nameSet = diseaseItemRepository.findAll().stream()
+                .map(diseaseItem -> diseaseItem.getDiseaseName().split("_"))
+                .flatMap(Arrays::stream).filter(s -> s.length() > 3)
+                .collect(Collectors.toSet());
         nameSet.removeAll(STOP_WORD_SET);
         diseaseName = new HintWord(nameSet);
     }
@@ -40,7 +43,15 @@ public class HintWordService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Set<String> classSet = properties.entrySet().parallelStream().map(Map.Entry::getValue).map(s -> s.toString().split(" ")).flatMap(Arrays::stream).filter(strings -> !strings.equals("and")).filter(strings -> !strings.equals("of")).collect(Collectors.toSet());
+        Set<String> classSet = properties.entrySet().parallelStream()
+                .map(Map.Entry::getValue)
+                .map(s -> s.toString().split(" "))
+                .flatMap(Arrays::stream)
+                .filter(s -> !s.equals("and"))
+                .filter(s -> !s.equals("of"))
+                .map(s -> s.replace(",", ""))
+                .filter(s -> diseaseItemRepository.existsByDiseaseClassContains(s))
+                .collect(Collectors.toSet());
         diseaseClass = new HintWord(classSet);
     }
 

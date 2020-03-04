@@ -47,4 +47,6 @@ public interface DiseaseItemRepository extends JpaRepository<DiseaseItem, Long> 
 
     @Query(value = "SELECT MAX(d.geneItems.size) FROM DiseaseItem d")
     Integer findMaxGeneSize();
+
+    boolean existsByDiseaseClassContains(String diseaseClass);
 }
