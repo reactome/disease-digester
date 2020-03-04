@@ -36,6 +36,12 @@ input[type="radio"] {
     vertical-align: middle;
 }
 
+.table-wrapper {
+    width: 100%;
+    height: auto;
+    overflow: auto;
+}
+
 .btn-sort {
     /*border-radius: 5px;*/
     /*float: right;*/
@@ -73,4 +79,9 @@ div.pagination > span > p {
 
 div.pagination > span > select {
     width: 75px;
+}
+
+/* resizing default table */
+table.reactome {
+    width: 99%;
 }

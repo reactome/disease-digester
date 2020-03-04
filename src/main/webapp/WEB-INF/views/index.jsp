@@ -21,7 +21,7 @@
 
     <div id="disease_digester">
         <%--    the table div--%>
-        <div id="r-responsive-table" class="details-wrap enlarge-table">
+        <div id="r-notresponsive-table" class="details-wrap enlarge-table">
             <table class="reactome table-parameter">
                 <caption>Parameters</caption>
                 <thead>
@@ -84,57 +84,60 @@
                 </tr>
                 </tbody>
             </table>
-            <table class="reactome">
-                <caption>Overlay Table</caption>
-                <thead>
-                <tr>
-                    <th scope="col">Check in Pathway Browser</th>
-                    <th scope="col">Disease name
-                        <button class="btn-sort" @click="sortByDiseaseName">
-                            <span class="fa fa-angle-up"></span>
-                            <span class="fa fa-angle-down"></span>
-                        </button>
-                        <input type="text" placeholder="Disease name filter" v-model="nameKeyword" list="nameKeywords"
-                               @change="searchDiseaseName($event.target.value)">
-                        <datalist id="nameKeywords">
-                            <option v-for="nameKeyword in nameKeywords">{{nameKeyword}}</option>
-                        </datalist>
-                    </th>
-                    <th scope="col">Disease class
-                        <button class="btn-sort" @click="sortByDiseaseClass">
-                            <span class="fa fa-angle-up"></span>
-                            <span class="fa fa-angle-down"></span></button>
-                        <input type="text" placeholder="Disease class filter" v-model="classKeyword"
-                               list="classKeywords"
-                               @change="searchDiseaseClass($event.target.value)">
-                        <datalist id="classKeywords">
-                            <option v-for="classKeyword in classKeywords">{{classKeyword}}</option>
-                        </datalist>
-                    </th>
-                    <th scope="col">Number of genes
-                        <button class="btn-sort" @click="sortByGeneNumber">
-                            <span class="fa fa-angle-up"></span>
-                            <span class="fa fa-angle-down"></span></button>
-                    </th>
-                    <th scope="col">Gene list</th>
-                    <th scope="col">Disease id</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="disease in diseases">
-                    <td data-label="Check">
-                        <button class="btn btn-primary" @click="analyze(disease.geneItems)">Analysis</button>
-                    </td>
-                    <td data-label="Disease Name">{{disease.diseaseName}}</td>
-                    <td data-label="Disease class">{{disease.diseaseClass}}</td>
-                    <td data-label="Number of genes">{{disease.geneItems.length}}</td>
-                    <td data-label="Gene list">
-                        <div class="td-text-overflow">{{getGeneList(disease.geneItems)}}</div>
-                    </td>
-                    <td data-label="Disease id">{{disease.diseaseId}}</td>
-                </tr>
-                </tbody>
-            </table>
+
+            <div class="table-wrapper">
+                <table class="reactome">
+                    <caption>Overlay Table</caption>
+                    <thead>
+                    <tr>
+                        <th scope="col">Check in Pathway Browser</th>
+                        <th scope="col">Disease name
+                            <button class="btn-sort" @click="sortByDiseaseName">
+                                <span class="fa fa-angle-up"></span>
+                                <span class="fa fa-angle-down"></span>
+                            </button>
+                            <input type="text" placeholder="Disease name filter" v-model="nameKeyword" list="nameKeywords"
+                                   @change="searchDiseaseName($event.target.value)">
+                            <datalist id="nameKeywords">
+                                <option v-for="nameKeyword in nameKeywords">{{nameKeyword}}</option>
+                            </datalist>
+                        </th>
+                        <th scope="col">Disease class
+                            <button class="btn-sort" @click="sortByDiseaseClass">
+                                <span class="fa fa-angle-up"></span>
+                                <span class="fa fa-angle-down"></span></button>
+                            <input type="text" placeholder="Disease class filter" v-model="classKeyword"
+                                   list="classKeywords"
+                                   @change="searchDiseaseClass($event.target.value)">
+                            <datalist id="classKeywords">
+                                <option v-for="classKeyword in classKeywords">{{classKeyword}}</option>
+                            </datalist>
+                        </th>
+                        <th scope="col">Number of genes
+                            <button class="btn-sort" @click="sortByGeneNumber">
+                                <span class="fa fa-angle-up"></span>
+                                <span class="fa fa-angle-down"></span></button>
+                        </th>
+                        <th scope="col">Gene list</th>
+                        <th scope="col">Disease id</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="disease in diseases">
+                        <td data-label="Check">
+                            <button class="btn btn-primary" @click="analyze(disease.geneItems)">Analysis</button>
+                        </td>
+                        <td data-label="Disease Name">{{disease.diseaseName}}</td>
+                        <td data-label="Disease class">{{disease.diseaseClass}}</td>
+                        <td data-label="Number of genes">{{disease.geneItems.length}}</td>
+                        <td data-label="Gene list">
+                            <div class="td-text-overflow">{{getGeneList(disease.geneItems)}}</div>
+                        </td>
+                        <td data-label="Disease id">{{disease.diseaseId}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
             <%--        the table footer div--%>
         <div>
