@@ -161,20 +161,26 @@ let disease_digester = new Vue({
             }
             return geneList.sort().join(', ');
         },
-        analyze(geneItems) {
+        async analyze(geneItems) {
             let data = {
                 "projectToHuman": this.projectToHuman,
                 "includeInteractors": this.includeInteractors,
                 "redirectToReacFoam": this.redirectToReacFoam,
                 "genes": geneItems
             };
-            axios.post('/overlay/disgenet/analyze', data)
+            let url = this.redirectToReacFoam ?
+                "https://reactome.org/reacfoam/" : "https://reactome.org/PathwayBrowser/";
+            //to avoid the popup-blocker, must open a page immediately after the btn on-click event,
+            // then await to set the true location from the response url,
+            let analyzeWindow = window.open(url);
+            analyzeWindow.focus();
+            await axios.post('/overlay/disgenet/analyze', data)
                 .then(res => {
-                    // window.open(res.data, replace = true).focus();
-                    window.open(res.data).focus();
+                    url = res.data;
                 }).catch(err => {
-                console.log(err)
-            });
+                    console.log(err)
+                });
+            analyzeWindow.location = url;
         },
         updatePropertyFunc(value, target, maximum, callback) {
             //this is the generic function to update the target property value by the giving new value.
@@ -237,17 +243,17 @@ let disease_digester = new Vue({
         },
         sortByDiseaseName() {
             this.sort = 'disease';
-            console.log(this.sort);
+            // console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
         sortByDiseaseClass() {
             this.sort = 'class';
-            console.log(this.sort);
+            // console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
         sortByGeneNumber() {
             this.sort = 'gene';
-            console.log(this.sort);
+            // console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
         searchDiseaseName(nameKeyword) {
