@@ -146,7 +146,7 @@ class DiseaseParser {
     }
 
     private Map<String, String> loadGeneId2AccNumMap() {
-        /* load gene id ot UniProtKB mapping paris */
+        /* load gene id to UniProtKB mapping pairs */
         Map<String, String> geneIdMap = new HashMap<>();
         BufferedReader TSVFile = new BufferedReader(new InputStreamReader(Objects.requireNonNull(GENEID_4_UNIPROT)));
         String DELIMITER = "\t";

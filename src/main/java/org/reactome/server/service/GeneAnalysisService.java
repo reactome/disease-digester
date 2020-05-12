@@ -40,7 +40,7 @@ public class GeneAnalysisService {
         analysisService = StringUtils.replaceFirst(analysisService, PLACEHOLDER, requestData.isIncludeInteractors().toString());
         AnalysisResult result = restTemplate.postForObject(analysisService, payload, AnalysisResult.class);
         String token;
-        if (result != null) {
+        if (null != result) {
             token = result.getSummary().getToken();
         } else {
             throw new EmptyGeneAnalysisResultException(payload);

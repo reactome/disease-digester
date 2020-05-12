@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DiseaseItemService {
-    private static Integer maxGeneSize;
+    private static volatile Integer maxGeneSize;
     private static final String DISEASE_NAME = "diseaseName";
     private static final String DISEASE_CLASS = "diseaseClass";
     private static final String GENE = "gene";
@@ -74,7 +74,7 @@ public class DiseaseItemService {
     }
 
     public Integer getMaxGeneSize() {
-        if (maxGeneSize == null) {
+        if (null == maxGeneSize) {
             maxGeneSize = diseaseItemRepository.findMaxGeneSize();
         }
         return maxGeneSize;
