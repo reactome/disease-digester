@@ -1,6 +1,7 @@
 package org.reactome.server.tools;
 
 import org.apache.commons.lang3.StringUtils;
+import org.reactome.server.domain.DataRow;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.GeneItem;
 
@@ -8,12 +9,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 class DiseaseParser {
     /*
@@ -22,11 +21,8 @@ class DiseaseParser {
 
     private List<DiseaseItem> diseaseItems;
     private static final String DELIMITER = "\t";
-    // !Notice that rhe char `Ν` in word `Νot` is a Greek Capital Letter Nu, not a English Capital Letter N,
-    // so that this class can be always ascending sorted after the one which has class
-    private static final String NOT_CLASSIFIED = "Νot Classified";
     private final InputStream GENEID_4_UNIPROT = this.getClass().getClassLoader().getResourceAsStream("geneid_4_uniprot.tsv");
-    private final InputStream DISEASE_CLASS = this.getClass().getClassLoader().getResourceAsStream("disease-class.properties");
+//    private final InputStream DISEASE_CLASS = this.getClass().getClassLoader().getResourceAsStream("disease-class.properties");
 
     DiseaseParser(BufferedReader file) throws Exception {
         setDiseaseItems(loadDiseaseItems(file));
@@ -40,76 +36,32 @@ class DiseaseParser {
         this.diseaseItems = diseaseItems;
     }
 
-    private List<DiseaseItem> loadDiseaseItems(BufferedReader file) throws Exception {
-//      <-- read table header start -->
-        String headerLine = file.readLine(); // Read header line.
-        List<String> headers = Arrays.asList(Objects.requireNonNull(headerLine.split(DELIMITER)));
-//      <-- read table header end -->
-
-        List<Map<String, String>> table = new ArrayList<>();
-
-
-//      <-- read content start -->
-        String line = file.readLine(); // Read first data row.
-        while (line != null) {
-            List<String> rowData = Arrays.asList(line.split(DELIMITER));
-            Map<String, String> newRow = new LinkedHashMap<>();
-            assert headers.size() == rowData.size();
-            for (int i = 0; i < headers.size(); i++) {
-                newRow.put(headers.get(i), rowData.get(i).trim());
-            }
-            table.add(newRow);
-            line = file.readLine(); // Read next line of data.
+    private List<DiseaseItem> loadDiseaseItems(BufferedReader file) {
+        List<String> table = new ArrayList<>();
+        try {
+            file.readLine();// Jump the header line.
+            String line;
+            while ((line = file.readLine()) != null) table.add(line);
+            file.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        //      <-- read content end -->
-        file.close();
-//        return cleavage(transferTable2DiseaseItems(table));
-        return abbreviatedAttributeMapping(transferTable2DiseaseItems(table));
+        return transferTable2DiseaseItemList(table);
     }
 
-    private List<DiseaseItem> transferTable2DiseaseItems(List<Map<String, String>> table) {
+    private List<DiseaseItem> transferTable2DiseaseItemList(List<String> table) {
         /* transfer Map<table> to DiseaseItem objects */
-        List<String> diseaseFields = Arrays.stream(DiseaseItem.class.getDeclaredFields())
-                .map(Field::getName)
-                .filter(s -> s.contains("disease"))
-                .collect(toList());
-        List<String> geneFields = Arrays.stream(GeneItem.class.getDeclaredFields())
-                .map(Field::getName)
-                .filter(s -> s.contains("gene"))
-                .collect(toList());
-
-        /* grouping disease with disease id */
-        Map<Map<String, String>, List<String>> byDiseaseId = table.stream()
-                .collect(Collectors.groupingBy(m -> diseaseFields.stream()
-                        .collect(toMap(Function.identity(), m::get)), mapping(n -> n.get("geneId"), toList())));
-
-        /* grouping gene with gene id */
-        Map<Map<String, String>, List<String>> byGeneId = table.stream()
-                .collect(Collectors.groupingBy(m -> geneFields.stream()
-                        .collect(toMap(Function.identity(), m::get)), mapping(n -> n.get("diseaseId"), toList())));
-
-        /* record mapping relationship */
-        Map<String, List<String>> diseaseIdMap = new HashMap<>();
-        byDiseaseId.forEach((k, v) -> diseaseIdMap.put(k.get("diseaseId"), v));
-        Map<String, List<String>> geneIdMap = new HashMap<>();
-        byGeneId.forEach((k, v) -> geneIdMap.put(k.get("geneId"), v));
-
-        List<DiseaseItem> diseaseItems = new ArrayList<>();
-        List<GeneItem> geneItems = new ArrayList<>();
-
-        byDiseaseId.keySet().forEach(m -> diseaseItems.add(new DiseaseItem(m.get("diseaseId"), trimDiseaseName(m.get("diseaseName")), m.get("diseaseClass"))));
-
-        List<DiseaseItem> uniqueDiseaseItems = cleavageDiseaseItemsByDiseaseClass(diseaseItems);
-
-        byGeneId.keySet().forEach(m -> geneItems.add(new GeneItem(m.get("geneId"), m.get("geneSymbol"))));
-
-//        geneItems.forEach(geneItem -> geneItem.setDiseaseItems(uniqueDiseaseItems.stream().filter(diseaseItem -> geneIdMap.get(geneItem.getGeneId()).contains(diseaseItem.getDiseaseId())).collect(toList())));
-        Collections.synchronizedList(geneItems).parallelStream().forEach(geneItem -> geneItem.setDiseaseItems(uniqueDiseaseItems.stream().filter(diseaseItem -> geneIdMap.get(geneItem.getGeneId()).contains(diseaseItem.getDiseaseId())).collect(toSet())));
-
-//        uniqueDiseaseItems.forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toList())));
-        Collections.synchronizedList(uniqueDiseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setGeneItems(geneItems.stream().filter(geneItem -> diseaseIdMap.get(diseaseItem.getDiseaseId()).contains(geneItem.getGeneId())).collect(toList())));
-
-        return uniqueDiseaseItems;
+        List<DataRow> dataRowList = table.stream().map((String s) -> {
+            String[] ss = s.split(DELIMITER);
+            return new DataRow(ss[0].trim(), ss[1].trim(), ss[4].trim(), trimDiseaseName(ss[5].trim()), Float.parseFloat(ss[9].trim()));
+        }).collect(toList());
+        Map<DiseaseItem, List<DataRow>> diseaseItemMap = dataRowList.stream().collect(Collectors.groupingBy((dataRow -> new DiseaseItem(dataRow.getDiseaseId(), dataRow.getDiseaseName()))));
+        return diseaseItemMap.entrySet().stream().map(entry -> {
+            DiseaseItem diseaseItem = entry.getKey();
+            List<GeneItem> geneItems = entry.getValue().stream().map(dataRow -> new GeneItem(dataRow.getGeneId(), dataRow.getDiseaseId(), dataRow.getGeneSymbol(), dataRow.getScore())).collect(toList());
+            diseaseItem.setGeneItems(geneItems);
+            return diseaseItem;
+        }).collect(toList());
     }
 
     /**
@@ -125,24 +77,6 @@ class DiseaseParser {
                 .map(String::toLowerCase)
                 .map(StringUtils::capitalize)
                 .collect(Collectors.joining("_"));
-    }
-
-    private List<DiseaseItem> abbreviatedAttributeMapping(List<DiseaseItem> diseaseItems) {
-        Map<String, String> diseaseClassMap = loadDiseaseClass2TopDiseaseClassMap();
-        Map<String, String> geneId2AccNumMap = loadGeneId2AccNumMap();
-
-        Collections.synchronizedList(diseaseItems).parallelStream().forEach(diseaseItem -> diseaseItem.setDiseaseClass(Optional.ofNullable(diseaseClassMap.get(diseaseItem.getDiseaseClass())).orElse(NOT_CLASSIFIED)));
-        Collections.synchronizedList(diseaseItems).parallelStream().forEach(
-                diseaseItem -> diseaseItem.getGeneItems().forEach(
-                        geneItem -> geneItem.setAccessionNumber(geneId2AccNumMap.get(geneItem.getGeneId()))));
-        return diseaseItems;
-    }
-
-    private List<DiseaseItem> cleavageDiseaseItemsByDiseaseClass(List<DiseaseItem> diseaseItems) {
-        List<DiseaseItem> hasMoreThanOneDiseaseClass = diseaseItems.stream().filter(diseaseItem -> diseaseItem.getDiseaseClass().contains(";")).collect(toList());
-        diseaseItems.removeAll(hasMoreThanOneDiseaseClass);
-        diseaseItems.addAll(hasMoreThanOneDiseaseClass.stream().flatMap(diseaseItem -> new DiseaseItem().cleavage(diseaseItem).stream()).collect(toList()));
-        return diseaseItems;
     }
 
     private Map<String, String> loadGeneId2AccNumMap() {
@@ -166,14 +100,14 @@ class DiseaseParser {
         return geneIdMap;
     }
 
-    private Map<String, String> loadDiseaseClass2TopDiseaseClassMap() {
-        /* load disease class abbreviation name to explicit name mapping paris */
-        Properties properties = new Properties();
-        try {
-            properties.load(new InputStreamReader(Objects.requireNonNull(DISEASE_CLASS)));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return properties.entrySet().stream().collect(toMap(e -> e.getKey().toString().trim(), e -> e.getValue().toString().trim()));
-    }
+//    private Map<String, String> loadDiseaseClass2TopDiseaseClassMap() {
+//        /* load disease class abbreviation name to explicit name mapping paris */
+//        Properties properties = new Properties();
+//        try {
+//            properties.load(new InputStreamReader(Objects.requireNonNull(DISEASE_CLASS)));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return properties.entrySet().stream().collect(toMap(e -> e.getKey().toString().trim(), e -> e.getValue().toString().trim()));
+//    }
 }

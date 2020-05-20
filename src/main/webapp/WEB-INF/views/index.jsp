@@ -26,9 +26,9 @@
                 <caption>Parameters</caption>
                 <thead>
                 <tr>
-                    <th width="20%" scope="col">Parameter</th>
+                    <th width="25%" scope="col">Parameter</th>
                     <th width="20%" scope="col">Option</th>
-                    <th width="70%" scope="col">Description</th>
+                    <th width="55%" scope="col">Description</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -46,18 +46,30 @@
                         at the bottom of the visualisation.
                     </td>
                 </tr>
-                <%--                <tr>--%>
-                <%--                    <td data-label="Parameter">Project to human</td>--%>
-                <%--                    <td data-label="Option"><input type="checkbox" name="analysisParameters" checked--%>
-                <%--                                                   @change="switchIfProjectToHuman"></td>--%>
-                <%--                    <td data-label="Description">All provided gene names are mapped to human orthologs, where--%>
-                <%--                        possible.--%>
-                <%--                    </td>--%>
-                <%--                </tr>--%>
+                <tr>
+                    <td data-label="Parameter">Score</td>
+                    <td data-label="Option">
+                        <div>
+                            <input type="radio" name="score" value=null :checked="cutoffValue==null"
+                                   @change="changeCutoffValue($event.target.value)">Low (no filter)
+                        </div>
+                        <div>
+                            <input type="radio" name="score" value=0.33 :checked="cutoffValue==0.33"
+                                   @change="changeCutoffValue($event.target.value)">Medium (> 0.33)
+                        </div>
+                        <div>
+                            <input type="radio" name="score" value=0.66 :checked="cutoffValue==0.66"
+                                   @change="changeCutoffValue($event.target.value)">High (> 0.66)
+                        </div>
+                    </td>
+                    <td data-label="Description">Score of the gene-disease association as provided by DisGeNET.
+                    </td>
+                </tr>
                 <tr>
                     <td data-label="Parameter">Include interactors</td>
                     <td data-label="Option"><input type="checkbox" name="analysisParameters"
-                                                   @change="switchIfIncludeInteractors"></td>
+                                                   @change="switchIfIncludeInteractors" :checked="includeInteractors">
+                    </td>
                     <td data-label="Description">Include high confidence interactors from IntAct in Reactome.
                     </td>
                 </tr>
@@ -65,10 +77,12 @@
                     <td data-label="Parameter">Default result view</td>
                     <td data-label="Option">
                         <div>
-                            <input type="radio" name="analysisParameters" checked @change="switchIfRedirectToReacFoam">ReacFoam
+                            <input type="radio" name="analysisParameters" :checked="redirectToReacFoam"
+                                   @change="switchIfRedirectToReacFoam">ReacFoam
                         </div>
                         <div>
-                            <input type="radio" name="analysisParameters" @change="switchIfRedirectToReacFoam">Fireworks
+                            <input type="radio" name="analysisParameters" :checked="!redirectToReacFoam"
+                                   @change="switchIfRedirectToReacFoam">Fireworks
                         </div>
                     </td>
                     <td data-label="Description">Reactome provides two different options for the first view of the
@@ -78,9 +92,9 @@
                 <tr>
                     <td data-label="Parameter">Reset the filters</td>
                     <td data-label="Option">
-                        <button @click="resetKeyWord">Reset</button>
+                        <button @click="resetParameters">Reset</button>
                     </td>
-                    <td data-label="Description">Clear all filters, and reset to default values.</td>
+                    <td data-label="Description">Clear disease name filter, and reset to default values.</td>
                 </tr>
                 </tbody>
             </table>
@@ -96,21 +110,11 @@
                                 <span class="fa fa-angle-up"></span>
                                 <span class="fa fa-angle-down"></span>
                             </button>
-                            <input type="text" placeholder="Disease name filter" v-model="nameKeyword" list="nameKeywords"
+                            <input type="text" placeholder="Disease name filter" v-model="nameKeyword"
+                                   list="nameKeywords"
                                    @change="searchDiseaseName($event.target.value)">
                             <datalist id="nameKeywords">
                                 <option v-for="nameKeyword in nameKeywords">{{nameKeyword}}</option>
-                            </datalist>
-                        </th>
-                        <th scope="col">Disease class
-                            <button class="btn-sort" @click="sortByDiseaseClass">
-                                <span class="fa fa-angle-up"></span>
-                                <span class="fa fa-angle-down"></span></button>
-                            <input type="text" placeholder="Disease class filter" v-model="classKeyword"
-                                   list="classKeywords"
-                                   @change="searchDiseaseClass($event.target.value)">
-                            <datalist id="classKeywords">
-                                <option v-for="classKeyword in classKeywords">{{classKeyword}}</option>
                             </datalist>
                         </th>
                         <th scope="col">Number of genes
@@ -128,18 +132,20 @@
                             <button class="btn btn-primary" @click="analyze(disease.geneItems)">Analysis</button>
                         </td>
                         <td data-label="Disease Name">{{disease.diseaseName}}</td>
-                        <td data-label="Disease class">{{disease.diseaseClass}}</td>
                         <td data-label="Number of genes">{{disease.geneItems.length}}</td>
                         <td data-label="Gene list">
                             <div class="td-text-overflow">{{getGeneList(disease.geneItems)}}</div>
                         </td>
-                        <td data-label="Disease id">{{disease.diseaseId}}</td>
+                        <td data-label="Disease id"><a
+                                :href="'https://www.disgenet.org/search?disease='+disease.diseaseId"
+                                target="_blank">{{disease.diseaseId}}</a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-            <%--        the table footer div--%>
+        <%--        the table footer div--%>
         <div>
             <pagination :page-number="pageNumber" :page-size="pageSize" :total-page="totalPage"
                         @change-page-number="changePageNumber" @change-page-size="changePageSize"></pagination>

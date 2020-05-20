@@ -1,32 +1,29 @@
 package org.reactome.server.domain;
 
-//import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "gene")
 public class GeneItem {
     @Id
-//    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //    @JsonIgnore
-    @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems")
-    private Set<DiseaseItem> diseaseItems;
-    //    @JsonIgnore
+    //    @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems")
+//    private Set<DiseaseItem> diseaseItems;
+    private String diseaseId;
     private String geneId;
     private String geneSymbol;
-    //    @JsonIgnore
     private String accessionNumber;
+    private Float score;
 
     public GeneItem() {
     }
 
-    public GeneItem(String geneId, String geneSymbol) {
+    public GeneItem(String geneId, String diseaseId, String geneSymbol, Float score) {
         this.geneId = geneId;
+        this.diseaseId = diseaseId;
         this.geneSymbol = geneSymbol;
+        this.score = score;
     }
 
     public Long getId() {
@@ -37,13 +34,13 @@ public class GeneItem {
         this.id = id;
     }
 
-    public Set<DiseaseItem> getDiseaseItems() {
-        return diseaseItems;
-    }
+//    public Set<DiseaseItem> getDiseaseItems() {
+//        return diseaseItems;
+//    }
 
-    public void setDiseaseItems(Set<DiseaseItem> diseaseItems) {
-        this.diseaseItems = diseaseItems;
-    }
+//    public void setDiseaseItems(Set<DiseaseItem> diseaseItems) {
+//        this.diseaseItems = diseaseItems;
+//    }
 
     public String getGeneId() {
         return geneId;
@@ -51,6 +48,14 @@ public class GeneItem {
 
     public void setGeneId(String geneId) {
         this.geneId = geneId;
+    }
+
+    public String getDiseaseId() {
+        return diseaseId;
+    }
+
+    public void setDiseaseId(String diseaseId) {
+        this.diseaseId = diseaseId;
     }
 
     public String getGeneSymbol() {
@@ -69,13 +74,23 @@ public class GeneItem {
         this.accessionNumber = accessionNumber;
     }
 
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
+    }
+
     @Override
     public String toString() {
         return "GeneItem{" +
-                "id='" + id + '\'' +
+                "id=" + id +
+                ", diseaseId='" + diseaseId + '\'' +
                 ", geneId='" + geneId + '\'' +
                 ", geneSymbol='" + geneSymbol + '\'' +
                 ", accessionNumber='" + accessionNumber + '\'' +
+                ", score=" + score +
                 '}';
     }
 }

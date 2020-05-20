@@ -21,15 +21,12 @@ public class DiseaseItemSerializer extends StdSerializer<DiseaseItem> {
     public void serialize(DiseaseItem diseaseItem, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 //      "diseaseId": "C4017238",
 //      "diseaseName": "Diabetes_Mellitus_Type_2_Protection_Against",
-//      "diseaseClass": "Νot Classified",
 //      "geneItems": [Array]
         jsonGenerator.writeStartObject();
         jsonGenerator.writeFieldName("diseaseId");
         jsonGenerator.writeString(diseaseItem.getDiseaseId());
         jsonGenerator.writeFieldName("diseaseName");
         jsonGenerator.writeString(diseaseItem.getDiseaseName());
-        jsonGenerator.writeFieldName("diseaseClass");
-        jsonGenerator.writeString(diseaseItem.getDiseaseClass());
         jsonGenerator.writeFieldName("geneItems");
         jsonGenerator.writeStartArray();
         for (GeneItem geneItem : diseaseItem.getGeneItems()) {

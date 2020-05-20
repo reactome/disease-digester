@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 
@@ -70,9 +69,10 @@ public class Importer {
         JSAPResult jsapResult = jsap.parse(args);
         try {
             BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("src/main/java/org/reactome/server/tools/curated_gene_disease_associations.tsv.gz")), StandardCharsets.UTF_8));
             List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
             saveDiseaseItems(diseaseItems);
-            saveDiseaseName2UniProtAccNumBinaryDataAsTSV(diseaseItems);
+//            saveDiseaseName2UniProtAccNumBinaryDataAsTSV(DiseaseItemC);
         } catch (Exception e) {
             logger.warn(e.getMessage());
             e.printStackTrace();
@@ -85,11 +85,11 @@ public class Importer {
         long start = System.currentTimeMillis();
         File file = new File(Paths.get("").toAbsolutePath().toString().concat(File.separator).concat(EXPORT_BINARY_FILE_NAME));
         BufferedOutputStream outputStream;
-        List<DiseaseItem> sorted = diseaseItems.stream().sorted().distinct().collect(Collectors.toList());
+//        List<DiseaseItem> sorted = diseaseItems.stream().sorted().distinct().collect(Collectors.toList());
         try {
             outputStream = new BufferedOutputStream(new FileOutputStream(file));
             outputStream.write("#Disease\tUniProt\n".getBytes());
-            for (DiseaseItem diseaseItem : sorted) {
+            for (DiseaseItem diseaseItem : diseaseItems) {
                 for (GeneItem geneItem : diseaseItem.getGeneItems()) {
                     if (geneItem.getAccessionNumber() != null) {
                         outputStream.write(diseaseItem.getDiseaseName().concat("\t").concat(geneItem.getAccessionNumber().concat("\n")).getBytes());

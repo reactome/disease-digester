@@ -67,7 +67,7 @@ Vue.component('pagination', {
     }
 });
 
-let disease_digester = new Vue({
+let overlay = new Vue({
     el: '#disease_digester',
     data: {
         diseases: [],
@@ -79,8 +79,6 @@ let disease_digester = new Vue({
         redirectToReacFoam: true,
         nameKeyword: null,
         nameKeywords: null,
-        classKeyword: null,
-        classKeywords: null,
         first: null,
         last: null,
         pageSize: 50,
@@ -91,6 +89,7 @@ let disease_digester = new Vue({
         totalElements: null,
         sort: 'gene',
         order: 'desc',
+        cutoffValue: null,
     },
     created: function () {
         axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&sort=gene&order=desc')
@@ -99,11 +98,6 @@ let disease_digester = new Vue({
         axios.get('/overlay/disgenet/diseaseNameHintWord')
             .then(res => {
                 this.nameKeywords = res.data.keywords;
-            })
-            .catch(err => console.log(err));
-        axios.get('/overlay/disgenet/diseaseClassHintWord')
-            .then(res => {
-                this.classKeywords = res.data.keywords;
             })
             .catch(err => console.log(err));
         axios.get('/overlay/disgenet/getMaxGeneSize')
@@ -147,8 +141,6 @@ let disease_digester = new Vue({
         refreshPageData() {
             if (this.nameKeyword != null) {
                 this.loadData('/findByDiseaseName?name=' + this.nameKeyword, this.pageNumber, this.pageSize, this.geneSize, this.sort, this.order);
-            } else if (this.classKeyword != null) {
-                this.loadData('/findByDiseaseClass?class=' + this.classKeyword, this.pageNumber, this.pageSize, this.geneSize, this.sort, this.order)
             } else {
                 this.loadData('/findAll', this.pageNumber, this.pageSize, this.geneSize, this.sort, this.order)
             }
@@ -246,11 +238,6 @@ let disease_digester = new Vue({
             // console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
-        sortByDiseaseClass() {
-            this.sort = 'class';
-            // console.log(this.sort);
-            this.reverseOrderAndLoadData();
-        },
         sortByGeneNumber() {
             this.sort = 'gene';
             // console.log(this.sort);
@@ -258,23 +245,21 @@ let disease_digester = new Vue({
         },
         searchDiseaseName(nameKeyword) {
             this.nameKeyword = nameKeyword;
-            this.classKeyword = null;
             // this.geneSize = 1;
             this.loadData('/findByDiseaseName?name=' + this.nameKeyword, 1, this.pageSize, this.geneSize, this.sort, this.order);
         },
-        searchDiseaseClass(classKeyword) {
-            this.classKeyword = classKeyword;
-            this.nameKeyword = null;
-            // this.geneSize = 1;
-            //set the geneSize as one so that there can always have the results in the table when some entry may have less then the default geneSize
-            this.loadData('/findByDiseaseClass?class=' + this.classKeyword, 1, this.pageSize, this.geneSize, this.sort, this.order);
-        },
-        resetKeyWord() {
-            this.nameKeyword = null;
-            this.classKeyword = null;
+        resetParameters() {
             this.geneSize = 10;
+            this.cutoffValue = null;
+            this.nameKeyword = null;
+            this.includeInteractors = false;
+            this.redirectToReacFoam = true;
+            this.refreshPageData();
+        },
+        changeCutoffValue(cutoffValue) {
+            this.cutoffValue = cutoffValue;
             this.refreshPageData();
         },
     },
 });
-export {disease_digester};
+export {overlay};
