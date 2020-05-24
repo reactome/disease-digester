@@ -68,7 +68,7 @@ Vue.component('pagination', {
 });
 
 let overlay = new Vue({
-    el: '#disease_digester',
+    el: '#disease-overlay',
     data: {
         diseases: [],
         geneSize: 10,
@@ -77,30 +77,30 @@ let overlay = new Vue({
         projectToHuman: true,
         includeInteractors: false,
         redirectToReacFoam: true,
-        nameKeyword: null,
-        nameKeywords: null,
-        first: null,
-        last: null,
-        pageSize: 50,
-        offset: null,
+        name: null,
+        names: null,
         pageNumber: 1,
-        showPageNumber: [],
+        pageSize: 50,
         totalPage: null,
-        totalElements: null,
-        sort: 'gene',
-        order: 'desc',
-        cutoffValue: null,
+        showPageNumber: [],
+        sort: 'GENE',
+        order: 'DESC',
+        score: 0.0,
     },
     created: function () {
-        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&sort=gene&order=desc')
+        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&score=0.0&sort=GENE&order=DESC')
             .then(res => this.setData(res.data))
             .catch(err => console.log(err));
         axios.get('/overlay/disgenet/diseaseNameHintWord')
             .then(res => {
-                this.nameKeywords = res.data.keywords;
+                this.names = res.data.names;
             })
             .catch(err => console.log(err));
-        axios.get('/overlay/disgenet/getMaxGeneSize')
+        let maxGeneSizeUrl = '/overlay/disgenet/getMaxGeneSize?score=' + this.score;
+        if (this.name != null) {
+            maxGeneSizeUrl += '&name=' + this.name;
+        }
+        axios.get(maxGeneSizeUrl)
             .then(res => {
                 // this.maxGeneSize = Math.log(res.data);
                 this.maxGeneSize = res.data;
@@ -111,26 +111,23 @@ let overlay = new Vue({
     // watch: {},
     methods: {
         setData: function (data) {
-            this.diseases = data.content;
-            this.first = data.first;
-            this.last = data.last;
-            this.pageSize = data.size;
-            this.offset = data.pageable.offset;
-            this.totalPage = data.totalPages;
-            this.totalElements = data.totalElements;
-            this.pageNumber = data.number + 1;
-            if (this.diseases.length === 0) {
-                window.alert('No entry in the query results has more than: ' + this.geneSize + ' genes( set as parameter in "Minimum number of genes per disease"), now this value will be set to one for showing the results!');
-                this.geneSize = 1;
-                this.refreshPageData();
+            this.diseases = data.diseases;
+            if (this.diseases === null) {
+                window.alert('No entry matched for score bigger than: ' + this.score + ' and ' + this.geneSize + ' of genes per disease, ' +
+                    'you may need to set a lower score level or a smaller number of genes per disease in the Parameter Table to see more entry.');
+                // this.geneSize = 1;
+                // this.refreshPageData();
             }
+            this.pageSize = data.pageSize;
+            this.totalPage = data.totalPage;
+            this.pageNumber = data.pageNumber;
         },
-        loadData: function (func = '/findAll', pageNumber, pageSize, geneSize, sort = 'gene', order = 'desc') {
+        loadData: function (func = '/findAll', pageNumber, pageSize, geneSize, score, sort = this.sort, order = this.order) {
             let url = null;
             if (func.match('/findAll')) {
-                url = '/overlay/disgenet' + func + '?pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&sort=' + sort + '&order=' + order;
+                url = '/overlay/disgenet' + func + '?pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&score=' + score + '&sort=' + sort + '&order=' + order;
             } else {
-                url = '/overlay/disgenet' + func + '&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&sort=' + sort + '&order=' + order;
+                url = '/overlay/disgenet' + func + '&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&score=' + score + '&sort=' + sort + '&order=' + order;
             }
             console.log(url);
             axios.get(url).then(res => this.setData(res.data))
@@ -139,10 +136,12 @@ let overlay = new Vue({
                 });
         },
         refreshPageData() {
-            if (this.nameKeyword != null) {
-                this.loadData('/findByDiseaseName?name=' + this.nameKeyword, this.pageNumber, this.pageSize, this.geneSize, this.sort, this.order);
+            this.pageNumber = this.pageNumber == null ? 1 : this.pageNumber;
+            this.pageSize = this.pageSize == null ? 50 : this.pageSize;
+            if (this.name != null) {
+                this.loadData('/findByDiseaseName?name=' + this.name, this.pageNumber, this.pageSize, this.geneSize, this.score, this.sort, this.order);
             } else {
-                this.loadData('/findAll', this.pageNumber, this.pageSize, this.geneSize, this.sort, this.order)
+                this.loadData('/findAll', this.pageNumber, this.pageSize, this.geneSize, this.score, this.sort, this.order)
             }
         },
         getGeneList(geneItems) {
@@ -188,12 +187,11 @@ let overlay = new Vue({
         },
         changeMinGeneSize(geneSize) {
             // this.updatePropertyFunc(geneSize,this.geneSize,this.maxGeneSize,this.refreshPageData);
+            this.geneSize = parseInt(geneSize);
             if (geneSize > this.maxGeneSize) {
                 this.geneSize = this.maxGeneSize;
             } else if (geneSize < 1) {
                 this.geneSize = 1;
-            } else {
-                this.geneSize = parseInt(geneSize);
             }
             this.refreshPageData();
         },
@@ -226,38 +224,40 @@ let overlay = new Vue({
             // console.log(this.redirectToReacFoam);
         },
         reverseOrderAndLoadData() {
-            if (this.order === 'asc') {
-                this.order = 'desc';
+            if (this.order === 'ASC') {
+                this.order = 'DESC';
             } else {
-                this.order = 'asc';
+                this.order = 'ASC';
             }
             this.refreshPageData();
         },
         sortByDiseaseName() {
-            this.sort = 'disease';
+            this.sort = 'NAME';
             // console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
         sortByGeneNumber() {
-            this.sort = 'gene';
+            this.sort = 'GENE';
             // console.log(this.sort);
             this.reverseOrderAndLoadData();
         },
-        searchDiseaseName(nameKeyword) {
-            this.nameKeyword = nameKeyword;
+        searchDiseaseName(name) {
+            this.name = name;
             // this.geneSize = 1;
-            this.loadData('/findByDiseaseName?name=' + this.nameKeyword, 1, this.pageSize, this.geneSize, this.sort, this.order);
+            this.loadData('/findByDiseaseName?name=' + this.name, 1, this.pageSize, this.geneSize, this.score, this.sort, this.order);
         },
         resetParameters() {
             this.geneSize = 10;
-            this.cutoffValue = null;
-            this.nameKeyword = null;
+            this.score = 0.0;
+            this.name = null;
             this.includeInteractors = false;
             this.redirectToReacFoam = true;
+            this.pageNumber = 1;
+            this.pageSize = 50;
             this.refreshPageData();
         },
-        changeCutoffValue(cutoffValue) {
-            this.cutoffValue = cutoffValue;
+        changeScore(score) {
+            this.score = score;
             this.refreshPageData();
         },
     },

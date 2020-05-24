@@ -33,6 +33,12 @@ public class DiseaseItemSerializer extends StdSerializer<DiseaseItem> {
             jsonGenerator.writeString(geneItem.getGeneSymbol());
         }
         jsonGenerator.writeEndArray();
+//        jsonGenerator.writeFieldName("scores");
+//        jsonGenerator.writeStartArray();
+//        for (GeneItem geneItem : diseaseItem.getGeneItems()) {
+//            jsonGenerator.writeNumber(geneItem.getScore());
+//        }
+//        jsonGenerator.writeEndArray();
         jsonGenerator.writeEndObject();
     }
 }

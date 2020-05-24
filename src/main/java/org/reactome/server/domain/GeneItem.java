@@ -3,26 +3,24 @@ package org.reactome.server.domain;
 import javax.persistence.*;
 
 @Entity
+@Cacheable
 @Table(name = "gene")
 public class GeneItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //    @ManyToMany(targetEntity = DiseaseItem.class, mappedBy = "geneItems")
-//    private Set<DiseaseItem> diseaseItems;
-    private String diseaseId;
     private String geneId;
     private String geneSymbol;
     private String accessionNumber;
-    private Float score;
+    private float score;
 
     public GeneItem() {
     }
 
-    public GeneItem(String geneId, String diseaseId, String geneSymbol, Float score) {
+    public GeneItem(String geneId, String geneSymbol, String accessionNumber, float score) {
         this.geneId = geneId;
-        this.diseaseId = diseaseId;
         this.geneSymbol = geneSymbol;
+        this.accessionNumber = accessionNumber;
         this.score = score;
     }
 
@@ -34,28 +32,12 @@ public class GeneItem {
         this.id = id;
     }
 
-//    public Set<DiseaseItem> getDiseaseItems() {
-//        return diseaseItems;
-//    }
-
-//    public void setDiseaseItems(Set<DiseaseItem> diseaseItems) {
-//        this.diseaseItems = diseaseItems;
-//    }
-
     public String getGeneId() {
         return geneId;
     }
 
     public void setGeneId(String geneId) {
         this.geneId = geneId;
-    }
-
-    public String getDiseaseId() {
-        return diseaseId;
-    }
-
-    public void setDiseaseId(String diseaseId) {
-        this.diseaseId = diseaseId;
     }
 
     public String getGeneSymbol() {
@@ -74,11 +56,11 @@ public class GeneItem {
         this.accessionNumber = accessionNumber;
     }
 
-    public Float getScore() {
+    public float getScore() {
         return score;
     }
 
-    public void setScore(Float score) {
+    public void setScore(float score) {
         this.score = score;
     }
 
@@ -86,7 +68,6 @@ public class GeneItem {
     public String toString() {
         return "GeneItem{" +
                 "id=" + id +
-                ", diseaseId='" + diseaseId + '\'' +
                 ", geneId='" + geneId + '\'' +
                 ", geneSymbol='" + geneSymbol + '\'' +
                 ", accessionNumber='" + accessionNumber + '\'' +

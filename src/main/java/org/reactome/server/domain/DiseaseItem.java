@@ -5,18 +5,19 @@ import org.reactome.server.util.DiseaseItemSerializer;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
+@Cacheable
 @Table(name = "disease")
 @JsonSerialize(using = DiseaseItemSerializer.class)
 public class DiseaseItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String diseaseId;
     private String diseaseName;
-    @OneToMany(targetEntity = GeneItem.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "diseaseId")
     private List<GeneItem> geneItems;
 
     public DiseaseItem() {
@@ -27,12 +28,25 @@ public class DiseaseItem {
         this.diseaseName = diseaseName;
     }
 
-    public Long getId() {
-        return id;
+    public DiseaseItem(String diseaseId, String diseaseName, List<GeneItem> geneItems) {
+        this.diseaseId = diseaseId;
+        this.diseaseName = diseaseName;
+        this.geneItems = geneItems;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    /*Rewrite the equals & hashcode method so that the collectors.groupBy can work correctly */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DiseaseItem that = (DiseaseItem) o;
+        return Objects.equals(diseaseId, that.diseaseId) &&
+                Objects.equals(diseaseName, that.diseaseName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(diseaseId, diseaseName);
     }
 
     public String getDiseaseId() {
@@ -59,10 +73,10 @@ public class DiseaseItem {
         this.geneItems = geneItems;
     }
 
+
     @Override
     public String toString() {
         return "DiseaseItem{" +
-                "id=" + id +
                 ", diseaseId='" + diseaseId + '\'' +
                 ", diseaseName='" + diseaseName + '\'' +
                 ", geneItems=" + geneItems +

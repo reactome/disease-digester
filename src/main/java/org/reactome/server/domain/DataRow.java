@@ -1,15 +1,13 @@
 package org.reactome.server.domain;
 
-import java.util.Objects;
-
 public class DataRow {
     private String geneId;
     private String geneSymbol;
     private String diseaseId;
     private String diseaseName;
-    private Float score;
+    private float score;
 
-    public DataRow(String geneId, String geneSymbol, String diseaseId, String diseaseName, Float score) {
+    public DataRow(String geneId, String geneSymbol, String diseaseId, String diseaseName, float score) {
         this.geneId = geneId;
         this.geneSymbol = geneSymbol;
         this.diseaseId = diseaseId;
@@ -50,25 +48,12 @@ public class DataRow {
         this.diseaseName = diseaseName;
     }
 
-    public Float getScore() {
+    public float getScore() {
         return score;
     }
 
-    public void setScore(Float score) {
+    public void setScore(float score) {
         this.score = score;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DataRow dataRow = (DataRow) o;
-        return Objects.equals(diseaseId, dataRow.diseaseId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(diseaseId);
     }
 
     @Override

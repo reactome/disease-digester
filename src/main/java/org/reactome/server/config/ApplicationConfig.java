@@ -19,12 +19,11 @@ import java.security.cert.X509Certificate;
 
 
 @Configuration
-@Import(JpaConfig.class)
-@PropertySource(value = {"classpath:application.properties"})
+@Import(MybatisConfig.class)
+@PropertySource("classpath:application.properties")
 @ComponentScan(basePackageClasses = Application.class)
 public class ApplicationConfig {
 
-    //todo add default error page
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
@@ -41,13 +40,9 @@ public class ApplicationConfig {
     @Bean
     public RestTemplate restTemplate() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-        SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
-                .loadTrustMaterial(null, acceptingTrustStrategy)
-                .build();
+        SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
         SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setSSLSocketFactory(csf)
-                .build();
+        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
         final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setHttpClient(httpClient);
         return new RestTemplate(factory);

@@ -9,19 +9,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 class DiseaseParser {
     /*
-    This disease parser is hard-coded correspond to the tsv file header name
+    This disease parser is hard-coded correspond to the tsv file
      */
 
     private List<DiseaseItem> diseaseItems;
     private static final String DELIMITER = "\t";
-    private final InputStream GENEID_4_UNIPROT = this.getClass().getClassLoader().getResourceAsStream("geneid_4_uniprot.tsv");
+    private final InputStream GENEID_4_UNIPROT = this.getClass().getClassLoader().getResourceAsStream("geneid_to_uniprot.tsv");
 //    private final InputStream DISEASE_CLASS = this.getClass().getClassLoader().getResourceAsStream("disease-class.properties");
 
     DiseaseParser(BufferedReader file) throws Exception {
@@ -37,37 +36,49 @@ class DiseaseParser {
     }
 
     private List<DiseaseItem> loadDiseaseItems(BufferedReader file) {
+        /*Read raw text data from file*/
         List<String> table = new ArrayList<>();
         try {
-            file.readLine();// Jump the header line.
+            /*Jump the header line.*/
+            file.readLine();
             String line;
             while ((line = file.readLine()) != null) table.add(line);
             file.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return transferTable2DiseaseItemList(table);
-    }
 
-    private List<DiseaseItem> transferTable2DiseaseItemList(List<String> table) {
-        /* transfer Map<table> to DiseaseItem objects */
+        /*Wrapping text data as DataRow object*/
         List<DataRow> dataRowList = table.stream().map((String s) -> {
             String[] ss = s.split(DELIMITER);
             return new DataRow(ss[0].trim(), ss[1].trim(), ss[4].trim(), trimDiseaseName(ss[5].trim()), Float.parseFloat(ss[9].trim()));
-        }).collect(toList());
+        }).collect(Collectors.toList());
+        return convertDataRowList2DiseaseItemList(dataRowList);
+    }
+
+    private List<DiseaseItem> convertDataRowList2DiseaseItemList(List<DataRow> dataRowList) {
+        /*Grouping DataRow by diseaseId*/
         Map<DiseaseItem, List<DataRow>> diseaseItemMap = dataRowList.stream().collect(Collectors.groupingBy((dataRow -> new DiseaseItem(dataRow.getDiseaseId(), dataRow.getDiseaseName()))));
-        return diseaseItemMap.entrySet().stream().map(entry -> {
+        assert diseaseItemMap.size() < dataRowList.size();
+
+        Map<String, String> geneId2AccNumMap = loadGeneId2AccNumMap();
+
+        /*Convert DataRow into DiseaseItem*/
+        List<DiseaseItem> diseaseItemList = diseaseItemMap.entrySet().stream().map(entry -> {
             DiseaseItem diseaseItem = entry.getKey();
-            List<GeneItem> geneItems = entry.getValue().stream().map(dataRow -> new GeneItem(dataRow.getGeneId(), dataRow.getDiseaseId(), dataRow.getGeneSymbol(), dataRow.getScore())).collect(toList());
+            List<GeneItem> geneItems = entry.getValue().stream().map(dataRow -> new GeneItem(dataRow.getGeneId(), dataRow.getGeneSymbol(), geneId2AccNumMap.get(dataRow.getGeneId()), dataRow.getScore())).collect(Collectors.toList());
             diseaseItem.setGeneItems(geneItems);
             return diseaseItem;
-        }).collect(toList());
+        }).collect(Collectors.toList());
+        assert 2037 == diseaseItemList.stream().max(Comparator.comparing(diseaseItem -> diseaseItem.getGeneItems().size())).get().getGeneItems().size();
+        assert "C3714756".equals(diseaseItemList.stream().max(Comparator.comparing(diseaseItem -> diseaseItem.getGeneItems().size())).get().getDiseaseId());
+        return diseaseItemList;
     }
 
     /**
      * trim disease name: replace all non-word character with underscore, trim and capitalize
      *
-     * @param diseaseName
+     * @param diseaseName given the disease name.
      * @return trimmed disease name
      */
     private String trimDiseaseName(String diseaseName) {
@@ -80,7 +91,7 @@ class DiseaseParser {
     }
 
     private Map<String, String> loadGeneId2AccNumMap() {
-        /* load gene id to UniProtKB mapping pairs */
+        /* Load GeneId to UniProtKB mapping pairs */
         Map<String, String> geneIdMap = new HashMap<>();
         BufferedReader TSVFile = new BufferedReader(new InputStreamReader(Objects.requireNonNull(GENEID_4_UNIPROT)));
         String DELIMITER = "\t";
@@ -99,15 +110,4 @@ class DiseaseParser {
         }
         return geneIdMap;
     }
-
-//    private Map<String, String> loadDiseaseClass2TopDiseaseClassMap() {
-//        /* load disease class abbreviation name to explicit name mapping paris */
-//        Properties properties = new Properties();
-//        try {
-//            properties.load(new InputStreamReader(Objects.requireNonNull(DISEASE_CLASS)));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return properties.entrySet().stream().collect(toMap(e -> e.getKey().toString().trim(), e -> e.getValue().toString().trim()));
-//    }
 }

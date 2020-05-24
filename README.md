@@ -75,22 +75,18 @@ and response body should something be like:
       "sorted": false,
       "unsorted": true
     },
-    "offset": 20,
     "pageNumber": 1,
     "pageSize": 20,
     "paged": true,
     "unpaged": false
   },
-  "last": false,
   "totalPages": 19,
-  "totalElements": 364,
   "number": 1,
   "size": 20,
   "sort": {
     "sorted": false,
     "unsorted": true
   },
-  "first": false,
   "numberOfElements": 20
 }
 ```

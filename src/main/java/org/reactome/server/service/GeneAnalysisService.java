@@ -14,8 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class GeneAnalysisService {
-    private final RestTemplate restTemplate;
-    private final DiseaseItemService diseaseItemService;
+    private RestTemplate restTemplate;
+    private DiseaseItemService diseaseItemService;
     private static final String DEFAULT_ANALYSIS_PARAMETER = "projection";
     private static final Logger logger = LoggerFactory.getLogger(GeneAnalysisService.class);
 
@@ -36,7 +36,7 @@ public class GeneAnalysisService {
         this.diseaseItemService = diseaseItemService;
     }
 
-    // todo: use reactome analysis-service component instead of request data via API from network
+    // todo: use reactome analysis-service as internal component instead of request data via API from network
     public String checkGeneListAnalysisResult(AnalysisRequestData requestData) throws EmptyGeneAnalysisResultException {
         String payLoad = String.join(" ", requestData.getGenes());
         String analysisService = requestData.isProjectToHuman() ?
@@ -49,23 +49,78 @@ public class GeneAnalysisService {
                 : StringUtils.replaceFirst(PATHWAY_BROWSER_FIREWORKS, PLACEHOLDER, token);
     }
 
-    public String analysisByDiseaseName(String disease) throws EmptyGeneAnalysisResultException {
-        String payLoad = String.join(" ", diseaseItemService.getGeneItemsByDiseaseId(disease));
+    // TODO: 2020/5/24 add more parameter in this method
+    public String analysisByDiseaseId(String diseaseId) throws EmptyGeneAnalysisResultException {
+        String payLoad = String.join(" ", diseaseItemService.getGeneListByDiseaseId(diseaseId));
         String url = StringUtils.replaceFirst(ANALYSIS_SERVICE, PLACEHOLDER, DEFAULT_ANALYSIS_PARAMETER);
         url = StringUtils.replaceFirst(url, PLACEHOLDER, "true");
-        logger.info(url);
-        logger.info(payLoad);
         String token = doAnalysis(url, payLoad);
         return StringUtils.replace(PATHWAY_BROWSER_REACFOAM, PLACEHOLDER, token);
     }
 
+    //Name	Description
+//file *
+//file
+//(formData)
+//A file with the data to be analysed
+//
+//interactors
+//boolean
+//(query)
+//Include interactors
+//
+//pageSize
+//integer
+//(query)
+//pathways per page
+//
+//page
+//integer
+//(query)
+//page number
+//
+//sortBy
+//string
+//(query)
+//how to sort the result
+//
+//order
+//string
+//(query)
+//specifies the order
+//
+//resource
+//string
+//(query)
+//the resource to sort
+//
+//pValue
+//number
+//(query)
+//defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned
+//
+//includeDisease
+//boolean
+//(query)
+//set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)
+//
+//min
+//integer
+//(query)
+//minimum number of contained entities per pathway (takes into account the resource)
+//
+//max
+//integer
+//(query)
+//maximum number of contained entities per pathway (takes into account the resource)
+//    todo: take those above parameter into account :https://reactome.org/AnalysisService/#/identifiers/getPostFileToHumanUsingPOST
     private String doAnalysis(String url, String playLoad) throws EmptyGeneAnalysisResultException {
         AnalysisResult result = restTemplate.postForObject(url, playLoad, AnalysisResult.class);
-        String token = null;
+        String token;
         if (null != result) {
             token = result.getSummary().getToken();
         } else {
-            throw new EmptyGeneAnalysisResultException(playLoad);
+            throw new EmptyGeneAnalysisResultException(String.format("Failed to analysis data from URL: %s with payload: %s.", url, playLoad));
         }
         return token;
     }

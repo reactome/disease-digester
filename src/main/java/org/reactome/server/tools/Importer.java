@@ -103,13 +103,13 @@ public class Importer {
         logger.info("Load: " + diseaseItems.size() + " entry in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into " + file.getName());
     }
 
-    private static void saveDiseaseItems(List<DiseaseItem> diseaseItems) {
+    private static void saveDiseaseItems(List<DiseaseItem> diseaseItemList) {
         long start = System.currentTimeMillis();
         Transaction transaction = session.beginTransaction();
-        diseaseItems.forEach(session::save);
+        diseaseItemList.forEach(session::save);
         transaction.commit();
         session.close();
-        logger.info("Load: " + diseaseItems.size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
+        logger.info("Load: " + diseaseItemList.size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
     }
 
     private static BufferedReader downloadFile(URL url) throws IOException {

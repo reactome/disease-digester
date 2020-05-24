@@ -19,6 +19,6 @@ public class DiseaseParserTest extends TestBase {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("src/test/resources/curated_gene_disease_associations.tsv.gz")), StandardCharsets.UTF_8));
         List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
 //        diseaseItems.forEach(System.out::println);
-        Assert.assertEquals(4678, diseaseItems.size());
+        Assert.assertEquals(10370, diseaseItems.size());
     }
 }

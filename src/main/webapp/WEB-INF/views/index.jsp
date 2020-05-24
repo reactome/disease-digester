@@ -19,7 +19,7 @@
         <a href="mailto:help@reactome.org">contact us</a>.
     </div>
 
-    <div id="disease_digester">
+    <div id="disease-overlay">
         <%--    the table div--%>
         <div id="r-notresponsive-table" class="details-wrap enlarge-table">
             <table class="reactome table-parameter">
@@ -50,16 +50,16 @@
                     <td data-label="Parameter">Score</td>
                     <td data-label="Option">
                         <div>
-                            <input type="radio" name="score" value=null :checked="cutoffValue==null"
-                                   @change="changeCutoffValue($event.target.value)">Low (no filter)
+                            <input type="radio" name="score" value=0.0 :checked="score==0"
+                                   @change="changeScore($event.target.value)">Low (no filter)
                         </div>
                         <div>
-                            <input type="radio" name="score" value=0.33 :checked="cutoffValue==0.33"
-                                   @change="changeCutoffValue($event.target.value)">Medium (> 0.33)
+                            <input type="radio" name="score" value=0.33 :checked="score==0.33"
+                                   @change="changeScore($event.target.value)">Medium (> 0.33)
                         </div>
                         <div>
-                            <input type="radio" name="score" value=0.66 :checked="cutoffValue==0.66"
-                                   @change="changeCutoffValue($event.target.value)">High (> 0.66)
+                            <input type="radio" name="score" value=0.66 :checked="score==0.66"
+                                   @change="changeScore($event.target.value)">High (> 0.66)
                         </div>
                     </td>
                     <td data-label="Description">Score of the gene-disease association as provided by DisGeNET.
@@ -110,11 +110,11 @@
                                 <span class="fa fa-angle-up"></span>
                                 <span class="fa fa-angle-down"></span>
                             </button>
-                            <input type="text" placeholder="Disease name filter" v-model="nameKeyword"
-                                   list="nameKeywords"
+                            <input type="text" placeholder="Disease name filter" v-model="name"
+                                   list="names"
                                    @change="searchDiseaseName($event.target.value)">
-                            <datalist id="nameKeywords">
-                                <option v-for="nameKeyword in nameKeywords">{{nameKeyword}}</option>
+                            <datalist id="names">
+                                <option v-for="name in names">{{name}}</option>
                             </datalist>
                         </th>
                         <th scope="col">Number of genes
