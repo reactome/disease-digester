@@ -131,15 +131,14 @@
                         <td data-label="Check">
                             <button class="btn btn-primary" @click="analyze(disease.geneItems)">Analysis</button>
                         </td>
-                        <td data-label="Disease Name">{{disease.diseaseName}}</td>
+                        <td data-label="Disease Name"><a
+                                :href="'https://www.disgenet.org/search?disease='+disease.diseaseId"
+                                target="_blank">{{disease.diseaseName}}</a></td>
                         <td data-label="Number of genes">{{disease.geneItems.length}}</td>
                         <td data-label="Gene list">
                             <div class="td-text-overflow">{{getGeneList(disease.geneItems)}}</div>
                         </td>
-                        <td data-label="Disease id"><a
-                                :href="'https://www.disgenet.org/search?disease='+disease.diseaseId"
-                                target="_blank">{{disease.diseaseId}}</a>
-                        </td>
+                        <td data-label="Disease id">{{disease.diseaseId}}</td>
                     </tr>
                     </tbody>
                 </table>
