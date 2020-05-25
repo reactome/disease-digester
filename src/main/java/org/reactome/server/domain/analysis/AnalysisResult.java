@@ -1,4 +1,4 @@
-package org.reactome.server.domain;
+package org.reactome.server.domain.analysis;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

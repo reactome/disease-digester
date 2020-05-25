@@ -1,7 +1,7 @@
 package org.reactome.server.service;
 
 public enum OrderBy {
-    ASC("asc"), DESC("desc");
+    ASC("ASC"), DESC("DESC");
 
     private String order;
 

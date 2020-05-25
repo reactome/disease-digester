@@ -73,7 +73,6 @@ public class DiseaseItem {
         this.geneItems = geneItems;
     }
 
-
     @Override
     public String toString() {
         return "DiseaseItem{" +

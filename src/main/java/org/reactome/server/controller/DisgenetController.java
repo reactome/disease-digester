@@ -1,9 +1,7 @@
 package org.reactome.server.controller;
 
-import org.reactome.server.domain.AnalysisRequestData;
 import org.reactome.server.domain.DiseaseItemResult;
 import org.reactome.server.domain.DiseaseNameHintWord;
-import org.reactome.server.exception.EmptyGeneAnalysisResultException;
 import org.reactome.server.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +18,11 @@ public class DisgenetController {
 
     private static final Logger logger = LoggerFactory.getLogger(DisgenetController.class);
     private DiseaseItemService diseaseItemService;
-    private GeneAnalysisService geneAnalysisService;
     private HintWordService hintWordService;
 
     @Autowired
-    public DisgenetController(DiseaseItemService diseaseItemService, GeneAnalysisService geneAnalysisService, HintWordService hintWordService) {
+    public DisgenetController(DiseaseItemService diseaseItemService, HintWordService hintWordService) {
         this.diseaseItemService = diseaseItemService;
-        this.geneAnalysisService = geneAnalysisService;
         this.hintWordService = hintWordService;
     }
 
@@ -35,13 +31,6 @@ public class DisgenetController {
         return "index";
     }
 
-    @RequestMapping(value = "/{diseaseId}", method = RequestMethod.GET)
-    @ResponseStatus(value = HttpStatus.OK)
-    public @ResponseBody
-    String diseaseAnalysis(@PathVariable("diseaseId") String diseaseId) throws EmptyGeneAnalysisResultException {
-//        return new ModelAndView(new RedirectView(geneAnalysisService.analysisByDiseaseId(diseaseId)));
-        return geneAnalysisService.analysisByDiseaseId(diseaseId);
-    }
 
     @GetMapping(value = "/findAll")
     @ResponseStatus(value = HttpStatus.OK)
@@ -69,12 +58,6 @@ public class DisgenetController {
         return diseaseItemService.findByDiseaseName(pageNumber, pageSize, diseaseName, score, geneSize, sortBy, orderBy);
     }
 
-    @PostMapping(value = "/analyze")
-    @ResponseStatus(value = HttpStatus.OK)
-    public @ResponseBody
-    String analyse(@RequestBody AnalysisRequestData requestData) throws EmptyGeneAnalysisResultException {
-        return geneAnalysisService.checkGeneListAnalysisResult(requestData);
-    }
 
     /*TODO: store this value into user browser's cookie'*/
     @GetMapping(value = "/diseaseNameHintWord")

@@ -11,16 +11,14 @@ import java.util.stream.Stream;
 public class DiseaseItemResult {
     private List<DiseaseItem> diseases;
     private Integer pageNumber;
-    private Integer pageSize;
     private Integer totalPage;
 
     public DiseaseItemResult() {
     }
 
-    public DiseaseItemResult(List<DiseaseItem> diseases, Integer pageNumber, Integer pageSize, Integer totalPage, SortBy sortBy, OrderBy orderBy) {
+    public DiseaseItemResult(List<DiseaseItem> diseases, Integer pageNumber, Integer totalPage, SortBy sortBy, OrderBy orderBy) {
         this.setDiseases(diseases, sortBy, orderBy);
         this.pageNumber = pageNumber;
-        this.pageSize = pageSize;
         this.totalPage = totalPage;
     }
 
@@ -28,16 +26,20 @@ public class DiseaseItemResult {
         return diseases;
     }
 
-    public void setDiseases(List<DiseaseItem> content, SortBy sortBy, OrderBy orderBy) {
+    public void setDiseases(List<DiseaseItem> content, SortBy sort, OrderBy order) {
+        /*need to sort disease items since the service method used two query to find all the entry:
+        one to find the disease id first(get results by using a GROUP BY function), and another to find the associated gene items for that id.
+        but the second query can not sort the results by geneSize( which need a group by aggregation function, and therefore go back to the circle for loop callback of GROUP BY)>*/
+        // TODO: 2020/5/25 this is a dirty way to sort DiseaseItem is quite, should move the item sort part into sql query
         Stream<DiseaseItem> diseaseItemStream = content.stream();
-        if (sortBy == SortBy.GENE) {
-            if (orderBy == OrderBy.ASC) {
+        if (sort == SortBy.GENE) {
+            if (order == OrderBy.ASC) {
                 this.diseases = diseaseItemStream.sorted(DiseaseItemComparator.GeneSizASCComparator).collect(Collectors.toList());
             } else {
                 this.diseases = diseaseItemStream.sorted(DiseaseItemComparator.GeneSizDESCComparator).collect(Collectors.toList());
             }
         } else {
-            if (orderBy == OrderBy.ASC) {
+            if (order == OrderBy.ASC) {
                 this.diseases = diseaseItemStream.sorted(DiseaseItemComparator.DiseaseNameASCComparator).collect(Collectors.toList());
             } else {
                 this.diseases = diseaseItemStream.sorted(DiseaseItemComparator.DiseaseNameDESCComparator).collect(Collectors.toList());
@@ -53,14 +55,6 @@ public class DiseaseItemResult {
         this.pageNumber = pageNumber;
     }
 
-    public Integer getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
-
     public Integer getTotalPage() {
         return totalPage;
     }
@@ -74,7 +68,6 @@ public class DiseaseItemResult {
         return "DiseaseItemResult{" +
                 "content=" + diseases +
                 ", pageNumber=" + pageNumber +
-                ", pageSize=" + pageSize +
                 ", totalPage=" + totalPage +
                 '}';
     }

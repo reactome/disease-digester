@@ -23,10 +23,8 @@ public class DiseaseItemSerializer extends StdSerializer<DiseaseItem> {
 //      "diseaseName": "Diabetes_Mellitus_Type_2_Protection_Against",
 //      "geneItems": [Array]
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeFieldName("diseaseId");
-        jsonGenerator.writeString(diseaseItem.getDiseaseId());
-        jsonGenerator.writeFieldName("diseaseName");
-        jsonGenerator.writeString(diseaseItem.getDiseaseName());
+        jsonGenerator.writeStringField("diseaseId", diseaseItem.getDiseaseId());
+        jsonGenerator.writeStringField("diseaseName", diseaseItem.getDiseaseName());
         jsonGenerator.writeFieldName("geneItems");
         jsonGenerator.writeStartArray();
         for (GeneItem geneItem : diseaseItem.getGeneItems()) {

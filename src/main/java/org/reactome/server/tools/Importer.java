@@ -33,7 +33,7 @@ public class Importer {
     private static final String RAW_ZIPPED_FILE_NAME = "curated_gene_disease_associations.tsv.gz";
     private static final String EXPORT_BINARY_FILE_NAME = "DiseaseName_UniProtAccNum.tsv";
     private static final String DOWNLOAD_LINK = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz";
-    private static final String DB_NAME = "digester";
+    private static final String DB_NAME = "disease";
     private static final String DB_USER = "root";
     private static final String DB_PASS = "root";
     private static final String DB_CREATE = "create";
@@ -42,6 +42,7 @@ public class Importer {
     private static Session session;
 
     static {
+        // TODO: 2020/5/25 read properties from the setting file or Profiles
         settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
         settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
 //        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto&useSSL=false");
@@ -68,8 +69,8 @@ public class Importer {
         );
         JSAPResult jsapResult = jsap.parse(args);
         try {
-            BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
-//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("src/main/java/org/reactome/server/tools/curated_gene_disease_associations.tsv.gz")), StandardCharsets.UTF_8));
+//            BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("src/main/java/org/reactome/server/tools/curated_gene_disease_associations.tsv.gz")), StandardCharsets.UTF_8));
             List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
             saveDiseaseItems(diseaseItems);
 //            saveDiseaseName2UniProtAccNumBinaryDataAsTSV(DiseaseItemC);

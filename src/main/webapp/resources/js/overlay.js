@@ -73,8 +73,6 @@ let overlay = new Vue({
         diseases: [],
         geneSize: 10,
         maxGeneSize: null,
-        analysisParameter: 'projection',
-        projectToHuman: true,
         includeInteractors: false,
         redirectToReacFoam: true,
         name: null,
@@ -96,16 +94,7 @@ let overlay = new Vue({
                 this.names = res.data.names;
             })
             .catch(err => console.log(err));
-        let maxGeneSizeUrl = '/overlay/disgenet/getMaxGeneSize?score=' + this.score;
-        if (this.name != null) {
-            maxGeneSizeUrl += '&name=' + this.name;
-        }
-        axios.get(maxGeneSizeUrl)
-            .then(res => {
-                // this.maxGeneSize = Math.log(res.data);
-                this.maxGeneSize = res.data;
-            })
-            .catch(err => console.log(err));
+        this.getMaxGeneSize();
     },
     // computed: {},
     // watch: {},
@@ -113,12 +102,14 @@ let overlay = new Vue({
         setData: function (data) {
             this.diseases = data.diseases;
             if (this.diseases === null) {
-                window.alert('No entry matched for score bigger than: ' + this.score + ' and ' + this.geneSize + ' of genes per disease, ' +
-                    'you may need to set a lower score level or a smaller number of genes per disease in the Parameter Table to see more entry.');
-                // this.geneSize = 1;
-                // this.refreshPageData();
+                if (this.name === null) {
+                    window.alert('No entry matched for score bigger than: ' + this.score + ' and ' + this.geneSize + ' of genes per disease, ' +
+                        'you may need to set a lower score level or a smaller number of genes per disease in the Parameter Table to see more entry.');
+                } else {
+                    window.alert('No entry matched for search disease name contain: ' + this.name + ' with score bigger than: ' + this.score + ' and ' + this.geneSize + ' of genes per disease, ' +
+                        'you may need to set a lower score level or a smaller number of genes per disease in the Parameter Table to see more entry.');
+                }
             }
-            this.pageSize = data.pageSize;
             this.totalPage = data.totalPage;
             this.pageNumber = data.pageNumber;
         },
@@ -137,12 +128,24 @@ let overlay = new Vue({
         },
         refreshPageData() {
             this.pageNumber = this.pageNumber == null ? 1 : this.pageNumber;
-            this.pageSize = this.pageSize == null ? 50 : this.pageSize;
             if (this.name != null) {
                 this.loadData('/findByDiseaseName?name=' + this.name, this.pageNumber, this.pageSize, this.geneSize, this.score, this.sort, this.order);
             } else {
                 this.loadData('/findAll', this.pageNumber, this.pageSize, this.geneSize, this.score, this.sort, this.order)
             }
+            this.getMaxGeneSize();
+        },
+        getMaxGeneSize() {
+            let maxGeneSizeUrl = '/overlay/disgenet/getMaxGeneSize?score=' + this.score;
+            if (this.name != null) {
+                maxGeneSizeUrl += '&name=' + this.name;
+            }
+            axios.get(maxGeneSizeUrl)
+                .then(res => {
+                    // this.maxGeneSize = Math.log(res.data);
+                    this.maxGeneSize = res.data;
+                })
+                .catch(err => console.log(err));
         },
         getGeneList(geneItems) {
             //do not directly return the `geneItems.sort().join(', ')`,or the Vue will arose: You may have an infinite update loop in a component render function.
@@ -154,7 +157,6 @@ let overlay = new Vue({
         },
         async analyze(geneItems) {
             let data = {
-                "projectToHuman": this.projectToHuman,
                 "includeInteractors": this.includeInteractors,
                 "redirectToReacFoam": this.redirectToReacFoam,
                 "genes": geneItems
@@ -165,7 +167,7 @@ let overlay = new Vue({
             // then await to set the true location from the response url,
             let analyzeWindow = window.open(url);
             analyzeWindow.focus();
-            await axios.post('/overlay/disgenet/analyze', data)
+            await axios.post('/overlay/analyze', data)
                 .then(res => {
                     url = res.data;
                 }).catch(err => {

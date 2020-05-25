@@ -15,10 +15,6 @@ import java.util.List;
  */
 @Service("diseaseItemService")
 public class DiseaseItemServiceImpl implements DiseaseItemService {
-    private static final Float DEFAULT_SCORE = 0.0f;
-    private static final Integer DEFAULT_GENE_SIZE = 10;
-    private static final SortBy DEFAULT_SORT_BY = SortBy.GENE;
-    private static final OrderBy DEFAULT_ORDER_BY = OrderBy.ASC;
     private final DiseaseItemMapper diseaseItemMapper;
 
     @Autowired
@@ -30,7 +26,6 @@ public class DiseaseItemServiceImpl implements DiseaseItemService {
     @Override
     @Transactional(readOnly = true)
     public DiseaseItemResult findAll(Integer pageNumber, Integer pageSize, Float score, Integer geneSize, SortBy sort, OrderBy order) {
-        DiseaseItemResult diseaseItemResult;
         List<String> diseaseIds;
         List<DiseaseItem> diseaseItems;
         Integer count = PageHelper.getCount(diseaseItemMapper, score, geneSize);
@@ -55,8 +50,7 @@ public class DiseaseItemServiceImpl implements DiseaseItemService {
             return new DiseaseItemResult();
         }
         diseaseItems = diseaseItemMapper.findAllByDiseaseIdAndScore(diseaseIds, score);
-        diseaseItemResult = new DiseaseItemResult(diseaseItems, pageNumber, pageSize, totalPage, sort, order);
-        return diseaseItemResult;
+        return new DiseaseItemResult(diseaseItems, pageNumber, totalPage, sort, order);
     }
 
     @Override
@@ -79,9 +73,6 @@ public class DiseaseItemServiceImpl implements DiseaseItemService {
         }
         if (sort == SortBy.GENE) {
             diseaseIds = diseaseItemMapper.selectDiseaseIdByDiseaseName(diseaseName, score, geneSize, order.getOrder(), pageSize, offset);
-            System.out.println(diseaseIds.size());
-            // TODO: 2020/5/24 here the diseaseIds maybe empty caused by the high score
-            diseaseIds.forEach(System.out::println);
         } else {
             diseaseIds = diseaseItemMapper.selectDiseaseIdByDiseaseNameAndOrderByDiseaseName(diseaseName, score, geneSize, order.getOrder(), pageSize, offset);
         }
@@ -89,7 +80,7 @@ public class DiseaseItemServiceImpl implements DiseaseItemService {
             return new DiseaseItemResult();
         }
         diseaseItems = diseaseItemMapper.findAllByDiseaseIdAndScore(diseaseIds, score);
-        return new DiseaseItemResult(diseaseItems, pageNumber, pageSize, totalPage, sort, order);
+        return new DiseaseItemResult(diseaseItems, pageNumber, totalPage, sort, order);
     }
 
     public Integer getMaxGeneSize(Float score, String diseaseName) {
