@@ -1,25 +1,59 @@
 package org.reactome.server.domain.analysis;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.http.HttpStatus;
 
-
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnalysisResult {
-    //  analysis token was included in the summary object
-    private AnalysisSummary summary;
+    /*this object is used for serializing the disease analysis returned json file*/
+    private HttpStatus status = HttpStatus.OK;
+    private String url = null;
+    private String error = null;
+    private AnalysisParameter parameter;
 
-    public AnalysisSummary getSummary() {
-        return summary;
+    public AnalysisResult(AnalysisParameter parameter) {
+        this.parameter = parameter;
     }
 
-    public void setSummary(AnalysisSummary summary) {
-        this.summary = summary;
+    public int getStatus() {
+        return status.value();
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public AnalysisParameter getParameter() {
+        return parameter;
+    }
+
+    public void setParameter(AnalysisParameter parameter) {
+        this.parameter = parameter;
     }
 
     @Override
     public String toString() {
-        return "AnalysisResults{" +
-                "summary=" + summary +
+        return "AnalysisResult{" +
+                "httpStatus=" + status +
+                ", urlResult='" + url + '\'' +
+                ", errorMessage='" + error + '\'' +
+                ", parameter=" + parameter +
                 '}';
     }
 }

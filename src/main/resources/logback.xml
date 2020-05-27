@@ -18,6 +18,6 @@
     <logger name="org.mybatis" level="ALL"/>
     <logger name="com.alibaba" level="ERROR"/>
     <logger name="com.zaxxer" level="ERROR"/>
-    <logger name="org.reactome.server" level="ALL"/>
+    <logger name="org.reactome.server" level="ERROR"/>
 <!--    <logger name="org.reactome.server" level="ERROR"/>-->
 </configuration>

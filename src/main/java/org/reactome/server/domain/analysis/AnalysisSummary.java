@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AnalysisSummary {
-    //    just need the token info only
+    /*this object is used for deserialize the returned json object from restemplate */
     private String token;
 
     public String getToken() {

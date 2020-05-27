@@ -6,6 +6,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AnalysisRequestData {
+    /*used for deserialize the request form data from analysis service api*/
     private Boolean includeInteractors;
     private Boolean redirectToReacFoam;
     private List<String> genes;

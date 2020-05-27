@@ -2,21 +2,23 @@ package org.reactome.server.controller;
 
 import org.reactome.server.domain.DiseaseItemResult;
 import org.reactome.server.domain.DiseaseNameHintWord;
-import org.reactome.server.service.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.reactome.server.service.DiseaseItemService;
+import org.reactome.server.service.HintWordService;
+import org.reactome.server.service.OrderBy;
+import org.reactome.server.service.SortBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Optional;
 
+@ApiIgnore
 @Controller
 @RequestMapping("/disgenet")
 public class DisgenetController {
 
-    private static final Logger logger = LoggerFactory.getLogger(DisgenetController.class);
     private DiseaseItemService diseaseItemService;
     private HintWordService hintWordService;
 

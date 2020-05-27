@@ -1,12 +1,8 @@
 package org.reactome.server.domain.analysis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.reactome.server.service.OrderBy;
-import org.reactome.server.util.AnalysisSerializer;
-import org.springframework.http.HttpStatus;
 
-@JsonSerialize(using = AnalysisSerializer.class)
 public class AnalysisParameter {
     //Analyse the identifiers in the file over the different species and projects the result to Homo Sapiens
     private boolean projection = true;
@@ -23,9 +19,6 @@ public class AnalysisParameter {
     //set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)
     private boolean includeDisease = true;
 
-    private HttpStatus httpStatus = HttpStatus.OK;
-    private String urlResult = null;
-    private String errorMessage = null;
 
     public AnalysisParameter() {
     }
@@ -86,30 +79,6 @@ public class AnalysisParameter {
         this.includeDisease = includeDisease;
     }
 
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public void setHttpStatus(HttpStatus httpStatus) {
-        this.httpStatus = httpStatus;
-    }
-
-    public String getUrlResult() {
-        return urlResult;
-    }
-
-    public void setUrlResult(String urlResult) {
-        this.urlResult = urlResult;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     @JsonIgnore
     public String getParameter() {
         return projection ? "/projection" : "/" +
@@ -131,9 +100,6 @@ public class AnalysisParameter {
                 ", resource=" + resource +
                 ", pValue=" + pValue +
                 ", includeDisease=" + includeDisease +
-                ", httpStatus=" + httpStatus +
-                ", urlResult='" + urlResult + '\'' +
-                ", errorMessage='" + errorMessage + '\'' +
                 '}';
     }
 }
