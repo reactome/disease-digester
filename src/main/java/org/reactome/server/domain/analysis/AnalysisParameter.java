@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.reactome.server.service.OrderBy;
 import org.reactome.server.util.AnalysisSerializer;
+import org.springframework.http.HttpStatus;
 
 @JsonSerialize(using = AnalysisSerializer.class)
 public class AnalysisParameter {
@@ -22,7 +23,9 @@ public class AnalysisParameter {
     //set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)
     private boolean includeDisease = true;
 
+    private HttpStatus httpStatus = HttpStatus.OK;
     private String urlResult = null;
+    private String errorMessage = null;
 
     public AnalysisParameter() {
     }
@@ -79,6 +82,18 @@ public class AnalysisParameter {
         return includeDisease;
     }
 
+    public void setIncludeDisease(boolean includeDisease) {
+        this.includeDisease = includeDisease;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    public void setHttpStatus(HttpStatus httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
     public String getUrlResult() {
         return urlResult;
     }
@@ -87,8 +102,12 @@ public class AnalysisParameter {
         this.urlResult = urlResult;
     }
 
-    public void setIncludeDisease(boolean includeDisease) {
-        this.includeDisease = includeDisease;
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     @JsonIgnore
@@ -112,7 +131,9 @@ public class AnalysisParameter {
                 ", resource=" + resource +
                 ", pValue=" + pValue +
                 ", includeDisease=" + includeDisease +
-                ", urlResult='" + urlResult +
+                ", httpStatus=" + httpStatus +
+                ", urlResult='" + urlResult + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
                 '}';
     }
 }

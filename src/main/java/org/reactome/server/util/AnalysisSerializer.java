@@ -19,7 +19,12 @@ public class AnalysisSerializer extends StdSerializer<AnalysisParameter> {
     @Override
     public void serialize(AnalysisParameter analysisParameter, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeStringField("url", analysisParameter.getUrlResult());
+        jsonGenerator.writeNumberField("status", analysisParameter.getHttpStatus().value());
+        if (null != analysisParameter.getUrlResult()) {
+            jsonGenerator.writeStringField("url", analysisParameter.getUrlResult());
+        } else {
+            jsonGenerator.writeStringField("error", analysisParameter.getErrorMessage());
+        }
         jsonGenerator.writeObjectFieldStart("Summary");
         jsonGenerator.writeBooleanField("projection", analysisParameter.isProjection());
         jsonGenerator.writeBooleanField("interactors", analysisParameter.isInteractors());

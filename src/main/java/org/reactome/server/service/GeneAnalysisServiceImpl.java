@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -55,22 +56,33 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
         String url = ANALYSIS_SERVICE.concat(parameter.getParameter());
         logger.debug(url);
         String token = doAnalysis(url, payLoad);
-        ReacfoamParameter reacfoamParameter = new ReacfoamParameter();
-        reacfoamParameter.setAnalysis(token);
-        parameter.setUrlResult(PATHWAY_BROWSER_REACFOAM.concat(reacfoamParameter.getParameter()));
+        if (null != token) {
+            ReacfoamParameter reacfoamParameter = new ReacfoamParameter();
+            reacfoamParameter.setAnalysis(token);
+            parameter.setUrlResult(PATHWAY_BROWSER_REACFOAM.concat(reacfoamParameter.getParameter()));
+        } else {
+            parameter.setHttpStatus(HttpStatus.NOT_ACCEPTABLE);
+            parameter.setErrorMessage(String.format("Failed to analyze diseaseId: '%s'", diseaseId));
+        }
         return parameter;
     }
 
     //    todo: take those above parameter into account :https://reactome.org/AnalysisService/#/identifiers/getPostFileToHumanUsingPOST
     private String doAnalysis(String url, String playLoad) throws EmptyGeneAnalysisResultException {
-        AnalysisResult result = restTemplate.postForObject(url, playLoad, AnalysisResult.class);
-        String token;
-        if (null != result) {
-            token = result.getSummary().getToken();
-        } else {
-            throw new EmptyGeneAnalysisResultException(String.format("Failed to analysis data from URL: %s with payload: %s.", url, playLoad));
+        AnalysisResult result;
+        try {
+            result = restTemplate.postForObject(url, playLoad, AnalysisResult.class);
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return null;
         }
-        return token;
+        if (null != result) {
+            return result.getSummary().getToken();
+        } else {
+//            throw new EmptyGeneAnalysisResultException(String.format("Failed to analysis data from URL: %s with payload: %s.", url, playLoad));
+            logger.info(String.format("Failed to analysis data from URL: %s with payload: %s.", url, playLoad));
+            return null;
+        }
     }
 
     private AnalysisParameter createAnalysisParameter(Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) {

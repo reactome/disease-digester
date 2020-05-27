@@ -7,6 +7,7 @@ import org.reactome.server.exception.EmptyGeneAnalysisResultException;
 import org.reactome.server.service.GeneAnalysisService;
 import org.reactome.server.service.OrderBy;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +40,6 @@ public class AnalyzeController {
                                       @RequestParam(value = "resource", required = false) Resource resource,
                                       @RequestParam(value = "pValue", required = false) Float pValue,
                                       @RequestParam(value = "includeDisease", required = false) Boolean includeDisease) throws EmptyGeneAnalysisResultException {
-        AnalysisParameter parameter = geneAnalysisService.analysisByDiseaseId(diseaseId, projection, interactors, sortBy, order, resource, pValue, includeDisease);
-        System.out.println(parameter);
-        return parameter;
+        return geneAnalysisService.analysisByDiseaseId(diseaseId, projection, interactors, sortBy, order, resource, pValue, includeDisease);
     }
 }
