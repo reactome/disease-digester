@@ -7,8 +7,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+
 @Mapper
+@Component
 public interface DiseaseItemMapper {
     @Select("select d.diseaseId from disease d inner join gene g on d.diseaseId = g.diseaseId where score >= ${score} group by d.diseaseId having count(g.geneId) >= ${size} order by count(g.geneId) ${order} limit ${pageSize} offset ${offset}")
     List<String> selectDiseaseId(@Param("score") Float score, @Param("size") Integer geneSize, @Param("order") String order, @Param("pageSize") Integer pageSize, @Param("offset") Integer offset);
@@ -48,4 +49,3 @@ public interface DiseaseItemMapper {
     @Select("select geneSymbol from gene where diseaseId = '${diseaseId}'")
     List<String> getGeneListByDiseaseId(@Param("diseaseId") String diseaseId);
 }
-

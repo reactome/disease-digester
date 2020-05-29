@@ -3,7 +3,7 @@ package org.reactome.server.service;
 
 import org.reactome.server.domain.analysis.SortBy;
 import org.reactome.server.domain.analysis.*;
-import org.reactome.server.exception.EmptyGeneAnalysisResultException;
+import org.reactome.server.exception.FailedAnalyzeDiseaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.tags.EscapeBodyTag;
 
-@Service("geneAnalysisService")
+@Service
 public class GeneAnalysisServiceImpl implements GeneAnalysisService {
     private RestTemplate restTemplate;
     private DiseaseItemService diseaseItemService;
@@ -33,7 +34,7 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
 
     // todo: use reactome analysis-service as internal component instead of request data via API from network
     @Override
-    public String checkGeneListAnalysisResult(AnalysisRequestData requestData) throws EmptyGeneAnalysisResultException {
+    public String checkGeneListAnalysisResult(AnalysisRequestData requestData) throws FailedAnalyzeDiseaseException {
         String payLoad = String.join(" ", requestData.getGenes());
         AnalysisParameter parameter = new AnalysisParameter();
         parameter.setInteractors(requestData.isIncludeInteractors());
@@ -49,10 +50,10 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
 
     // TODO: 2020/5/24 add more parameter in this method
     @Override
-    public AnalysisResult analysisByDiseaseId(String diseaseId, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) throws EmptyGeneAnalysisResultException {
+    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) throws FailedAnalyzeDiseaseException {
 //    public String analysisByDiseaseId(String diseaseId, Object... parameters) throws EmptyGeneAnalysisResultException {
-        String payLoad = String.join(" ", diseaseItemService.getGeneListByDiseaseId(diseaseId));
-        AnalysisParameter parameter = createAnalysisParameter(projection, interactors, sortBy, order, resource, pValue, includeDisease);
+        String payLoad = String.join(" ", diseaseItemService.getGeneListByDiseaseId(disease));
+        AnalysisParameter parameter = createAnalysisParameter(disease, projection, interactors, sortBy, order, resource, pValue, includeDisease);
         String url = ANALYSIS_SERVICE.concat(parameter.getParameter());
         logger.debug(url);
         AnalysisResult result = new AnalysisResult(parameter);
@@ -63,13 +64,15 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
             result.setUrl(PATHWAY_BROWSER_REACFOAM.concat(reacfoamParameter.getParameter()));
         } else {
             result.setStatus(HttpStatus.NOT_ACCEPTABLE);
-            result.setError(String.format("Failed to analyze disease id: '%s'", diseaseId));
+            String error = String.format("Failed to analyze disease id: '%s'", disease);
+            result.setError(error);
+            throw new FailedAnalyzeDiseaseException(error);
         }
         return result;
     }
 
     //    todo: take those above parameter into account :https://reactome.org/AnalysisService/#/identifiers/getPostFileToHumanUsingPOST
-    private String doAnalysis(String url, String playLoad) throws EmptyGeneAnalysisResultException {
+    private String doAnalysis(String url, String playLoad) {
         AnalysisInternalResult result;
         try {
             result = restTemplate.postForObject(url, playLoad, AnalysisInternalResult.class);
@@ -86,8 +89,11 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
         }
     }
 
-    private AnalysisParameter createAnalysisParameter(Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) {
+    private AnalysisParameter createAnalysisParameter(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) {
         AnalysisParameter parameter = new AnalysisParameter();
+        if (null != disease) {
+            parameter.setDisease(disease);
+        }
         if (null != projection) {
             parameter.setProjection(projection);
         }

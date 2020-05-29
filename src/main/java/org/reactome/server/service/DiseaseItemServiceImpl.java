@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author Byron
  */
-@Service("diseaseItemService")
+@Service
 public class DiseaseItemServiceImpl implements DiseaseItemService {
     private final DiseaseItemMapper diseaseItemMapper;
 

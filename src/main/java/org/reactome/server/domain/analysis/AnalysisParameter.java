@@ -4,23 +4,34 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.reactome.server.service.OrderBy;
 
 public class AnalysisParameter {
+    private String disease;
     //Analyse the identifiers in the file over the different species and projects the result to Homo Sapiens
     private boolean projection = true;
     //Include interactors
     private boolean interactors = false;
     //how to sort the result
+    @JsonIgnore
     private SortBy sortBy = SortBy.ENTITIES_PVALUE;
     //specifies the order
+    @JsonIgnore
     private OrderBy order = OrderBy.ASC;
     //the resource to sort
+    @JsonIgnore
     private Resource resource = Resource.TOTAL;
     //defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned
     private float pValue = 1;
     //set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)
     private boolean includeDisease = true;
 
-
     public AnalysisParameter() {
+    }
+
+    public String getDisease() {
+        return disease;
+    }
+
+    public void setDisease(String disease) {
+        this.disease = disease;
     }
 
     public boolean isProjection() {
@@ -93,7 +104,8 @@ public class AnalysisParameter {
     @Override
     public String toString() {
         return "AnalysisParameter{" +
-                "projection=" + projection +
+                "disease='" + disease + '\'' +
+                ", projection=" + projection +
                 ", interactors=" + interactors +
                 ", sortBy=" + sortBy +
                 ", order=" + order +

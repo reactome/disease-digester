@@ -30,8 +30,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.reactome.server.controller"))
                 .paths(PathSelectors.any())
-                .build()
-                .pathMapping("/overlay");
+                .build();
     }
 
     @Override
