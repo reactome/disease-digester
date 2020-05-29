@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.tags.EscapeBodyTag;
 
 @Service
 public class GeneAnalysisServiceImpl implements GeneAnalysisService {
@@ -50,23 +49,23 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
 
     // TODO: 2020/5/24 add more parameter in this method
     @Override
-    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) throws FailedAnalyzeDiseaseException {
+    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) {
 //    public String analysisByDiseaseId(String diseaseId, Object... parameters) throws EmptyGeneAnalysisResultException {
         String payLoad = String.join(" ", diseaseItemService.getGeneListByDiseaseId(disease));
         AnalysisParameter parameter = createAnalysisParameter(disease, projection, interactors, sortBy, order, resource, pValue, includeDisease);
         String url = ANALYSIS_SERVICE.concat(parameter.getParameter());
         logger.debug(url);
-        AnalysisResult result = new AnalysisResult(parameter);
+        AnalysisResult result;
         String token = doAnalysis(url, payLoad);
         if (null != token) {
             ReacfoamParameter reacfoamParameter = new ReacfoamParameter();
             reacfoamParameter.setAnalysis(token);
+            result = new AnalysisResult(HttpStatus.OK, parameter);
             result.setUrl(PATHWAY_BROWSER_REACFOAM.concat(reacfoamParameter.getParameter()));
         } else {
-            result.setStatus(HttpStatus.NOT_ACCEPTABLE);
+            result = new AnalysisResult(HttpStatus.NOT_ACCEPTABLE, parameter);
             String error = String.format("Failed to analyze disease id: '%s'", disease);
             result.setError(error);
-            throw new FailedAnalyzeDiseaseException(error);
         }
         return result;
     }

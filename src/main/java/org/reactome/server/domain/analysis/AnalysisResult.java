@@ -4,14 +4,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AnalysisResult {
+//public class AnalysisResult extends ResponseEntity<AnalysisParameter> {
+public class AnalysisResult  {
     /*this object is used for serializing the disease analysis returned json file*/
-    private HttpStatus status = HttpStatus.OK;
+    private HttpStatus status;
     private String url = null;
     private String error = null;
     private AnalysisParameter parameter;
 
-    public AnalysisResult(AnalysisParameter parameter) {
+    public AnalysisResult(HttpStatus status, AnalysisParameter parameter) {
+        this.status = status;
         this.parameter = parameter;
     }
 

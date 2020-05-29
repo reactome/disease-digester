@@ -33,7 +33,7 @@ public class AnalyzeController {
 
 
     @GetMapping("/{disease}")
-    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Do analysis by given a specific diseases and return the reacfoam result link.",
             notes = "Use projection to analyze the disease's associated identifiers retrieved from database over different species and project the result to Homo Sapiens(the projection is calculated by the orthologous slot in the Reactome database). " +
                     "Use interactors to decide if include interactors. " +
@@ -54,13 +54,13 @@ public class AnalyzeController {
             @ApiImplicitParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", dataType = "Float", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "includeDisease", value = "set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)", dataType = "Boolean", paramType = "query", defaultValue = "true")
     })
-    @ApiResponses({@ApiResponse(code = 406, message = "Failed to analyze a specific disease")})
+//    @ApiResponses({@ApiResponse(code = 406, message = "Failed to analyze a specific disease")})
     public @ResponseBody
-    AnalysisResult diseaseAnalysis(@PathVariable("disease") String disease,
-                                   @RequestParam("projection") Boolean projection,
-                                   @RequestParam("interactors") Boolean interactors,
-                                   @RequestParam("pValue") Float pValue,
-                                   @RequestParam("includeDisease") Boolean includeDisease) throws FailedAnalyzeDiseaseException {
+    AnalysisResult diseaseAnalysis(@PathVariable(value = "disease") String disease,
+                                   @RequestParam(value = "projection", required = false) Boolean projection,
+                                   @RequestParam(value = "interactors", required = false) Boolean interactors,
+                                   @RequestParam(value = "pValue", required = false) Float pValue,
+                                   @RequestParam(value = "includeDisease", required = false) Boolean includeDisease) {
         return geneAnalysisService.analysisByDisease(disease, projection, interactors, SortBy.ENTITIES_PVALUE, OrderBy.ASC, Resource.TOTAL, pValue, includeDisease);
     }
 }
