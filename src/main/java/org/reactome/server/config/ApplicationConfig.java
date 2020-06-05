@@ -17,9 +17,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
-
 @Configuration
-@Import(MybatisConfig.class)
+@Import({AspectConfig.class, MybatisConfig.class})
 @PropertySource("classpath:application.properties")
 @ComponentScan(basePackageClasses = Application.class)
 public class ApplicationConfig {
@@ -48,3 +47,4 @@ public class ApplicationConfig {
         return new RestTemplate(factory);
     }
 }
+

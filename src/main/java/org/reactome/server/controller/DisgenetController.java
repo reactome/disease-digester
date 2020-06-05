@@ -1,5 +1,6 @@
 package org.reactome.server.controller;
 
+import org.reactome.server.annotation.ParameterLogger;
 import org.reactome.server.domain.DiseaseItemResult;
 import org.reactome.server.domain.DiseaseNameHintWord;
 import org.reactome.server.service.DiseaseItemService;
@@ -33,7 +34,7 @@ public class DisgenetController {
         return "index";
     }
 
-
+    @ParameterLogger
     @GetMapping(value = "/findAll")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
@@ -47,6 +48,7 @@ public class DisgenetController {
         return diseaseItemService.findAll(pageNumber, pageSize, score, geneSize, sortBy, orderBy);
     }
 
+    @ParameterLogger
     @GetMapping(value = "/findByDiseaseName")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody

@@ -1,6 +1,9 @@
 package org.reactome.server.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.reactome.server.annotation.ParameterLogger;
 import org.reactome.server.domain.analysis.AnalysisRequestData;
 import org.reactome.server.domain.analysis.AnalysisResult;
 import org.reactome.server.domain.analysis.Resource;
@@ -23,6 +26,7 @@ public class AnalyzeController {
         this.geneAnalysisService = geneAnalysisService;
     }
 
+    @ParameterLogger
     @ApiIgnore
     @PostMapping
     @ResponseStatus(value = HttpStatus.OK)
@@ -31,7 +35,7 @@ public class AnalyzeController {
         return geneAnalysisService.checkGeneListAnalysisResult(requestData);
     }
 
-
+    @ParameterLogger
     @GetMapping("/{disease}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Do analysis by given a specific diseases and return the reacfoam result link.",
@@ -51,7 +55,7 @@ public class AnalyzeController {
             @ApiImplicitParam(name = "disease", value = "A specific disease", required = true, dataType = "String", paramType = "path"),
             @ApiImplicitParam(name = "projection", value = "If project result to Homo Sapiens", dataType = "Boolean", paramType = "query", defaultValue = "true"),
             @ApiImplicitParam(name = "interactors", value = "Include interactors", dataType = "Boolean", paramType = "query", defaultValue = "true"),
-            @ApiImplicitParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", dataType = "Float", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", dataType = "Float", paramType = "query", defaultValue = "1.0"),
             @ApiImplicitParam(name = "includeDisease", value = "set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)", dataType = "Boolean", paramType = "query", defaultValue = "true")
     })
 //    @ApiResponses({@ApiResponse(code = 406, message = "Failed to analyze a specific disease")})

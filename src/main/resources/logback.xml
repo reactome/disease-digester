@@ -15,9 +15,8 @@
     </root>
 
     <logger name="org.springframework" level="ERROR"/>
-    <logger name="org.mybatis" level="ALL"/>
+    <logger name="org.mybatis" level="ERROR"/>
     <logger name="com.alibaba" level="ERROR"/>
     <logger name="com.zaxxer" level="ERROR"/>
-    <logger name="org.reactome.server" level="ERROR"/>
-<!--    <logger name="org.reactome.server" level="ERROR"/>-->
+    <logger name="org.reactome.server" level="INFO"/>
 </configuration>
