@@ -28,7 +28,7 @@
 }
 
 .swagger-ui .info a {
-    color: #2F9EC2;
+    color: #2F9EC2 !important;
 }
 
 .swagger-ui .response p {
