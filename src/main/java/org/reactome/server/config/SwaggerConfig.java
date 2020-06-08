@@ -2,7 +2,6 @@ package org.reactome.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -18,11 +17,6 @@ import java.util.Collections;
 @EnableSwagger2
 public class SwaggerConfig extends WebMvcConfigurationSupport {
     private ApiInfo apiInfo() {
-//        return new ApiInfoBuilder()
-//                .title("Disease Analysis Service")
-//                .description("Provides an API for disease analysis by given a specific disease id")
-//                .version("0.1")
-//                .build();
         return new ApiInfo(
                 "Disease Analysis Service",
                 "Provides an API for disease analysis by given a specific disease id",
@@ -44,12 +38,5 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
-    }
-
-    @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }
