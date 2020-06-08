@@ -35,27 +35,25 @@ public class AnalyzeController {
         return geneAnalysisService.checkGeneListAnalysisResult(requestData);
     }
 
+    @ApiIgnore
+    @GetMapping
+    public String apiDoc() {
+        return "swagger/analysis-api-doc";
+    }
+
     @ParameterLogger
-    @GetMapping("/{disease}")
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/{disease}", produces = "application/json")
     @ApiOperation(value = "Do analysis by given a specific diseases and return the reacfoam result link.",
             notes = "Use projection to analyze the disease's associated identifiers retrieved from database over different species and project the result to Homo Sapiens(the projection is calculated by the orthologous slot in the Reactome database). " +
                     "Use interactors to decide if include interactors. " +
                     "the defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned. " +
-                    "The includeDisease set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics) ")
-//    public AnalysisResult diseaseAnalysis(@ApiParam(name = "diseaseId", value = "A specific disease id", required = true) @PathVariable("diseaseId") String diseaseId,
-//                                          @ApiParam(name = "projection", value = "If project result to Homo Sapiens") Boolean projection,
-//                                          @ApiParam(name = "interactors", value = "Include interactors") Boolean interactors,
-//                                   @ApiParam(name = "sortBy") org.reactome.server.domain.analysis.SortBy sortBy,
-//                                   @ApiParam(name = "order") OrderBy order,
-//                                   @ApiParam(name = "resource", value = "") Resource resource,
-//                                          @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned") Float pValue,
-//                                          @ApiParam(name = "includeDisease", value = "set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)") Boolean includeDisease) throws EmptyGeneAnalysisResultException {
+                    "The includeDisease set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics) ",httpMethod = "GET", response = AnalysisResult.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "disease", value = "A specific disease", required = true, dataType = "String", paramType = "path"),
             @ApiImplicitParam(name = "projection", value = "If project result to Homo Sapiens", dataType = "Boolean", paramType = "query", defaultValue = "true"),
             @ApiImplicitParam(name = "interactors", value = "Include interactors", dataType = "Boolean", paramType = "query", defaultValue = "true"),
-            @ApiImplicitParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", dataType = "Float", paramType = "query", defaultValue = "1.0"),
+            @ApiImplicitParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", dataType = "Number", paramType = "query", defaultValue = "1.0"),
             @ApiImplicitParam(name = "includeDisease", value = "set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)", dataType = "Boolean", paramType = "query", defaultValue = "true")
     })
 //    @ApiResponses({@ApiResponse(code = 406, message = "Failed to analyze a specific disease")})

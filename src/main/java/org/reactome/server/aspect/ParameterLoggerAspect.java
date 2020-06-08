@@ -15,7 +15,7 @@ import java.util.Arrays;
 @Aspect
 @Component
 public class ParameterLoggerAspect {
-    private final Logger logger = LoggerFactory.getLogger(ParameterLoggerAspect.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParameterLoggerAspect.class);
 
     @Around("@annotation(org.reactome.server.annotation.ParameterLogger)")
     private Object printParameterLog(ProceedingJoinPoint point) throws Throwable {

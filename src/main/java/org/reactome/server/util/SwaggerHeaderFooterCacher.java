@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -25,7 +26,7 @@ import java.security.cert.X509Certificate;
 /**
  * Generates the header and the footer every MINUTES defined below.
  * The header.jsp and footer.jsp are placed under jsp folder in WEB-INF
- *
+ * <p>
  * IMPORTANT
  * ---------
  * We assume the war file runs exploded, because there is no way of writing
@@ -36,7 +37,7 @@ import java.security.cert.X509Certificate;
  * @author Guilherme Viteri (gviteri@ebi.ac.uk)
  */
 @Component
-public class HeaderFooterCacher extends Thread {
+public class SwaggerHeaderFooterCacher extends Thread {
 
     private static Logger logger = LoggerFactory.getLogger("threadLogger");
 
@@ -44,15 +45,16 @@ public class HeaderFooterCacher extends Thread {
     private static final String TITLE_CLOSE = "</title>";
     private static final String TITLE_REPLACE = "<title>Reactome | DisGeNET overlay of gene-disease associations</title>";
 
-    private static final String OVERLAY_CSS = "<link rel=\"stylesheet\" href=\"/overlay/resources/css/overlay.css?v=20191121\" type=\"text/css\" />";
+    private static final String CUSTOM_CSS = "<link rel=\"stylesheet\" href=\"/overlay/resources/css/custom.css?v=20191121\" type=\"text/css\" />";
+    private static final String SWAGGER_UI_CSS = "<link rel=\"stylesheet\" href=\"/overlay/resources/css/swagger-ui.css?v=20191121\" type=\"text/css\" />";
     private static final String HEADER_CLOSE = "</head>";
-    private static final String HEADER_CLOSE_REPLACE = OVERLAY_CSS + "\n</head>";
+    private static final String HEADER_CLOSE_REPLACE = CUSTOM_CSS + SWAGGER_UI_CSS + "\n</head>";
 
 
     private static final String SCRIPT_FOOTER_CLOSE = "</body>";
-    private static final String SCRIPT_FOOTER_REPLACE = "<script src=\"/overlay/resources/js/vue.js?v=0.1\"></script>\n " +
-            "<script src=\"/overlay/resources/js/axios.js?v=0.1\"></script>\n " +
-            "<script type=\"module\" src=\"/overlay/resources/js/overlay.js?v=0.1\"></script>\n</body>";
+    private static final String SCRIPT_FOOTER_REPLACE = "<script src=\"/overlay/resources/js/swagger-ui.js?v=0.1\"></script>\n " +
+            "<script src=\"/overlay/resources/js/swagger-ui-bundle.js?v=0.1\"></script>\n " +
+            "<script src=\"/overlay/resources/js/swagger-ui-standalone-preset.js?v=0.1\"></script>\n</body>";
 
     private static final Integer MINUTES = 15;
 
@@ -64,7 +66,7 @@ public class HeaderFooterCacher extends Thread {
     private boolean active = true;
 
     @Autowired
-    public HeaderFooterCacher(@Value("${template.server}") String server) {
+    public SwaggerHeaderFooterCacher(@Value("${template.server}") String server) {
         super("OD-HeaderFooter");
         this.server = server;
         start();
@@ -78,7 +80,7 @@ public class HeaderFooterCacher extends Thread {
                 if (active) Thread.sleep(1000 * 60 * MINUTES);
             }
         } catch (InterruptedException e) {
-            logger.info("Disease-Overlay HeaderFooterCacher interrupted");
+            logger.info("Disease-Overlay SwaggerHeaderFooterCacher interrupted");
         }
     }
 
@@ -89,10 +91,10 @@ public class HeaderFooterCacher extends Thread {
             //HACK!
             if (path.contains("WEB-INF")) {
                 //When executing in a deployed war file in tomcat, the WEB-INF folder is just one bellow the classes
-                path += "../views/";
+                path += "../views/swagger/";
             } else {
                 //When executing in local we need to write the files in the actual resources
-                path += "../../src/main/webapp/WEB-INF/views/";
+                path += "../../src/main/webapp/WEB-INF/views/swagger/";
             }
             String file = path + fileName;
             FileOutputStream out = new FileOutputStream(file);
@@ -108,7 +110,7 @@ public class HeaderFooterCacher extends Thread {
     private String getTemplate() {
         String templateURL = this.server + TEMPLATE_PAGE;
         try {
-            String rtn = IOUtils.toString(getTemplateInputStream(templateURL));
+            String rtn = IOUtils.toString(getTemplateInputStream(templateURL), StandardCharsets.UTF_8);
 
             // Add search form
             rtn = getReplaced(rtn, TITLE_OPEN, TITLE_CLOSE, TITLE_REPLACE);
@@ -151,16 +153,16 @@ public class HeaderFooterCacher extends Thread {
         }
     }
 
-    private InputStream getTemplateInputStream(String url){
+    private InputStream getTemplateInputStream(String url) {
         try {
             HttpURLConnection conn;
             URL aux = new URL(url);
-            if(aux.getProtocol().contains("https")){
+            if (aux.getProtocol().contains("https")) {
                 doTrustToCertificates(); //accepting the certificate by default
                 conn = (HttpsURLConnection) aux.openConnection();
                 conn.setInstanceFollowRedirects(true);  //you still need to handle redirect manully.
                 HttpURLConnection.setFollowRedirects(true);
-            }else{
+            } else {
                 URLConnection tmpConn = aux.openConnection();
                 conn = (HttpURLConnection) tmpConn;
             }
@@ -180,8 +182,12 @@ public class HeaderFooterCacher extends Thread {
                     public X509Certificate[] getAcceptedIssuers() {
                         return null;
                     }
-                    public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-                    public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
                 }
         };
 
@@ -202,6 +208,6 @@ public class HeaderFooterCacher extends Thread {
     public void interrupt() {
         active = false;
         super.interrupt();
-        logger.info("Disease-Overlay HeaderFooterCacher stopped");
+        logger.info("Disease-Overlay SwaggerHeaderFooterCacher stopped");
     }
 }
