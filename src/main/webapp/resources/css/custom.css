@@ -14,7 +14,7 @@
 .swagger-ui .info .title small pre {
     /* api version next to name */
     margin: 0;
-    font-family: Titillium Web, sans-serif;
+    font-family: Titillium Web, sans-serif !important;
     color: #fff;
     background: none;
     border: none;
@@ -73,8 +73,8 @@
 
 /* in case we want to reduce padding */
 .swagger-ui .opblock-tag {
-    padding: 5px 0;
-    font-size: 20px;
+    padding: 5px 0 !important;
+    font-size: 20px !important;
 }
 
 .swagger-ui .btn:hover,

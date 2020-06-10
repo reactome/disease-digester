@@ -1,5 +1,6 @@
 package org.reactome.server.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+//@SuppressWarnings("unused")
+@Api(tags = "analyze", description = "Reactome DisGeNET analysis queries")
 @Controller
 @RequestMapping("/analyze")
 public class AnalyzeController {
@@ -35,34 +38,24 @@ public class AnalyzeController {
         return geneAnalysisService.checkGeneListAnalysisResult(requestData);
     }
 
-    @ApiIgnore
-    @GetMapping
-    public String apiDoc() {
-        return "swagger/analysis-api-doc";
-    }
-
     @ParameterLogger
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/{disease}", produces = "application/json")
-    @ApiOperation(value = "Do analysis by given a specific diseases and return the reacfoam result link.",
-            notes = "Use projection to analyze the disease's associated identifiers retrieved from database over different species and project the result to Homo Sapiens(the projection is calculated by the orthologous slot in the Reactome database). " +
-                    "Use interactors to decide if include interactors. " +
-                    "the defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned. " +
-                    "The includeDisease set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics) ",httpMethod = "GET", response = AnalysisResult.class)
+    @ApiOperation(value = "Do analysis by a specific diseases and return the reacfoam result link.", httpMethod = "GET", response = AnalysisResult.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "disease", value = "A specific disease", required = true, dataType = "String", paramType = "path"),
-            @ApiImplicitParam(name = "projection", value = "If project result to Homo Sapiens", dataType = "Boolean", paramType = "query", defaultValue = "true"),
-            @ApiImplicitParam(name = "interactors", value = "Include interactors", dataType = "Boolean", paramType = "query", defaultValue = "true"),
-            @ApiImplicitParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", dataType = "Number", paramType = "query", defaultValue = "1.0"),
-            @ApiImplicitParam(name = "includeDisease", value = "set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)", dataType = "Boolean", paramType = "query", defaultValue = "true")
+            @ApiImplicitParam(name = "disease", value = "A specific disease, identified by disease id, for example C4279912.", required = true, dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "projection", value = "Map identifiers to Homo sapiens.", dataType = "Boolean", paramType = "query", defaultValue = "true"),
+            @ApiImplicitParam(name = "interactors", value = "Include high confidence IntAct interactors to extend coverage of Reactome.", dataType = "Boolean", paramType = "query", defaultValue = "true"),
+            @ApiImplicitParam(name = "pValue", value = "Defines the pValue threshold. Only hit pathways with pValue equals below the threshold will be returned.", dataType = "Number", paramType = "query", defaultValue = "1.0"),
+            @ApiImplicitParam(name = "includeDiseasePathways", value = "Set to 'false' to exclude the Reactome disease pathways from the result (it does not alter the statistics).", dataType = "Boolean", paramType = "query", defaultValue = "true")
     })
-//    @ApiResponses({@ApiResponse(code = 406, message = "Failed to analyze a specific disease")})
+//    @ApiResponses({@ApiResponse(code = 406, message = "Failed to analyze a specific disease id")})
     public @ResponseBody
     AnalysisResult diseaseAnalysis(@PathVariable(value = "disease") String disease,
                                    @RequestParam(value = "projection", required = false) Boolean projection,
                                    @RequestParam(value = "interactors", required = false) Boolean interactors,
                                    @RequestParam(value = "pValue", required = false) Float pValue,
-                                   @RequestParam(value = "includeDisease", required = false) Boolean includeDisease) {
-        return geneAnalysisService.analysisByDisease(disease, projection, interactors, SortBy.ENTITIES_PVALUE, OrderBy.ASC, Resource.TOTAL, pValue, includeDisease);
+                                   @RequestParam(value = "includeDiseasePathways", required = false) Boolean includeDiseasePathways) {
+        return geneAnalysisService.analysisByDisease(disease, projection, interactors, SortBy.ENTITIES_PVALUE, OrderBy.ASC, Resource.TOTAL, pValue, includeDiseasePathways);
     }
 }

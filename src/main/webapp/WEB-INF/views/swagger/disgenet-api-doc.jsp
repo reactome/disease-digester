@@ -40,7 +40,8 @@
         }
         // Build a system
         const ui = SwaggerUIBundle({
-            url: window.location.origin + deployPath + "/api",
+            // url: window.location.origin + deployPath + "/api",
+            url: window.location.origin + "/api",
             dom_id: '#swagger-ui',
             deepLinking: true,
             presets: [

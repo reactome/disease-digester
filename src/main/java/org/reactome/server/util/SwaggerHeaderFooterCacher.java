@@ -138,7 +138,10 @@ public class SwaggerHeaderFooterCacher extends Thread {
     private void getHeaderAndFooter(String file) {
         if (file != null && !file.isEmpty()) {
             String[] parts = StringUtils.split(file, "<!-- template-placeholder -->");
-            writeFile("header.jsp", parts[0]);
+            String header = parts[0];
+            // change the search input placeholder content to show an actual disease name from the dataset as example
+            header = header.replaceAll("O95631, NTN1, signaling by EGFR, glucose", "Melanoma, Cytopenia, Obesity");
+            writeFile("header.jsp", header);
             writeFile("footer.jsp", parts[1]);
         }
     }
@@ -146,7 +149,7 @@ public class SwaggerHeaderFooterCacher extends Thread {
     private String getReplaced(String target, String open, String close, String replace) {
         try {
             String pre = target.substring(0, target.indexOf(open));
-            String suf = target.substring(target.indexOf(close) + close.length(), target.length());
+            String suf = target.substring(target.indexOf(close) + close.length());
             return pre + replace + suf;
         } catch (StringIndexOutOfBoundsException e) {
             return target;

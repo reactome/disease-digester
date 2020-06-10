@@ -76,6 +76,8 @@ public class Importer {
         );
         JSAPResult jsapResult = jsap.parse(args);
         try {
+            // TODO: 2020/6/8 refactor the code in this section
+            // TODO: 2020/6/8 if the file is quite new so dont need to download it twice
 //            BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("src/main/java/org/reactome/server/tools/curated_gene_disease_associations.tsv.gz")), StandardCharsets.UTF_8));
             List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
@@ -92,10 +94,8 @@ public class Importer {
     private static void saveDiseaseName2UniProtAccNumBinaryDataAsTSV(List<DiseaseItem> diseaseItems) {
         long start = System.currentTimeMillis();
         File file = new File(Paths.get("").toAbsolutePath().toString().concat(File.separator).concat(EXPORT_BINARY_FILE_NAME));
-        BufferedOutputStream outputStream;
 //        List<DiseaseItem> sorted = diseaseItems.stream().sorted().distinct().collect(Collectors.toList());
-        try {
-            outputStream = new BufferedOutputStream(new FileOutputStream(file));
+        try ( BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))){
             outputStream.write("#Disease\tUniProt\n".getBytes());
             for (DiseaseItem diseaseItem : diseaseItems) {
                 for (GeneItem geneItem : diseaseItem.getGeneItems()) {
@@ -104,10 +104,10 @@ public class Importer {
                     }
                 }
             }
-            outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         logger.info("Load: " + diseaseItems.size() + " entry in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into " + file.getName());
     }
 

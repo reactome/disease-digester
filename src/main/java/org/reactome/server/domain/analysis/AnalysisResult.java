@@ -7,22 +7,22 @@ import org.springframework.http.HttpStatus;
 //public class AnalysisResult extends ResponseEntity<AnalysisParameter> {
 public class AnalysisResult  {
     /*this object is used for serializing the disease analysis returned json file*/
-    private HttpStatus status;
+    private HttpStatus code;
     private String url = null;
-    private String error = null;
+    private String message = null;
     private AnalysisParameter parameter;
 
     public AnalysisResult(HttpStatus status, AnalysisParameter parameter) {
-        this.status = status;
+        this.code = status;
         this.parameter = parameter;
     }
 
-    public int getStatus() {
-        return status.value();
+    public int getCode() {
+        return code.value();
     }
 
-    public void setStatus(HttpStatus status) {
-        this.status = status;
+    public void setCode(HttpStatus code) {
+        this.code = code;
     }
 
     public String getUrl() {
@@ -33,12 +33,12 @@ public class AnalysisResult  {
         this.url = url;
     }
 
-    public String getError() {
-        return error;
+    public String getMessage() {
+        return message;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public AnalysisParameter getParameter() {
@@ -52,9 +52,9 @@ public class AnalysisResult  {
     @Override
     public String toString() {
         return "AnalysisResult{" +
-                "httpStatus=" + status +
-                ", urlResult='" + url + '\'' +
-                ", errorMessage='" + error + '\'' +
+                "code=" + code +
+                ", url='" + url + '\'' +
+                ", message='" + message + '\'' +
                 ", parameter=" + parameter +
                 '}';
     }

@@ -3,7 +3,6 @@ package org.reactome.server.service;
 
 import org.reactome.server.domain.analysis.SortBy;
 import org.reactome.server.domain.analysis.*;
-import org.reactome.server.exception.FailedAnalyzeDiseaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
 
     // todo: use reactome analysis-service as internal component instead of request data via API from network
     @Override
-    public String checkGeneListAnalysisResult(AnalysisRequestData requestData) throws FailedAnalyzeDiseaseException {
+    public String checkGeneListAnalysisResult(AnalysisRequestData requestData) {
         String payLoad = String.join(" ", requestData.getGenes());
         AnalysisParameter parameter = new AnalysisParameter();
         parameter.setInteractors(requestData.isIncludeInteractors());
@@ -49,10 +48,10 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
 
     // TODO: 2020/5/24 add more parameter in this method
     @Override
-    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) {
+    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways) {
 //    public String analysisByDiseaseId(String diseaseId, Object... parameters) throws EmptyGeneAnalysisResultException {
         String payLoad = String.join(" ", diseaseItemService.getGeneListByDiseaseId(disease));
-        AnalysisParameter parameter = createAnalysisParameter(disease, projection, interactors, sortBy, order, resource, pValue, includeDisease);
+        AnalysisParameter parameter = createAnalysisParameter(disease, projection, interactors, sortBy, order, resource, pValue, includeDiseasePathways);
         String url = ANALYSIS_SERVICE.concat(parameter.getParameter());
         logger.debug(url);
         AnalysisResult result;
@@ -62,10 +61,11 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
             reacfoamParameter.setAnalysis(token);
             result = new AnalysisResult(HttpStatus.OK, parameter);
             result.setUrl(PATHWAY_BROWSER_REACFOAM.concat(reacfoamParameter.getParameter()));
+            result.setMessage("success");
         } else {
             result = new AnalysisResult(HttpStatus.NOT_ACCEPTABLE, parameter);
-            String error = String.format("Failed to analyze disease id: '%s'", disease);
-            result.setError(error);
+            String message = String.format("Failed to analyze disease id: '%s'", disease);
+            result.setMessage(message);
         }
         return result;
     }
@@ -88,7 +88,7 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
         }
     }
 
-    private AnalysisParameter createAnalysisParameter(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDisease) {
+    private AnalysisParameter createAnalysisParameter(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways) {
         AnalysisParameter parameter = new AnalysisParameter();
         if (null != disease) {
             parameter.setDisease(disease);
@@ -111,8 +111,8 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
         if (null != pValue) {
             parameter.setpValue(pValue);
         }
-        if (null != includeDisease) {
-            parameter.setIncludeDisease(includeDisease);
+        if (null != includeDiseasePathways) {
+            parameter.setIncludeDiseasePathways(includeDiseasePathways);
         }
         return parameter;
     }

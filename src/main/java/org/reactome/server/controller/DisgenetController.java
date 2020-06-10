@@ -34,6 +34,11 @@ public class DisgenetController {
         return "index";
     }
 
+    @GetMapping("/api")
+    public String apiDoc() {
+        return "swagger/disgenet-api-doc";
+    }
+
     @ParameterLogger
     @GetMapping(value = "/findAll")
     @ResponseStatus(value = HttpStatus.OK)

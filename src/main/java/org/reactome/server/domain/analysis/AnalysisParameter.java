@@ -21,7 +21,7 @@ public class AnalysisParameter {
     //defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned
     private float pValue = 1;
     //set to ‘false’ to exclude the disease pathways from the result (it does not alter the statistics)
-    private boolean includeDisease = true;
+    private boolean includeDiseasePathways = true;
 
     public AnalysisParameter() {
     }
@@ -82,12 +82,12 @@ public class AnalysisParameter {
         this.pValue = pValue;
     }
 
-    public boolean isIncludeDisease() {
-        return includeDisease;
+    public boolean isIncludeDiseasePathways() {
+        return includeDiseasePathways;
     }
 
-    public void setIncludeDisease(boolean includeDisease) {
-        this.includeDisease = includeDisease;
+    public void setIncludeDiseasePathways(boolean includeDiseasePathways) {
+        this.includeDiseasePathways = includeDiseasePathways;
     }
 
     @JsonIgnore
@@ -98,7 +98,7 @@ public class AnalysisParameter {
                 "&order=" + order.getOrder() +
                 "&resource=" + resource.getResource() +
                 "&pValue=" + pValue +
-                "&includeDisease=" + includeDisease;
+                "&includeDisease=" + includeDiseasePathways;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class AnalysisParameter {
                 ", order=" + order +
                 ", resource=" + resource +
                 ", pValue=" + pValue +
-                ", includeDisease=" + includeDisease +
+                ", includeDiseasePathways=" + includeDiseasePathways +
                 '}';
     }
 }
