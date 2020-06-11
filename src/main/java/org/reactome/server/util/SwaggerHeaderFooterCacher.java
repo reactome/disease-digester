@@ -43,7 +43,7 @@ public class SwaggerHeaderFooterCacher extends Thread {
 
     private static final String TITLE_OPEN = "<title>";
     private static final String TITLE_CLOSE = "</title>";
-    private static final String TITLE_REPLACE = "<title>Reactome | DisGeNET overlay of gene-disease associations</title>";
+    private static final String TITLE_REPLACE = "<title>Reactome | DisGeNET Analysis Service</title>";
 
     private static final String CUSTOM_CSS = "<link rel=\"stylesheet\" href=\"/overlay/resources/css/custom.css?v=20191121\" type=\"text/css\" />";
     private static final String SWAGGER_UI_CSS = "<link rel=\"stylesheet\" href=\"/overlay/resources/css/swagger-ui.css?v=20191121\" type=\"text/css\" />";

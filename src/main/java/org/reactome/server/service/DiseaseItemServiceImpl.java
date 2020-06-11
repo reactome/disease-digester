@@ -35,7 +35,7 @@ public class DiseaseItemServiceImpl implements DiseaseItemService {
             pageSize = count;
         }
         int offset;
-        if (pageNumber >= totalPage) {
+        if (pageNumber > totalPage) {
             pageNumber = totalPage;
             offset = 0;
         } else {
@@ -65,7 +65,7 @@ public class DiseaseItemServiceImpl implements DiseaseItemService {
             pageSize = count;
         }
         int offset;
-        if (pageNumber >= totalPage) {
+        if (pageNumber > totalPage) {
             pageNumber = totalPage;
             offset = 0;
         } else {

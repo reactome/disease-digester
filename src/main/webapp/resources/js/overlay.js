@@ -82,11 +82,11 @@ let overlay = new Vue({
         totalPage: null,
         showPageNumber: [],
         sort: 'GENE',
-        order: 'DESC',
+        order: 'ASC',
         score: 0.0,
     },
     created: function () {
-        axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&score=0.0&sort=GENE&order=DESC')
+            axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&score=0.0&sort=GENE&order=ASC')
             .then(res => this.setData(res.data))
             .catch(err => console.log(err));
         axios.get('/overlay/disgenet/diseaseNameHintWord')
@@ -163,7 +163,7 @@ let overlay = new Vue({
             };
             let url = this.redirectToReacFoam ?
                 "https://reactome.org/reacfoam/" : "https://reactome.org/PathwayBrowser/";
-            //to avoid the popup-blocker, must open a page immediately after the btn on-click event,
+            // to avoid the popup-blocker, must open a page immediately after the btn on-click event,
             // then await to set the true location from the response url,
             let analyzeWindow = window.open(url);
             analyzeWindow.focus();
@@ -249,13 +249,15 @@ let overlay = new Vue({
             this.loadData('/findByDiseaseName?name=' + this.name, 1, this.pageSize, this.geneSize, this.score, this.sort, this.order);
         },
         resetParameters() {
-            this.geneSize = 10;
-            this.score = 0.0;
             this.name = null;
-            this.includeInteractors = false;
-            this.redirectToReacFoam = true;
-            this.pageNumber = 1;
+            this.score = 0.0;
+            this.sort = 'GENE';
+            this.order = 'ASC';
             this.pageSize = 50;
+            this.geneSize = 10;
+            this.pageNumber = 1;
+            this.redirectToReacFoam = true;
+            this.includeInteractors = false;
             this.refreshPageData();
         },
         changeScore(score) {

@@ -33,15 +33,16 @@
 <script>
     window.onload = function () {
         <%-- Swagger Documentation - https://github.com/swagger-api/swagger-ui --%>
-        var deployPath = window.location.pathname.substr(0, window.location.pathname.lastIndexOf("/"));
+        let deployPath = window.location.pathname.substr(0, window.location.pathname.lastIndexOf("/"));
+        deployPath = deployPath.substr(0, deployPath.lastIndexOf("/"));
+        console.log(window.location.origin + deployPath + "/api");
         <%-- IE fix: if not present manually construct window.location.origin as IE does not support it directly --%>
         if (!window.location.origin) {
             window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
         }
         // Build a system
-        const ui = SwaggerUIBundle({
-            // url: window.location.origin + deployPath + "/api",
-            url: window.location.origin + "/api",
+        window.ui = SwaggerUIBundle({
+            url: window.location.origin + deployPath + "/api",
             dom_id: '#swagger-ui',
             deepLinking: true,
             presets: [
@@ -56,7 +57,6 @@
             tagsSorter: "alpha",
             docExpansion: "none"
         });
-        window.ui = ui;
     }
 </script>
 
