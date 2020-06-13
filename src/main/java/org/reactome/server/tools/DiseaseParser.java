@@ -70,6 +70,7 @@ class DiseaseParser {
             diseaseItem.setGeneItems(geneItems);
             return diseaseItem;
         }).collect(Collectors.toList());
+        // TODO: 2020/6/12 for data version 7.0, the assert is:
         assert 2037 == diseaseItemList.stream().max(Comparator.comparing(diseaseItem -> diseaseItem.getGeneItems().size())).get().getGeneItems().size();
         assert "C3714756".equals(diseaseItemList.stream().max(Comparator.comparing(diseaseItem -> diseaseItem.getGeneItems().size())).get().getDiseaseId());
         return diseaseItemList;

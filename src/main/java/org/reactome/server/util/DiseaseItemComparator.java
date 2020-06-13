@@ -2,6 +2,7 @@ package org.reactome.server.util;
 
 import org.reactome.server.domain.DiseaseItem;
 
+import java.util.Collections;
 import java.util.Comparator;
 
 public class DiseaseItemComparator {
@@ -19,7 +20,7 @@ public class DiseaseItemComparator {
     }
 
     public static final Comparator<DiseaseItem> GeneSizASCComparator = DiseaseItemComparator::compareTo;
-    public static final Comparator<DiseaseItem> GeneSizDESCComparator = (d1, d2) -> compareTo(d2, d1);
+    public static final Comparator<DiseaseItem> GeneSizDESCComparator = Collections.reverseOrder(DiseaseItemComparator::compareTo);
     public static final Comparator<DiseaseItem> DiseaseNameASCComparator = Comparator.comparing(DiseaseItem::getDiseaseName);
-    public static final Comparator<DiseaseItem> DiseaseNameDESCComparator = (d1, d2) -> d2.getDiseaseName().compareTo(d1.getDiseaseName());
+    public static final Comparator<DiseaseItem> DiseaseNameDESCComparator = Collections.reverseOrder(Comparator.comparing(DiseaseItem::getDiseaseName));
 }

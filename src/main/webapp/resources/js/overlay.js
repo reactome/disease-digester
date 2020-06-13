@@ -82,11 +82,11 @@ let overlay = new Vue({
         totalPage: null,
         showPageNumber: [],
         sort: 'GENE',
-        order: 'ASC',
+        order: 'DESC',
         score: 0.0,
     },
     created: function () {
-            axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&score=0.0&sort=GENE&order=ASC')
+            axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&score=0.0&sort=GENE&order=DESC')
             .then(res => this.setData(res.data))
             .catch(err => console.log(err));
         axios.get('/overlay/disgenet/diseaseNameHintWord')
@@ -252,7 +252,7 @@ let overlay = new Vue({
             this.name = null;
             this.score = 0.0;
             this.sort = 'GENE';
-            this.order = 'ASC';
+            this.order = 'DESC';
             this.pageSize = 50;
             this.geneSize = 10;
             this.pageNumber = 1;

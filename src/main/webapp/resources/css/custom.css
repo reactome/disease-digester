@@ -14,7 +14,7 @@
 .swagger-ui .info .title small pre {
     /* api version next to name */
     margin: 0;
-    font-family: Titillium Web, sans-serif !important;
+    font-family: Titillium Web, sans-serif;
     color: #fff;
     background: none;
     border: none;
@@ -57,7 +57,7 @@
 }
 
 .swagger-ui .info hgroup.main {
-    margin: 0;
+    margin: 0 !important;
 }
 
 .swagger-ui .tab li {
@@ -73,7 +73,7 @@
 
 /* in case we want to reduce padding */
 .swagger-ui .opblock-tag {
-    padding: 5px 0 !important;
+    padding: 5px 0;
     font-size: 20px !important;
 }
 
@@ -93,6 +93,11 @@
     border-color: #ff6060;
     color: #ff6060;
 }
+
+/*.swagger-ui .info h2::before,::after{*/
+    /*display: none !important;*/
+    /*content: none !important;*/
+/*}*/
 
 @media only screen and (max-width: 1024px) {
     .swagger-ui .opblock .opblock-summary {
