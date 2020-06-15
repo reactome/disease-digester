@@ -24,7 +24,7 @@
 }
 
 .swagger-ui .info {
-    margin: 10px 0;
+    margin: 10px 0 !important;
 }
 
 .swagger-ui .info a {
@@ -73,7 +73,7 @@
 
 /* in case we want to reduce padding */
 .swagger-ui .opblock-tag {
-    padding: 5px 0;
+    padding: 5px 0 !important;
     font-size: 20px !important;
 }
 
@@ -93,11 +93,6 @@
     border-color: #ff6060;
     color: #ff6060;
 }
-
-/*.swagger-ui .info h2::before,::after{*/
-    /*display: none !important;*/
-    /*content: none !important;*/
-/*}*/
 
 @media only screen and (max-width: 1024px) {
     .swagger-ui .opblock .opblock-summary {
@@ -124,7 +119,7 @@
     }
 
     .swagger-ui .opblock-tag small {
-        font-size: 12px;
+        font-size: 14px !important;
     }
 }
 
