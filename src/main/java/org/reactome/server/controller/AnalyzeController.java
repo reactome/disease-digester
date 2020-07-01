@@ -17,10 +17,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-//@SuppressWarnings("unused")
-@Api(tags = "analyze", description = "Reactome DisGeNET analysis queries")
 @Controller
 @RequestMapping("/analyze")
+@SuppressWarnings("unused")
+@Api(tags = "analyze", description = "Reactome DisGeNET analysis queries")
 public class AnalyzeController {
 
     private final GeneAnalysisService geneAnalysisService;

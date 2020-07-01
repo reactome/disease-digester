@@ -19,11 +19,11 @@ public class ParameterLoggerAspect {
 
     @Around("@annotation(org.reactome.server.annotation.ParameterLogger)")
     private Object printParameterLog(ProceedingJoinPoint point) throws Throwable {
-        logger.info(point.getSignature().getDeclaringTypeName() + '.' + point.getSignature().getName() + " with args: ");
+        logger.debug(point.getSignature().getDeclaringTypeName() + '.' + point.getSignature().getName() + " with args: ");
         Object[] args = point.getArgs();
-        logger.info(Arrays.toString(args));
+        logger.debug(Arrays.toString(args));
         Object proceed = point.proceed(args);
-        logger.info("returned: " + proceed.toString());
+        logger.debug("returned: " + proceed.toString());
         return proceed;
     }
 }

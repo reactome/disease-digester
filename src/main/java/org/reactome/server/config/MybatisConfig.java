@@ -1,12 +1,12 @@
 package org.reactome.server.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -32,16 +32,17 @@ public class MybatisConfig {
     }
 
     @Bean
-    public SqlSessionFactoryBean sqlSessionFactoryBean(DataSource dataSource) {
+    public SqlSessionFactory sqlSessionFactory() throws Exception {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
-        sqlSessionFactoryBean.setDataSource(dataSource);
+        sqlSessionFactoryBean.setDataSource(this.dataSource());
         sqlSessionFactoryBean.setTypeAliasesPackage(propertyConfig.getTypeAliasesPackage());
-        /*todo: add more database setting here for mybatis*/
-        return sqlSessionFactoryBean;
+        SqlSessionFactory sqlSessionFactory = sqlSessionFactoryBean.getObject();
+        sqlSessionFactory.getConfiguration().setCacheEnabled(true);
+        return sqlSessionFactory;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
+    public DataSourceTransactionManager DataSourceTransactionManager() {
+        return new DataSourceTransactionManager(this.dataSource());
     }
 }
