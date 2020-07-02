@@ -10,6 +10,7 @@ import java.util.List;
 
 @Mapper
 @Component
+@CacheNamespace
 public interface DiseaseItemMapper {
     @Select("select d.diseaseId from disease d inner join gene g on d.diseaseId = g.diseaseId where score >= ${score} group by d.diseaseId having count(g.geneId) >= ${size} order by count(g.geneId) ${order}, d.diseaseName ${order} limit ${pageSize} offset ${offset}")
     List<String> selectDiseaseId(@Param("score") Float score, @Param("size") Integer geneSize, @Param("order") String order, @Param("pageSize") Integer pageSize, @Param("offset") Integer offset);
