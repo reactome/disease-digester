@@ -1,11 +1,12 @@
 package org.reactome.server.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Cacheable
 @Table(name = "gene")
-public class GeneItem {
+public class GeneItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.reactome.server.util.DiseaseItemSerializer;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,7 +13,7 @@ import java.util.Objects;
 @Cacheable
 @Table(name = "disease")
 @JsonSerialize(using = DiseaseItemSerializer.class)
-public class DiseaseItem {
+public class DiseaseItem implements Serializable {
     @Id
     private String diseaseId;
     private String diseaseName;
