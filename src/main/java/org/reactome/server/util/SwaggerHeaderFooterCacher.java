@@ -45,16 +45,16 @@ public class SwaggerHeaderFooterCacher extends Thread {
     private static final String TITLE_CLOSE = "</title>";
     private static final String TITLE_REPLACE = "<title>Reactome | DisGeNET Analysis Service</title>";
 
-    private static final String CUSTOM_CSS = "<link rel=\"stylesheet\" href=\"/overlay/resources/css/custom.css?v=20191121\" type=\"text/css\" />";
-    private static final String SWAGGER_UI_CSS = "<link rel=\"stylesheet\" href=\"/overlay/resources/css/swagger-ui.css?v=20191121\" type=\"text/css\" />";
+    private static final String CUSTOM_CSS = "<link rel=\"stylesheet\" href=\"/overlays/resources/css/custom.css?v=20191121\" type=\"text/css\" />";
+    private static final String SWAGGER_UI_CSS = "<link rel=\"stylesheet\" href=\"/overlays/resources/css/swagger-ui.css?v=20191121\" type=\"text/css\" />";
     private static final String HEADER_CLOSE = "</head>";
     private static final String HEADER_CLOSE_REPLACE = CUSTOM_CSS + SWAGGER_UI_CSS + "\n</head>";
 
 
     private static final String SCRIPT_FOOTER_CLOSE = "</body>";
-    private static final String SCRIPT_FOOTER_REPLACE = "<script src=\"/overlay/resources/js/swagger-ui.js?v=0.1\"></script>\n " +
-            "<script src=\"/overlay/resources/js/swagger-ui-bundle.js?v=0.1\"></script>\n " +
-            "<script src=\"/overlay/resources/js/swagger-ui-standalone-preset.js?v=0.1\"></script>\n</body>";
+    private static final String SCRIPT_FOOTER_REPLACE = "<script src=\"/overlays/resources/js/swagger-ui.js?v=0.1\"></script>\n " +
+            "<script src=\"/overlays/resources/js/swagger-ui-bundle.js?v=0.1\"></script>\n " +
+            "<script src=\"/overlays/resources/js/swagger-ui-standalone-preset.js?v=0.1\"></script>\n</body>";
 
     private static final Integer MINUTES = 15;
 

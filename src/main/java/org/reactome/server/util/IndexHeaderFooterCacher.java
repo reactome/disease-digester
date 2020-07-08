@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -46,15 +45,15 @@ public class IndexHeaderFooterCacher extends Thread {
     private static final String TITLE_CLOSE = "</title>";
     private static final String TITLE_REPLACE = "<title>Reactome | DisGeNET overlay of gene-disease associations</title>";
 
-    private static final String OVERLAY_CSS = "<link rel=\"stylesheet\" href=\"/overlay/resources/css/overlay.css?v=20191121\" type=\"text/css\" />";
+    private static final String OVERLAY_CSS = "<link rel=\"stylesheet\" href=\"/overlays/resources/css/overlay.css?v=20191121\" type=\"text/css\" />";
     private static final String HEADER_CLOSE = "</head>";
     private static final String HEADER_CLOSE_REPLACE = OVERLAY_CSS + "\n</head>";
 
 
     private static final String SCRIPT_FOOTER_CLOSE = "</body>";
-    private static final String SCRIPT_FOOTER_REPLACE = "<script src=\"/overlay/resources/js/vue.js?v=0.1\"></script>\n " +
-            "<script src=\"/overlay/resources/js/axios.js?v=0.1\"></script>\n " +
-            "<script type=\"module\" src=\"/overlay/resources/js/overlay.js?v=0.1\"></script>\n</body>";
+    private static final String SCRIPT_FOOTER_REPLACE = "<script src=\"/overlays/resources/js/vue.js?v=0.1\"></script>\n " +
+            "<script src=\"/overlays/resources/js/axios.js?v=0.1\"></script>\n " +
+            "<script type=\"module\" src=\"/overlays/resources/js/overlay.js?v=0.1\"></script>\n</body>";
 
     private static final Integer MINUTES = 15;
 

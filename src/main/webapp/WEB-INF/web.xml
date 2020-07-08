@@ -44,7 +44,7 @@
     </listener>
 
     <servlet>
-        <servlet-name>Overlay</servlet-name>
+        <servlet-name>Disgenet</servlet-name>
         <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyHost</param-name>
@@ -60,8 +60,8 @@
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Overlay</servlet-name>
-        <url-pattern>/overlay/*</url-pattern>
+        <servlet-name>Disgenet</servlet-name>
+        <url-pattern>/overlays/*</url-pattern>
     </servlet-mapping>
 
     <servlet>

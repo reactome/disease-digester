@@ -27,7 +27,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                         "For a DisGeNET disease id, /analyze/ return a JSON object, which in the \"url\" parameter contains the URL that is the direct link to the results visualisation.<br/>" +
                         "This URL will remain valid for at least seven days, but will eventually expire.",
                 "0.1",
-                "AnalysisService/about/license-agreement",
+                "/license",
                 new Contact("Reactome", "https://reactome.org", "help@reactome.org"),
                 "Creative Commons Attribution 3.0 Unsupported License",
                 "http://creativecommons.org/licenses/by/3.0/legalcode",

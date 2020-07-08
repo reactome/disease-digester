@@ -86,10 +86,10 @@ let overlay = new Vue({
         score: 0.0,
     },
     created: function () {
-            axios.get('/overlay/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&score=0.0&sort=GENE&order=DESC')
+            axios.get('/overlays/disgenet/findAll?pageNumber=1&pageSize=50&geneSize=10&score=0.0&sort=GENE&order=DESC')
             .then(res => this.setData(res.data))
             .catch(err => console.log(err));
-        axios.get('/overlay/disgenet/diseaseNameHintWord')
+        axios.get('/overlays/disgenet/diseaseNameHintWord')
             .then(res => {
                 this.names = res.data.names;
             })
@@ -116,9 +116,9 @@ let overlay = new Vue({
         loadData: function (func = '/findAll', pageNumber, pageSize, geneSize, score, sort = this.sort, order = this.order) {
             let url = null;
             if (func.match('/findAll')) {
-                url = '/overlay/disgenet' + func + '?pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&score=' + score + '&sort=' + sort + '&order=' + order;
+                url = '/overlays/disgenet' + func + '?pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&score=' + score + '&sort=' + sort + '&order=' + order;
             } else {
-                url = '/overlay/disgenet' + func + '&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&score=' + score + '&sort=' + sort + '&order=' + order;
+                url = '/overlays/disgenet' + func + '&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&geneSize=' + geneSize + '&score=' + score + '&sort=' + sort + '&order=' + order;
             }
             console.log(url);
             axios.get(url).then(res => this.setData(res.data))
@@ -136,7 +136,7 @@ let overlay = new Vue({
             this.getMaxGeneSize();
         },
         getMaxGeneSize() {
-            let maxGeneSizeUrl = '/overlay/disgenet/getMaxGeneSize?score=' + this.score;
+            let maxGeneSizeUrl = '/overlays/disgenet/getMaxGeneSize?score=' + this.score;
             if (this.name != null) {
                 maxGeneSizeUrl += '&name=' + this.name;
             }
@@ -167,7 +167,7 @@ let overlay = new Vue({
             // then await to set the true location from the response url,
             let analyzeWindow = window.open(url);
             analyzeWindow.focus();
-            await axios.post('/overlay/analyze', data)
+            await axios.post('/overlays/analyze', data)
                 .then(res => {
                     url = res.data;
                 }).catch(err => {
