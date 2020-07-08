@@ -10,3 +10,9 @@ ntelliJ idea git ignore
 *.war
 *.ear
 *.class
+
+#Header Footer
+footer.jsp
+header.jsp
+
+sql/*
