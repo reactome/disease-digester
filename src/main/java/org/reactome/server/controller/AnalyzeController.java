@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
-@RequestMapping("/analyze")
+@RequestMapping("/disgenet/analyze")
 @SuppressWarnings("unused")
 @Api(tags = "analyze", description = "Reactome DisGeNET analysis queries")
 public class AnalyzeController {

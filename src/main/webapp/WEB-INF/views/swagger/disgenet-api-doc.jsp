@@ -42,7 +42,7 @@
         }
         // Build a system
         window.ui = SwaggerUIBundle({
-            url: window.location.origin + deployPath + "/api",
+            url: window.location.origin + deployPath + "/api-docs",
             dom_id: '#swagger-ui',
             deepLinking: true,
             presets: [
