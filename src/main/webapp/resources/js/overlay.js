@@ -167,7 +167,7 @@ let overlay = new Vue({
             // then await to set the true location from the response url,
             let analyzeWindow = window.open(url);
             analyzeWindow.focus();
-            await axios.post('/overlays/analyze', data)
+            await axios.post('/overlays/disgenet/analyze', data)
                 .then(res => {
                     url = res.data;
                 }).catch(err => {
