@@ -10,7 +10,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.GeneItem;
-import org.reactome.server.exception.FailedAnalyzeDiseaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,14 +22,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
 
@@ -39,24 +33,57 @@ public class Importer {
     private static final String RAW_ZIPPED_FILE_NAME = "curated_gene_disease_associations.tsv.gz";
     private static final String EXPORT_BINARY_FILE_NAME = "DiseaseName_UniProtAccNum.tsv";
     private static final String DOWNLOAD_LINK = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz";
-    private static final String DB_NAME = "disease";
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "root";
+    private static final String DB_NAME = "overlays";
     private static final String DB_CREATE = "create";
-    private static final long DAYS = 31;
-    //        private static final String DB_CREATE = "update";
     private static Map<String, String> settings = new HashMap<>();
     private static Session session;
 
-    static {
-        // TODO: 2020/5/25 read properties from the setting file or Profiles
+
+    public static void main(String[] args) throws Exception {
+        /*prepare the args*/
+        SimpleJSAP jsap = new SimpleJSAP(
+                DiseaseParser.class.getName(),
+                "Read, transfer and save disease-gene association table data from file to database.",
+                new Parameter[]{
+                        new FlaggedOption("name", JSAP.STRING_PARSER, DB_NAME, JSAP.NOT_REQUIRED, 'n', "name", "[Optional] Specify the database"),
+                        new FlaggedOption("user", JSAP.STRING_PARSER, null, JSAP.REQUIRED, 'u', "user", "[Need] The database user name"),
+                        new FlaggedOption("password", JSAP.STRING_PARSER, null, JSAP.REQUIRED, 'p', "password", "[Need] The database password"),
+                        new FlaggedOption("mode", JSAP.STRING_PARSER, DB_CREATE, JSAP.NOT_REQUIRED, 'm', "mode", "[Optional] The session mode [create | create-drop | update]"),
+                        new FlaggedOption("url", JSAP.URL_PARSER, DOWNLOAD_LINK, JSAP.NOT_REQUIRED, 'd', "url", "[Optional] The disease overlay table data in tsv/csv format with columns: 'diseaseId', 'diseaseName' and 'geneSymbol' from DisGeNet"),
+                }
+        );
+        JSAPResult jsapResult = jsap.parse(args);
+        if (!jsapResult.success()) {
+            System.exit(0);
+        }
+
+        /*prepare the sql session*/
+        prepareSession(jsapResult);
+
+        /*try to download the compressed association file from the given url*/
+        try {
+            // TODO: 2020/6/8 refactor the code in this section
+            BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("C:\\Users\\Byron\\IdeaProjects\\disease-digester\\src\\main\\java\\org\\reactome\\server\\tools\\curated_gene_disease_associations .tsv.gz")), StandardCharsets.UTF_8));
+            List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
+            saveDiseaseItems(diseaseItems);
+//            saveDiseaseName2UniProtAccNumBinaryDataAsTSV(DiseaseItem);
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (session.isOpen()) session.close();
+            System.exit(0);
+        }
+    }
+
+    private static void prepareSession(JSAPResult jsapResult) {
         settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
-//        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto&useSSL=false");
-        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
-        settings.put(Environment.USER, DB_USER);
-        settings.put(Environment.PASS, DB_PASS);
-        settings.put(Environment.HBM2DDL_AUTO, DB_CREATE);
+        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5InnoDBDialect");
+        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + jsapResult.getString("name") + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
+        settings.put(Environment.USER, jsapResult.getString("user"));
+        settings.put(Environment.PASS, jsapResult.getString("password"));
+        settings.put(Environment.HBM2DDL_AUTO, jsapResult.getString("mode"));
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(DiseaseItem.class);
         configuration.addAnnotatedClass(GeneItem.class);
@@ -64,38 +91,12 @@ public class Importer {
         session = sessionFactory.openSession();
     }
 
-
-    public static void main(String[] args) throws Exception {
-
-        SimpleJSAP jsap = new SimpleJSAP(
-                DiseaseParser.class.getName(),
-                "Read, transfer and save disease-gene association table data from file to database.",
-                new Parameter[]{
-                        new FlaggedOption("url", JSAP.URL_PARSER, DOWNLOAD_LINK, JSAP.REQUIRED, 'd', "url", "[Optional] The disease overlay table data in tsv/csv format with columns: 'diseaseId', 'diseaseName' and 'geneSymbol' from DisGeNet"),
-                }
-        );
-        JSAPResult jsapResult = jsap.parse(args);
-        try {
-            // TODO: 2020/6/8 refactor the code in this section
-            // TODO: 2020/6/8 if the file is quite new so dont need to download it twice
-//            BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("src/main/java/org/reactome/server/tools/curated_gene_disease_associations.tsv.gz")), StandardCharsets.UTF_8));
-            List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
-            saveDiseaseItems(diseaseItems);
-//            saveDiseaseName2UniProtAccNumBinaryDataAsTSV(DiseaseItemC);
-        } catch (Exception e) {
-            logger.warn(e.getMessage());
-            e.printStackTrace();
-        } finally {
-            System.exit(0);
-        }
-    }
-
     private static void saveDiseaseName2UniProtAccNumBinaryDataAsTSV(List<DiseaseItem> diseaseItems) {
+        /*archive the disease-gene association into tsv file*/
         long start = System.currentTimeMillis();
         File file = new File(Paths.get("").toAbsolutePath().toString().concat(File.separator).concat(EXPORT_BINARY_FILE_NAME));
 //        List<DiseaseItem> sorted = diseaseItems.stream().sorted().distinct().collect(Collectors.toList());
-        try ( BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))){
+        try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
             outputStream.write("#Disease\tUniProt\n".getBytes());
             for (DiseaseItem diseaseItem : diseaseItems) {
                 for (GeneItem geneItem : diseaseItem.getGeneItems()) {
@@ -106,6 +107,7 @@ public class Importer {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            System.exit(0);
         }
 
         logger.info("Load: " + diseaseItems.size() + " entry in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into " + file.getName());
@@ -167,16 +169,7 @@ public class Importer {
         } catch (Exception e) {
             logger.warn(e.getMessage());
             e.printStackTrace();
-//            dest.delete();
+            System.exit(0);
         }
-    }
-
-    private boolean isNeedToDownload(File file) {
-        Objects.requireNonNull(file, "file");
-        if (!file.exists()) {
-            return true;
-        }
-        Duration duration = Duration.between(Instant.ofEpochMilli(file.lastModified()), Instant.now());
-        return duration.toDays() > DAYS;
     }
 }

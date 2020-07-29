@@ -12,7 +12,7 @@
         <a href="http://www.disgenet.org/" target="_blank">DisGeNET </a>
         (<a href="https://www.ncbi.nlm.nih.gov/pubmed/31680165" target="_blank">Pinero J, et al, Nucleic Acids Res.
         2019</a>) is a database of gene-disease associations.
-        We have pre-processed DisGeNET curated gene-disease associations (Release v6.0) for overlay onto Reactome.
+        We have pre-processed DisGeNET curated gene-disease associations (Release v7.0) for overlay onto Reactome.
         For each disease, clicking on the "Analysis" button will show the results of Reactome pathway analysis with
         the set of genes associated with that disease.
         If you are interested in overlaying other data sources onto Reactome in a similar manner, please
