@@ -7,10 +7,42 @@ To represent the disease-gene binary relationship with a REACTOME overlay
 
 digester-importer [usage:]
 
-- use maven plugin to package/install codes into executable jar file, remember to change the **database configuration** in 
-location: `org.reactome.server.tools.Importer.java` before you run command
+- use `mvn clean package` to package codes into executable jar file
 
-- `java -jar ${classpath}/digester-importer-jar-with-dependencies.jar -d`
+- use `java -jar digester-importer-jar-with-dependencies.jar --help` to show the help message:
+    ```
+    Usage:
+      org.reactome.server.tools.DiseaseParser [--help] [(-n|--name) <name>]
+      (-u|--user) <user> (-p|--password) <password> [(-m|--mode) <mode>] [(-d|--url)
+      <url>]
+    
+    Read, transfer and save disease-gene association table data from file to
+    database.
+    
+    
+      [--help]
+            Prints this help message.
+    
+      [(-n|--name) <name>]
+            [Optional] Specify the database (default: overlays)
+    
+      (-u|--user) <user>
+            [Need] The database user name
+    
+      (-p|--password) <password>
+            [Need] The database password
+    
+      [(-m|--mode) <mode>]
+            [Optional] The session mode [create | create-drop | update] (default:
+            create)
+    
+      [(-d|--url) <url>]
+            [Optional] The disease overlay table data in tsv/csv format with
+            columns: 'diseaseId', 'diseaseName' and 'geneSymbol' from DisGeNet
+            (default:
+            https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz)
+    ```
+- use `java -jar digester-importer-jar-with-dependencies.jar -n DATABASE_NAME -u USER_NAME -p PASS_WORD` to download the latest update data and load into database
 
 disease-digester api [usage:]
 
@@ -35,61 +67,6 @@ disease-digester api [usage:]
 - [/disease-digester/findByDiseaseName?name=immune&page=1&size=40&sort=disease&order=desc]()
 
 - [/disease-digester/findByDiseaseName?name=immune&page=1&size=40&sort=gene&order=desc]()
-
-and response body should something be like:
-```json
-{
-  "content": [
-    {
-      "diseaseId": "C0342302",
-      "diseaseName": "Brittle_diabetes",
-      "diseaseClass": "Immune System Diseases",
-      "geneItems": [
-        {
-          "geneId": "1356",
-          "geneSymbol": "CP",
-          "accessionNumber": "P00450"
-        },
-        {
-          "geneId": "23274",
-          "geneSymbol": "CLEC16A",
-          "accessionNumber": "Q2KHT3"
-        }
-      ]
-    },
-    {
-      "diseaseId": "C0014518",
-      "diseaseName": "Toxic_Epidermal_Necrolysis",
-      "diseaseClass": "Immune System Diseases",
-      "geneItems": [
-        {
-          "geneId": "857",
-          "geneSymbol": "CAV1",
-          "accessionNumber": "Q03135"
-        }
-      ]
-    }
-  ],
-  "pageable": {
-    "sort": {
-      "sorted": false,
-      "unsorted": true
-    },
-    "pageNumber": 1,
-    "pageSize": 20,
-    "paged": true,
-    "unpaged": false
-  },
-  "totalPages": 19,
-  "number": 1,
-  "size": 20,
-  "sort": {
-    "sorted": false,
-    "unsorted": true
-  },
-  "numberOfElements": 20
-}
-```
 
 ## Task list, ordered in descending importance: 
 
