@@ -12,6 +12,7 @@ digester-importer [usage:]
 - use `java -jar digester-importer-jar-with-dependencies.jar --help` to show the help message:
 
     ```
+  
     Usage:
       org.reactome.server.tools.DiseaseParser [--help] [(-n|--name) <name>]
       (-u|--user) <user> (-p|--password) <password> [(-m|--mode) <mode>] [(-d|--url)
