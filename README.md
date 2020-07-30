@@ -10,6 +10,7 @@ digester-importer [usage:]
 - use `mvn clean package` to package codes into executable jar file
 
 - use `java -jar digester-importer-jar-with-dependencies.jar --help` to show the help message:
+
     ```
     Usage:
       org.reactome.server.tools.DiseaseParser [--help] [(-n|--name) <name>]
@@ -42,6 +43,7 @@ digester-importer [usage:]
             (default:
             https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz)
     ```
+  
 - use `java -jar digester-importer-jar-with-dependencies.jar -n DATABASE_NAME -u USER_NAME -p PASS_WORD` to download the latest update data and load into database
 
 disease-digester api [usage:]
