@@ -6,7 +6,7 @@
     <artifactId>disease-digester</artifactId>
     <packaging>war</packaging>
     <version>1.0.0</version>
-    <name>Disease Digester Parser and REST API</name>
+    <name>disease-digester</name>
     <organization>
         <name>The European Bioinformatics Institute</name>
         <url>http://www.ebi.ac.uk/</url>
