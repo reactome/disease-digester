@@ -31,7 +31,6 @@ import java.util.zip.GZIPInputStream;
 public class Importer {
     private static final Logger logger = LoggerFactory.getLogger(Importer.class);
     private static final String RAW_ZIPPED_FILE_NAME = "curated_gene_disease_associations.tsv.gz";
-    private static final String EXPORT_BINARY_FILE_NAME = "DiseaseName_UniProtAccNum.tsv";
     private static final String DOWNLOAD_LINK = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz";
     private static final String DB_NAME = "overlays";
     private static final String DB_CREATE = "create";
@@ -64,10 +63,8 @@ public class Importer {
         try {
             // TODO: 2020/6/8 refactor the code in this section
             BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
-//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream("C:\\Users\\Byron\\IdeaProjects\\disease-digester\\src\\main\\java\\org\\reactome\\server\\tools\\curated_gene_disease_associations .tsv.gz")), StandardCharsets.UTF_8));
             List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
             saveDiseaseItems(diseaseItems);
-//            saveDiseaseName2UniProtAccNumBinaryDataAsTSV(DiseaseItem);
         } catch (Exception e) {
             logger.warn(e.getMessage());
             e.printStackTrace();
@@ -89,28 +86,6 @@ public class Importer {
         configuration.addAnnotatedClass(GeneItem.class);
         SessionFactory sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
         session = sessionFactory.openSession();
-    }
-
-    private static void saveDiseaseName2UniProtAccNumBinaryDataAsTSV(List<DiseaseItem> diseaseItems) {
-        /*archive the disease-gene association into tsv file*/
-        long start = System.currentTimeMillis();
-        File file = new File(Paths.get("").toAbsolutePath().toString().concat(File.separator).concat(EXPORT_BINARY_FILE_NAME));
-//        List<DiseaseItem> sorted = diseaseItems.stream().sorted().distinct().collect(Collectors.toList());
-        try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
-            outputStream.write("#Disease\tUniProt\n".getBytes());
-            for (DiseaseItem diseaseItem : diseaseItems) {
-                for (GeneItem geneItem : diseaseItem.getGeneItems()) {
-                    if (geneItem.getAccessionNumber() != null) {
-                        outputStream.write(diseaseItem.getDiseaseName().concat("\t").concat(geneItem.getAccessionNumber().concat("\n")).getBytes());
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
-
-        logger.info("Load: " + diseaseItems.size() + " entry in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into " + file.getName());
     }
 
     private static void saveDiseaseItems(List<DiseaseItem> diseaseItemList) {
