@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.Security;
 import java.security.cert.X509Certificate;
 
 /**
@@ -175,7 +174,6 @@ public class IndexHeaderFooterCacher extends Thread {
     // trusting all certificate
     @SuppressWarnings("Duplicates")
     private void doTrustToCertificates() throws NoSuchAlgorithmException, KeyManagementException {
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     public X509Certificate[] getAcceptedIssuers() {

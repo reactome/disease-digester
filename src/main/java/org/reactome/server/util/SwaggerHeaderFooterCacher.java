@@ -179,7 +179,6 @@ public class SwaggerHeaderFooterCacher extends Thread {
     // trusting all certificate
     @SuppressWarnings("Duplicates")
     private void doTrustToCertificates() throws NoSuchAlgorithmException, KeyManagementException {
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     public X509Certificate[] getAcceptedIssuers() {
