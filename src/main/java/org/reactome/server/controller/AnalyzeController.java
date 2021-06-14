@@ -38,6 +38,7 @@ public class AnalyzeController {
         return geneAnalysisService.checkGeneListAnalysisResult(requestData);
     }
 
+    @CrossOrigin
     @ParameterLogger
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/{disease}", produces = "application/json")
