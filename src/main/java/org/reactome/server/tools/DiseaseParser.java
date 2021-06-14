@@ -1,6 +1,5 @@
 package org.reactome.server.tools;
 
-import org.apache.commons.lang3.StringUtils;
 import org.reactome.server.domain.DataRow;
 import org.reactome.server.domain.DiseaseItem;
 import org.reactome.server.domain.GeneItem;
@@ -9,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -86,9 +84,7 @@ class DiseaseParser {
         return Arrays.stream(diseaseName.split("[^\\w]"))
                 .filter(name -> name.matches("\\w+"))
                 .map(String::trim)
-                .map(String::toLowerCase)
-                .map(StringUtils::capitalize)
-                .collect(Collectors.joining("_"));
+                .collect(Collectors.joining(" "));
     }
 
     private Map<String, String> loadGeneId2AccNumMap() {
