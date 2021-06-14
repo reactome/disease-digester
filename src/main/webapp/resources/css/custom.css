@@ -46,10 +46,6 @@
     color: #333;
 }
 
-.swagger-ui .opblock-body pre span {
-    /* swagger css forces color white as important. */
-    color: #333 !important;
-}
 
 .swagger-ui .response-col_description__inner span {
     background-color: #fcf6db;
