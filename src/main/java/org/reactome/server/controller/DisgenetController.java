@@ -20,8 +20,8 @@ import java.util.Optional;
 @RequestMapping("/disgenet")
 public class DisgenetController {
 
-    private DiseaseItemService diseaseItemService;
-    private HintWordService hintWordService;
+    private final DiseaseItemService diseaseItemService;
+    private final HintWordService hintWordService;
 
     @Autowired
     public DisgenetController(DiseaseItemService diseaseItemService, HintWordService hintWordService) {
@@ -44,12 +44,12 @@ public class DisgenetController {
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     DiseaseItemResult findAll(
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize,
-            @RequestParam("geneSize") Integer geneSize,
-            @RequestParam("score") Float score,
-            @RequestParam("sort") SortBy sortBy,
-            @RequestParam("order") OrderBy orderBy) {
+            @RequestParam(value = "pageNumber", defaultValue = "1") Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "50") Integer pageSize,
+            @RequestParam(value = "geneSize", defaultValue = "10") Integer geneSize,
+            @RequestParam(value = "score", defaultValue = "0") Float score,
+            @RequestParam(value = "sort", defaultValue = "NAME") SortBy sortBy,
+            @RequestParam(value = "order", defaultValue = "ASC") OrderBy orderBy) {
         return diseaseItemService.findAll(pageNumber, pageSize, score, geneSize, sortBy, orderBy);
     }
 
@@ -58,13 +58,13 @@ public class DisgenetController {
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     DiseaseItemResult findByDiseaseName(@RequestParam("name") String diseaseName,
-                                        @RequestParam("pageNumber") Integer pageNumber,
-                                        @RequestParam("pageSize") Integer pageSize,
-                                        @RequestParam("geneSize") Integer geneSize,
-                                        @RequestParam("score") Float score,
-                                        @RequestParam("sort") SortBy sortBy,
-                                        @RequestParam("order") OrderBy orderBy) {
-        return diseaseItemService.findByDiseaseName(pageNumber, pageSize, diseaseName, score, geneSize, sortBy, orderBy);
+                                        @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
+                                        @RequestParam(required = false, defaultValue = "50") Integer pageSize,
+                                        @RequestParam(required = false, defaultValue = "10") Integer geneSize,
+                                        @RequestParam(required = false, defaultValue = "0") Float score,
+                                        @RequestParam(required = false, defaultValue = "NAME") SortBy sort,
+                                        @RequestParam(required = false, defaultValue = "ASC") OrderBy order) {
+        return diseaseItemService.findByDiseaseName(pageNumber, pageSize, diseaseName, score, geneSize, sort, order);
     }
 
 

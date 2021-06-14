@@ -12,7 +12,7 @@ public enum Resource {
     COMPOUND("COMPOUND"),
     PUBCHEM_COMPOUND("PUBCHEM_COMPOUND");
 
-    private String resource;
+    private final String resource;
 
     Resource(String resource) {
         this.resource = resource;

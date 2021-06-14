@@ -34,7 +34,7 @@ public class Importer {
     private static final String DOWNLOAD_LINK = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz";
     private static final String DB_NAME = "overlays";
     private static final String DB_CREATE = "create";
-    private static Map<String, String> settings = new HashMap<>();
+    private static final Map<String, String> settings = new HashMap<>();
     private static Session session;
 
 

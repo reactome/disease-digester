@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 //public class AnalysisResult extends ResponseEntity<AnalysisParameter> {
-public class AnalysisResult  {
+public class AnalysisResult {
     /*this object is used for serializing the disease analysis returned json file*/
     private HttpStatus code;
     private String url = null;

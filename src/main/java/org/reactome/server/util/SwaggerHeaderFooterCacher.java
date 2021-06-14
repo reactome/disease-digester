@@ -39,7 +39,7 @@ import java.security.cert.X509Certificate;
 @Component
 public class SwaggerHeaderFooterCacher extends Thread {
 
-    private static Logger logger = LoggerFactory.getLogger("threadLogger");
+    private static final Logger logger = LoggerFactory.getLogger("threadLogger");
 
     private static final String TITLE_OPEN = "<title>";
     private static final String TITLE_CLOSE = "</title>";

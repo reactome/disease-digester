@@ -39,7 +39,7 @@ import java.security.cert.X509Certificate;
 @Component
 public class IndexHeaderFooterCacher extends Thread {
 
-    private static Logger logger = LoggerFactory.getLogger("threadLogger");
+    private static final Logger logger = LoggerFactory.getLogger("threadLogger");
 
     private static final String TITLE_OPEN = "<title>";
     private static final String TITLE_CLOSE = "</title>";
@@ -145,7 +145,7 @@ public class IndexHeaderFooterCacher extends Thread {
     private String getReplaced(String target, String open, String close, String replace) {
         try {
             String pre = target.substring(0, target.indexOf(open));
-            String suf = target.substring(target.indexOf(close) + close.length(), target.length());
+            String suf = target.substring(target.indexOf(close) + close.length());
             return pre + replace + suf;
         } catch (StringIndexOutOfBoundsException e) {
             return target;
@@ -159,7 +159,7 @@ public class IndexHeaderFooterCacher extends Thread {
             if (aux.getProtocol().contains("https")) {
                 doTrustToCertificates(); //accepting the certificate by default
                 conn = (HttpsURLConnection) aux.openConnection();
-                conn.setInstanceFollowRedirects(true);  //you still need to handle redirect manully.
+                conn.setInstanceFollowRedirects(true);  //you still need to handle redirect manually.
                 HttpURLConnection.setFollowRedirects(true);
             } else {
                 URLConnection tmpConn = aux.openConnection();

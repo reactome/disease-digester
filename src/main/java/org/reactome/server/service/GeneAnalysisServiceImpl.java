@@ -13,8 +13,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class GeneAnalysisServiceImpl implements GeneAnalysisService {
-    private RestTemplate restTemplate;
-    private DiseaseItemService diseaseItemService;
+    private final RestTemplate restTemplate;
+    private final DiseaseItemService diseaseItemService;
     private static final Logger logger = LoggerFactory.getLogger(GeneAnalysisServiceImpl.class);
 
     @Value("${reactome.pathway.browser.fireworks}")
