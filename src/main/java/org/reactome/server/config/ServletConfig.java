@@ -23,7 +23,8 @@ public class ServletConfig {
         bean.setInitParameters(Map.of(
                 "proxyHost", "localhost",
                 "proxyPort", "8080",
-                "proxyPath", "/")
+                "proxyPath", "/",
+                "proxyProtocol", "http")
         );
         return bean;
     }
