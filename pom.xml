@@ -2,40 +2,95 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.reactome.server</groupId>
     <artifactId>disease-digester</artifactId>
     <packaging>war</packaging>
     <version>1.0.0</version>
-    <name>disease-digester</name>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Represents the disease-gene binary relationship with a REACTOME overlay</description>
+    <url>https://github.com/reactome/disease-digester</url>
+
     <organization>
-        <name>The European Bioinformatics Institute</name>
-        <url>http://www.ebi.ac.uk/</url>
+        <name>Reactome</name>
+        <url>https://reactome.org</url>
     </organization>
 
+    <licenses>
+        <license>
+            <name></name>
+            <url></url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>dengchuanbio</id>
+            <name>Chuan</name>
+        </developer>
+
+        <developer>
+            <id>gsviteri</id>
+            <name>Guilherme Viteri</name>
+            <email>gviteri@ebi.ac.uk</email>
+            <organization>The European Bioinformatics Institute</organization>
+            <organizationUrl>https://www.ebi.ac.uk</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/reactome/disease-digester.git</connection>
+        <developerConnection>scm:git:ssh://github.com:reactome/disease-digester.git</developerConnection>
+        <url>https://github.com/reactome/disease-digester/tree/master</url>
+    </scm>
+
     <properties>
-        <deploymentPath>/</deploymentPath>
-        <spring.version>5.0.5.RELEASE</spring.version>
-        <mysql.connector.version>8.0.11</mysql.connector.version>
-        <!--        <hibernate.version>5.4.1.Final</hibernate.version>-->
-        <hibernate.version>5.3.7.Final</hibernate.version>
-        <spring.data.jpa.version>2.0.6.RELEASE</spring.data.jpa.version>
-        <hikari.version>3.1.0</hikari.version>
-        <jackson.version>2.9.4</jackson.version>
-        <h2.version>1.4.197</h2.version>
-        <jsap.version>2.1</jsap.version>
-        <javax.servlet.version>4.0.0</javax.servlet.version>
+        <!-- dependencies -->
+        <commons.dbcp2.version>2.7.0</commons.dbcp2.version>
+        <commons.io.version>2.6</commons.io.version>
         <commons.lang.version>3.7</commons.lang.version>
-
+        <druid.version>1.1.20</druid.version>
+        <el.impl.version>2.2</el.impl.version>
+        <h2.version>1.4.197</h2.version>
+        <hibernate.version>5.3.7.Final</hibernate.version> <!-- <hibernate.version>5.4.1.Final</hibernate.version> -->
+        <hikari.version>3.1.0</hikari.version>
         <httpclient.version>4.5.3</httpclient.version>
-        <maven.war.version>2.6</maven.war.version>
-        <jdk.version>1.8</jdk.version>
-        <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+        <jackson.version>2.9.4</jackson.version>
+        <javax.servlet.version>4.0.0</javax.servlet.version>
+        <jsap.version>2.1</jsap.version>
         <jsp.version>2.1</jsp.version>
         <jstl.version>1.2</jstl.version>
+        <junit.version>4.12</junit.version>
+        <mybatis.version>3.4.6</mybatis.version>
+        <mybatis.generator.core.version>1.4.0</mybatis.generator.core.version>
+        <mybatis.spring.version>2.0.3</mybatis.spring.version>
+        <mysql.connector.version>8.0.11</mysql.connector.version>
+        <reactome.utils.version>1.0.2</reactome.utils.version>
+        <reflections.version>0.9.11</reflections.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <spring.data.jpa.version>2.0.6.RELEASE</spring.data.jpa.version>
+        <spring.version>5.0.5.RELEASE</spring.version>
         <swagger2.version>2.9.2</swagger2.version>
+
+        <!-- build -->
+        <deploymentPath>/</deploymentPath>
+        <jdk.version>1.8</jdk.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tomcat7.port>8080</tomcat7.port>
+
+        <!-- maven build and plugins -->
+        <maven.assembly.version>2.6</maven.assembly.version>
+        <maven.compiler.version>3.7.0</maven.compiler.version>
+        <maven.gpg.version>1.5</maven.gpg.version>
+        <maven.javadoc.version>2.10.3</maven.javadoc.version>
+        <maven.release.version>2.5.3</maven.release.version>
+        <maven.resources.version>3.0.1</maven.resources.version>
+        <maven.source.version>2.4</maven.source.version>
+        <maven.tomcat7.version>2.2</maven.tomcat7.version>
+        <maven.war.version>2.6</maven.war.version>
+        <nexus-staging-maven-plugin>1.6.7</nexus-staging-maven-plugin>
     </properties>
 
     <dependencies>
@@ -45,31 +100,37 @@
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -87,11 +148,13 @@
         <!--            <version>5.0.4.RELEASE</version>-->
         <!--        </dependency>-->
         <!-- Persistence -->
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
@@ -103,56 +166,66 @@
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
+
         <!-- java.lang.NoClassDefFoundError: org/apache/http/client/HttpClient-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
         </dependency>
+
         <!-- lightweight and lightning fast JDBC connection pooling framework -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${hikari.version}</version>
         </dependency>
+
         <!-- Spring Data -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
             <version>${spring.data.jpa.version}</version>
         </dependency>
-        <!--Jackson-->
+
+        <!-- Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.version}</version>
         </dependency>
+
         <!-- Servlet -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -160,26 +233,30 @@
             <version>${javax.servlet.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <!-- Avoid: javax.validation.ValidationException: HV000183: Unable to load 'javax.el.ExpressionFactory' -->
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>el-impl</artifactId>
-            <version>2.2</version>
+            <version>${el.impl.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <!-- commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons.lang.version}</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <version>${commons.io.version}</version>
         </dependency>
-        <!--JSAP console reader-->
+
+        <!-- JSAP console reader -->
         <dependency>
             <groupId>com.martiansoftware</groupId>
             <artifactId>jsap</artifactId>
@@ -190,15 +267,17 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -213,47 +292,56 @@
             <version>${jsp.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>${jstl.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.reactome.server.utils</groupId>
             <artifactId>reactome-utils</artifactId>
-            <version>1.0.2</version>
+            <version>${reactome.utils.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.4.6</version>
+            <version>${mybatis.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis-spring</artifactId>
-            <version>2.0.3</version>
+            <version>${mybatis.spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.mybatis.generator</groupId>
             <artifactId>mybatis-generator-core</artifactId>
-            <version>1.4.0</version>
+            <version>${mybatis.generator.core.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <version>2.7.0</version>
+            <version>${commons.dbcp2.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
-            <version>1.1.20</version>
+            <version>${druid.version}</version>
         </dependency>
+
         <!-- swagger -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>${swagger2.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
@@ -264,9 +352,8 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
+            <version>${reflections.version}</version>
         </dependency>
-
     </dependencies>
 
     <repositories>
@@ -296,38 +383,59 @@
         </repository>
     </repositories>
 
+    <!-- Configures the distribution to nexus repository -->
+    <distributionManagement>
+        <!-- Sonatype Release repo -->
+        <repository>
+            <id>ossrh</id>
+            <name>Sonatype Release Repository</name>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+
+        <!-- Sonatype SNAPSHOT repo -->
+        <snapshotRepository>
+            <id>ossrh</id>
+            <name>Sonatype Snapshot Repository</name>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <finalName>overlays</finalName>
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <version>${maven.tomcat7.version}</version>
                 <configuration>
                     <path>${deploymentPath}</path>
-                    <port>8080</port>
+                    <port>${tomcat7.port}</port>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>${maven.compiler.version}</version>
                 <configuration>
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
-                    <encoding>UTF-8</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>${maven.resources.version}</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
@@ -337,7 +445,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven.assembly.version}</version>
                 <configuration>
                     <finalName>digester-importer</finalName>
                     <archive>
@@ -358,6 +466,78 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Nexus staging plugin for Sonatype deployment -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging-maven-plugin}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
+            <!-- Generate source jar file -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Generate JavaDoc jar file -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Signs deployed jar, source jar, and JavaDoc jar with GPG -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven.gpg.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Allows "release" mvn goal to deploy a SNAPSHOT or version release to Sonatype -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven.release.version}</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                </configuration>
             </plugin>
         </plugins>
     </build>
