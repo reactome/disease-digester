@@ -18,5 +18,6 @@
     <logger name="org.mybatis" level="ERROR"/>
     <logger name="com.alibaba" level="ERROR"/>
     <logger name="com.zaxxer" level="ERROR"/>
+    <logger name="org.hibernate" level="ERROR"/>
     <logger name="org.reactome.server" level="INFO"/>
 </configuration>
