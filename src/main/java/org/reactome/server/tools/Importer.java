@@ -76,7 +76,7 @@ public class Importer {
 
     private static void prepareSession(JSAPResult jsapResult) {
         settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5InnoDBDialect");
+        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
         settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + jsapResult.getString("name") + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
         settings.put(Environment.USER, jsapResult.getString("user"));
         settings.put(Environment.PASS, jsapResult.getString("password"));
