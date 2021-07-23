@@ -34,7 +34,7 @@ public class DDLSchemaGenerator {
     static {
         System.setProperty(Environment.STORAGE_ENGINE, "innodb");
         settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
+        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
         // do not generate directly in the server,
         settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + DB_NAME + "?characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
         settings.put(Environment.USER, DB_USER);
