@@ -5,7 +5,7 @@ import org.reactome.server.mapper.DiseaseItemMapper;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PageHelper {
-    private static ConcurrentHashMap<String, Integer> countMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Integer> countMap = new ConcurrentHashMap<>();
 
     private PageHelper() {
     }

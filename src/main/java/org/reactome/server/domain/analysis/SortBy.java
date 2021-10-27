@@ -12,7 +12,7 @@ public enum SortBy {
     ENTITIES_PVALUE("ENTITIES_PVALUE"),
     ENTITIES_FDR("ENTITIES_FDR"),
     REACTIONS_RATIO("REACTIONS_RATIO");
-    private String sort;
+    private final String sort;
 
     SortBy(String sort) {
         this.sort = sort;

@@ -9,7 +9,7 @@ digester-importer [usage:]
 
 - use `mvn clean package` to package codes into executable jar file
 
-- use `java -jar digester-importer-jar-with-dependencies.jar --help` to show the help message:
+- use `java -jar digester-importer-exec.war --help` to show the help message:
 
     ```
   
@@ -45,11 +45,11 @@ digester-importer [usage:]
             https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz)
     ```
   
-- use `java -jar digester-importer-jar-with-dependencies.jar -n DATABASE_NAME -u USER_NAME -p PASS_WORD` to download the latest update data and load into database
+- use `java -jar digester-importer-exec.war -n DATABASE_NAME -u USER_NAME -p PASS_WORD` to download the latest update data and load into MySQL8 database
 
 disease-digester api [usage:]
 
-- run: `mvn tomcat7:run-war`
+- run: `mvn spring-boot:run`
 
 - [/disease-digester/findAll?page=2&size=40&sort=disease&order=asc]()
 
@@ -75,11 +75,11 @@ disease-digester api [usage:]
 
 ### 1. disease overlay table showed in webpage: 
 
-create a table show in reactome webpage (Reactome >> Tools >> Disease Overlay) with format like:
+Create a table show in reactome webpage (Reactome >> Tools >> Disease Overlay) with format like:
 
-|Disease name|Disease class|Number of genes|Gene list|Disease id|Check in Pathway Browser|       
-|:---|:----|:---|:---|:---|:---|:---|       
-|Testotoxicosis|Cancer|1|LHCGR|C1504412|[Analysis](https://reactome.org/PathwayBrowser#/DTAB=AN&ANALYSIS=)|     
+| Disease name   	| Disease class 	| Number of genes 	| Gene list 	| Disease id 	| Check in PathwayBrowser                                            	|
+|----------------	|---------------	|-----------------	|-----------	|------------	|--------------------------------------------------------------------	|
+| Testotoxicosis 	| Cancer        	| 1               	| LHCGR     	| C1504412   	| [Analysis](https://reactome.org/PathwayBrowser#/DTAB=AN&ANALYSIS=) 	| 
 
 
 features about this table:
