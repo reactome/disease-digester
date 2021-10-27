@@ -3,7 +3,7 @@ package org.reactome.server.service;
 public enum SortBy {
     GENE("gene"), NAME("name");
 
-    private String sort;
+    private final String sort;
 
     SortBy(String sort) {
         this.sort = sort;

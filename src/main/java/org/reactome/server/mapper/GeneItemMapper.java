@@ -1,6 +1,9 @@
 package org.reactome.server.mapper;
 
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.CacheNamespace;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.reactome.server.domain.GeneItem;
 import org.springframework.stereotype.Component;
 

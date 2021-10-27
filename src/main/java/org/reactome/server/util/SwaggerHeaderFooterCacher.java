@@ -39,7 +39,7 @@ import java.security.cert.X509Certificate;
 @Component
 public class SwaggerHeaderFooterCacher extends Thread {
 
-    private static Logger logger = LoggerFactory.getLogger("threadLogger");
+    private static final Logger logger = LoggerFactory.getLogger("threadLogger");
 
     private static final String TITLE_OPEN = "<title>";
     private static final String TITLE_CLOSE = "</title>";
@@ -179,7 +179,6 @@ public class SwaggerHeaderFooterCacher extends Thread {
     // trusting all certificate
     @SuppressWarnings("Duplicates")
     private void doTrustToCertificates() throws NoSuchAlgorithmException, KeyManagementException {
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     public X509Certificate[] getAcceptedIssuers() {

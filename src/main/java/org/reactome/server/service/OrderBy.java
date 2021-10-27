@@ -3,7 +3,7 @@ package org.reactome.server.service;
 public enum OrderBy {
     ASC("ASC"), DESC("DESC");
 
-    private String order;
+    private final String order;
 
     OrderBy(String order) {
         this.order = order;

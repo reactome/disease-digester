@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 @Service
 public class HintWordService {
-    private DiseaseItemMapper diseaseItemMapper;
+    private final DiseaseItemMapper diseaseItemMapper;
 
     @Autowired
     public HintWordService(DiseaseItemMapper diseaseItemMapper) {
