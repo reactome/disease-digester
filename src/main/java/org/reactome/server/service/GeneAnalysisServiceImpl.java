@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class GeneAnalysisServiceImpl implements GeneAnalysisService {
     private final RestTemplate restTemplate;
-    private final DiseaseItemService diseaseItemService;
+    private final DiseaseService diseaseService;
     private static final Logger logger = LoggerFactory.getLogger(GeneAnalysisServiceImpl.class);
 
     @Value("${reactome.pathway.browser.fireworks}")
@@ -25,9 +25,9 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
     private String ANALYSIS_SERVICE;
 
     @Autowired
-    public GeneAnalysisServiceImpl(RestTemplate restTemplate, DiseaseItemService diseaseItemService) {
+    public GeneAnalysisServiceImpl(RestTemplate restTemplate, DiseaseService diseaseService) {
         this.restTemplate = restTemplate;
-        this.diseaseItemService = diseaseItemService;
+        this.diseaseService = diseaseService;
     }
 
     // todo: use reactome analysis-service as internal component instead of request data via API from network
@@ -50,7 +50,7 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
     @Override
     public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways) {
 //    public String analysisByDiseaseId(String diseaseId, Object... parameters) throws EmptyGeneAnalysisResultException {
-        String payLoad = String.join(" ", diseaseItemService.getGeneListByDiseaseId(disease));
+        String payLoad = String.join(" ", diseaseService.getGeneListByDiseaseId(disease));
         AnalysisParameter parameter = createAnalysisParameter(disease, projection, interactors, sortBy, order, resource, pValue, includeDiseasePathways);
         String url = ANALYSIS_SERVICE.concat(parameter.getParameter());
         logger.debug(url);

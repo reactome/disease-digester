@@ -1,8 +1,9 @@
 package org.reactome.server.tools;
 
 import org.reactome.server.domain.DataRow;
-import org.reactome.server.domain.DiseaseItem;
-import org.reactome.server.domain.GeneItem;
+import org.reactome.server.domain.model.Disease;
+import org.reactome.server.domain.model.GDA;
+import org.reactome.server.domain.model.Gene;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,24 +17,34 @@ class DiseaseParser {
     This disease parser is hard-coded correspond to the tsv file
      */
 
-    private List<DiseaseItem> diseaseItems;
+    private final Map<String, Disease> idToDisease = new HashMap<>();
+    private final Map<String, Gene> idToGene = new HashMap<>();
+    private List<GDA> gdaList;
     private static final String DELIMITER = "\t";
     private final InputStream GENEID_4_UNIPROT = this.getClass().getClassLoader().getResourceAsStream("geneid_to_uniprot.tsv");
 //    private final InputStream DISEASE_CLASS = this.getClass().getClassLoader().getResourceAsStream("disease-class.properties");
 
     DiseaseParser(BufferedReader file) throws Exception {
-        setDiseaseItems(loadDiseaseItems(file));
+        setGdaList(loadDiseases(file));
     }
 
-    List<DiseaseItem> getDiseaseItems() {
-        return diseaseItems;
+    List<GDA> getGdaList() {
+        return gdaList;
     }
 
-    private void setDiseaseItems(List<DiseaseItem> diseaseItems) {
-        this.diseaseItems = diseaseItems;
+    Collection<Gene> getGenes() {
+        return idToGene.values();
     }
 
-    private List<DiseaseItem> loadDiseaseItems(BufferedReader file) {
+    Collection<Disease> getDiseases() {
+        return idToDisease.values();
+    }
+
+    private void setGdaList(List<GDA> gdaList) {
+        this.gdaList = gdaList;
+    }
+
+    private List<GDA> loadDiseases(BufferedReader file) {
         /*Read raw text data from file*/
         List<String> table = new ArrayList<>();
         try {
@@ -51,27 +62,17 @@ class DiseaseParser {
             String[] ss = s.split(DELIMITER);
             return new DataRow(ss[0].trim(), ss[1].trim(), ss[4].trim(), trimDiseaseName(ss[5].trim()), Float.parseFloat(ss[9].trim()));
         }).collect(Collectors.toList());
-        return convertDataRowList2DiseaseItemList(dataRowList);
+        return parseRows(dataRowList);
     }
 
-    private List<DiseaseItem> convertDataRowList2DiseaseItemList(List<DataRow> dataRowList) {
-        /*Grouping DataRow by diseaseId*/
-        Map<DiseaseItem, List<DataRow>> diseaseItemMap = dataRowList.stream().collect(Collectors.groupingBy((dataRow -> new DiseaseItem(dataRow.getDiseaseId(), dataRow.getDiseaseName()))));
-        assert diseaseItemMap.size() < dataRowList.size();
-
+    private List<GDA> parseRows(List<DataRow> dataRowList) {
         Map<String, String> geneId2AccNumMap = loadGeneId2AccNumMap();
-
-        /*Convert DataRow into DiseaseItem*/
-        List<DiseaseItem> diseaseItemList = diseaseItemMap.entrySet().stream().map(entry -> {
-            DiseaseItem diseaseItem = entry.getKey();
-            List<GeneItem> geneItems = entry.getValue().stream().map(dataRow -> new GeneItem(dataRow.getGeneId(), dataRow.getGeneSymbol(), geneId2AccNumMap.get(dataRow.getGeneId()), dataRow.getScore())).collect(Collectors.toList());
-            diseaseItem.setGeneItems(geneItems);
-            return diseaseItem;
-        }).collect(Collectors.toList());
-        // TODO: 2020/6/12 for data version 7.0, the assert is:
-        assert 2037 == diseaseItemList.stream().max(Comparator.comparing(diseaseItem -> diseaseItem.getGeneItems().size())).get().getGeneItems().size();
-        assert "C3714756".equals(diseaseItemList.stream().max(Comparator.comparing(diseaseItem -> diseaseItem.getGeneItems().size())).get().getDiseaseId());
-        return diseaseItemList;
+        return dataRowList.stream().map(dataRow -> new GDA(
+                        idToDisease.computeIfAbsent(dataRow.getDiseaseId(), s -> new Disease(dataRow.getDiseaseId(), dataRow.getDiseaseName())),
+                        idToGene.computeIfAbsent(dataRow.getGeneId(), s1 -> new Gene(dataRow.getGeneId(), dataRow.getGeneSymbol(), geneId2AccNumMap.get(dataRow.getGeneId()))),
+                        dataRow.getScore()
+                )
+        ).collect(Collectors.toList());
     }
 
     /**

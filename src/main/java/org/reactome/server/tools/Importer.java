@@ -8,8 +8,9 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.reactome.server.domain.DiseaseItem;
-import org.reactome.server.domain.GeneItem;
+import org.reactome.server.domain.model.Disease;
+import org.reactome.server.domain.model.GDA;
+import org.reactome.server.domain.model.Gene;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +64,7 @@ public class Importer {
         try {
             // TODO: 2020/6/8 refactor the code in this section
             BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
-            List<DiseaseItem> diseaseItems = new DiseaseParser(bufferedReader).getDiseaseItems();
-            saveDiseaseItems(diseaseItems);
+            saveDiseaseItems(new DiseaseParser(bufferedReader));
         } catch (Exception e) {
             logger.warn(e.getMessage());
             e.printStackTrace();
@@ -82,19 +82,22 @@ public class Importer {
         settings.put(Environment.PASS, jsapResult.getString("password"));
         settings.put(Environment.HBM2DDL_AUTO, jsapResult.getString("mode"));
         Configuration configuration = new Configuration();
-        configuration.addAnnotatedClass(DiseaseItem.class);
-        configuration.addAnnotatedClass(GeneItem.class);
+        configuration.addAnnotatedClass(GDA.class);
+        configuration.addAnnotatedClass(Disease.class);
+        configuration.addAnnotatedClass(Gene.class);
         SessionFactory sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
         session = sessionFactory.openSession();
     }
 
-    private static void saveDiseaseItems(List<DiseaseItem> diseaseItemList) {
+    private static void saveDiseaseItems(DiseaseParser parser) {
         long start = System.currentTimeMillis();
         Transaction transaction = session.beginTransaction();
-        diseaseItemList.forEach(session::save);
+        parser.getGenes().forEach(session::save);
+        parser.getDiseases().forEach(session::save);
+        parser.getGdaList().forEach(session::save);
         transaction.commit();
         session.close();
-        logger.info("Load: " + diseaseItemList.size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
+        logger.info("Load: " + parser.getGdaList().size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
     }
 
     private static BufferedReader downloadFile(URL url) throws IOException {

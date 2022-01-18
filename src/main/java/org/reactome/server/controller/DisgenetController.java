@@ -1,31 +1,37 @@
 package org.reactome.server.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.reactome.server.annotation.ParameterLogger;
-import org.reactome.server.domain.DiseaseItemResult;
 import org.reactome.server.domain.DiseaseNameHintWord;
-import org.reactome.server.service.DiseaseItemService;
+import org.reactome.server.domain.DiseaseResult;
+import org.reactome.server.repository.out.GeneToDiseases;
+import org.reactome.server.service.DiseaseService;
 import org.reactome.server.service.HintWordService;
-import org.reactome.server.service.OrderBy;
 import org.reactome.server.service.SortBy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@ApiIgnore
+@Api(tags = "content")
 @Controller
 @RequestMapping("/disgenet")
 public class DisgenetController {
 
-    private final DiseaseItemService diseaseItemService;
+    private final DiseaseService diseaseService;
     private final HintWordService hintWordService;
 
     @Autowired
-    public DisgenetController(DiseaseItemService diseaseItemService, HintWordService hintWordService) {
-        this.diseaseItemService = diseaseItemService;
+    public DisgenetController(DiseaseService diseaseService, HintWordService hintWordService) {
+        this.diseaseService = diseaseService;
         this.hintWordService = hintWordService;
     }
 
@@ -43,28 +49,28 @@ public class DisgenetController {
     @GetMapping(value = "/findAll")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    DiseaseItemResult findAll(
+    DiseaseResult findAll(
             @RequestParam(value = "pageNumber", defaultValue = "1") Integer pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "50") Integer pageSize,
             @RequestParam(value = "geneSize", defaultValue = "10") Integer geneSize,
             @RequestParam(value = "score", defaultValue = "0") Float score,
             @RequestParam(value = "sort", defaultValue = "NAME") SortBy sortBy,
-            @RequestParam(value = "order", defaultValue = "ASC") OrderBy orderBy) {
-        return diseaseItemService.findAll(pageNumber, pageSize, score, geneSize, sortBy, orderBy);
+            @RequestParam(value = "order", defaultValue = "ASC") Sort.Direction order) {
+        return diseaseService.findAll(pageNumber, pageSize, score, geneSize, sortBy, order);
     }
 
     @ParameterLogger
     @GetMapping(value = "/findByDiseaseName")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    DiseaseItemResult findByDiseaseName(@RequestParam("name") String diseaseName,
-                                        @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
-                                        @RequestParam(required = false, defaultValue = "50") Integer pageSize,
-                                        @RequestParam(required = false, defaultValue = "10") Integer geneSize,
-                                        @RequestParam(required = false, defaultValue = "0") Float score,
-                                        @RequestParam(required = false, defaultValue = "NAME") SortBy sort,
-                                        @RequestParam(required = false, defaultValue = "ASC") OrderBy order) {
-        return diseaseItemService.findByDiseaseName(pageNumber, pageSize, diseaseName, score, geneSize, sort, order);
+    DiseaseResult findByDiseaseName(@RequestParam("name") String diseaseName,
+                                    @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
+                                    @RequestParam(required = false, defaultValue = "50") Integer pageSize,
+                                    @RequestParam(required = false, defaultValue = "10") Integer geneSize,
+                                    @RequestParam(required = false, defaultValue = "0") Float score,
+                                    @RequestParam(required = false, defaultValue = "NAME") SortBy sort,
+                                    @RequestParam(required = false, defaultValue = "ASC") Sort.Direction order) {
+        return diseaseService.findByDiseaseName(pageNumber, pageSize, diseaseName, score, geneSize, sort, order);
     }
 
 
@@ -79,7 +85,15 @@ public class DisgenetController {
     @GetMapping(value = "/getMaxGeneSize")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    Integer getMaxGeneSize(@RequestParam("score") Float score, @RequestParam(value = "name", required = false) String name) {
-        return Optional.ofNullable(diseaseItemService.getMaxGeneSize(score, name)).orElse(0);
+    Long getMaxGeneSize(@RequestParam("score") Float score, @RequestParam(value = "name", required = false) String name) {
+        return Optional.ofNullable(diseaseService.getMaxGeneSize(score, name)).orElse(0L);
+    }
+
+    @ApiOperation(value = "Retrieve a detailed interaction information of a given accession", response = List.class, produces = "application/json")
+    @RequestMapping(value = "/findByGenesAndMinScore", method = RequestMethod.POST, consumes = "text/plain", produces = "application/json")
+    @ResponseBody
+    @CrossOrigin()
+    public List<GeneToDiseases> findByGenes(@ApiParam(value = "Interactor accessions (or identifiers)", required = true, defaultValue = "O95631") @RequestBody String geneAcs) {
+        return diseaseService.findByGenes(Arrays.stream(geneAcs.split(",|;|\\n|\\t")).map(String::trim).collect(Collectors.toSet()));
     }
 }

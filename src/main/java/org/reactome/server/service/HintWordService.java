@@ -1,7 +1,7 @@
 package org.reactome.server.service;
 
 import org.reactome.server.domain.DiseaseNameHintWord;
-import org.reactome.server.mapper.DiseaseItemMapper;
+import org.reactome.server.repository.DiseaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,16 +9,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class HintWordService {
-    private final DiseaseItemMapper diseaseItemMapper;
+    private final DiseaseRepository diseaseRepository;
 
     @Autowired
-    public HintWordService(DiseaseItemMapper diseaseItemMapper) {
-        this.diseaseItemMapper = diseaseItemMapper;
+    public HintWordService(DiseaseRepository diseaseRepository) {
+        this.diseaseRepository = diseaseRepository;
     }
 
     private static volatile DiseaseNameHintWord diseaseName;
@@ -26,10 +27,11 @@ public class HintWordService {
     private static final Set<String> STOP_WORD_SET = new BufferedReader(new InputStreamReader(Objects.requireNonNull(HintWordService.class.getClassLoader().getResourceAsStream(STOP_WORD)))).lines().collect(Collectors.toSet());
 
     private void setDiseaseNameHintWord() {
-        Set<String> nameSet = diseaseItemMapper.selectDiseaseName().stream()
-                .flatMap(s -> Stream.of(s.split("_")))
+        Set<String> nameSet = diseaseRepository.selectDiseaseName().stream()
+                .flatMap(s -> Stream.of(s.split(" ")))
                 .filter(s -> s.length() > 3)
-                .collect(Collectors.toSet());
+                .map(String::toLowerCase)
+                .collect(Collectors.toCollection(TreeSet::new));
         nameSet.removeAll(STOP_WORD_SET);
         diseaseName = new DiseaseNameHintWord(nameSet);
     }

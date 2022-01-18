@@ -1,36 +1,27 @@
-package org.reactome.server.domain;
+package org.reactome.server.domain.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
-@Entity
 @Cacheable
+@Entity
 @Table(name = "gene")
-public class GeneItem implements Serializable {
+public class Gene implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String geneId;
     private String geneSymbol;
     private String accessionNumber;
-    private float score;
+    @OneToMany(mappedBy = "gene")
+    private List<GDA> associatedDiseases;
 
-    public GeneItem() {
+    public Gene() {
     }
 
-    public GeneItem(String geneId, String geneSymbol, String accessionNumber, float score) {
+    public Gene(String geneId, String geneSymbol, String accessionNumber) {
         this.geneId = geneId;
         this.geneSymbol = geneSymbol;
         this.accessionNumber = accessionNumber;
-        this.score = score;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getGeneId() {
@@ -57,22 +48,20 @@ public class GeneItem implements Serializable {
         this.accessionNumber = accessionNumber;
     }
 
-    public float getScore() {
-        return score;
+    public List<GDA> getAssociatedDiseases() {
+        return associatedDiseases;
     }
 
-    public void setScore(float score) {
-        this.score = score;
+    public void setAssociatedDiseases(List<GDA> associatedDiseases) {
+        this.associatedDiseases = associatedDiseases;
     }
 
     @Override
     public String toString() {
         return "GeneItem{" +
-                "id=" + id +
-                ", geneId='" + geneId + '\'' +
+                "geneId='" + geneId + '\'' +
                 ", geneSymbol='" + geneSymbol + '\'' +
                 ", accessionNumber='" + accessionNumber + '\'' +
-                ", score=" + score +
                 '}';
     }
 }

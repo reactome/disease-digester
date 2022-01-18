@@ -1,38 +1,36 @@
-package org.reactome.server.domain;
+package org.reactome.server.domain.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.reactome.server.util.DiseaseItemSerializer;
+import org.reactome.server.util.DiseaseSerializer;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-
-@Entity
 @Cacheable
 @Table(name = "disease")
-@JsonSerialize(using = DiseaseItemSerializer.class)
-public class DiseaseItem implements Serializable {
+@Entity
+@JsonSerialize(using = DiseaseSerializer.class)
+public class Disease implements Serializable {
     @Id
     private String diseaseId;
     private String diseaseName;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "diseaseId")
-    private List<GeneItem> geneItems;
+    @OneToMany(mappedBy = "disease")
+    private List<GDA> associatedGenes;
 
-    public DiseaseItem() {
+    public Disease() {
     }
 
-    public DiseaseItem(String diseaseId, String diseaseName) {
+    public Disease(String diseaseId, String diseaseName) {
         this.diseaseId = diseaseId;
         this.diseaseName = diseaseName;
     }
 
-    public DiseaseItem(String diseaseId, String diseaseName, List<GeneItem> geneItems) {
+    public Disease(String diseaseId, String diseaseName, List<GDA> associatedGenes) {
         this.diseaseId = diseaseId;
         this.diseaseName = diseaseName;
-        this.geneItems = geneItems;
+        this.associatedGenes = associatedGenes;
     }
 
     /*Rewrite the equals & hashcode method so that the collectors.groupBy can work correctly */
@@ -40,7 +38,7 @@ public class DiseaseItem implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DiseaseItem that = (DiseaseItem) o;
+        Disease that = (Disease) o;
         return Objects.equals(diseaseId, that.diseaseId) &&
                 Objects.equals(diseaseName, that.diseaseName);
     }
@@ -66,20 +64,19 @@ public class DiseaseItem implements Serializable {
         this.diseaseName = diseaseName;
     }
 
-    public List<GeneItem> getGeneItems() {
-        return geneItems;
+    public List<GDA> getAssociatedGenes() {
+        return associatedGenes;
     }
 
-    public void setGeneItems(List<GeneItem> geneItems) {
-        this.geneItems = geneItems;
+    public void setAssociatedGenes(List<GDA> associatedGenes) {
+        this.associatedGenes = associatedGenes;
     }
 
     @Override
     public String toString() {
-        return "DiseaseItem{" +
+        return "Disease{" +
                 ", diseaseId='" + diseaseId + '\'' +
                 ", diseaseName='" + diseaseName + '\'' +
-                ", geneItems=" + geneItems +
                 '}';
     }
 }
