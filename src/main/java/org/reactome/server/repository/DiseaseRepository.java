@@ -25,7 +25,8 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
                     "               'acc', d.diseaseId, " +
                     "               'alias', d.diseaseName, " +
                     "               'score', TRUNCATE(gda.score, 3), " +
-                    "               'accURL', CONCAT('https://www.disgenet.org/search?disease=', d.diseaseId) " +
+                    "               'accURL', CONCAT('https://www.disgenet.org/search?disease=', d.diseaseId), " +
+                    "               'evidencesURL', CONCAT('https://www.disgenet.org/browser/1/1/1/', g.geneId, '/0/25/diseaseid__', d.diseaseId, '-source__ALL/_b./') " +
                     "               ) " +
                     "           ) as interactors " +
                     "FROM disease d " +

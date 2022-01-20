@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiParam;
 import org.reactome.server.annotation.ParameterLogger;
 import org.reactome.server.domain.DiseaseNameHintWord;
 import org.reactome.server.domain.DiseaseResult;
-import org.reactome.server.repository.out.GeneToDiseases;
+import org.reactome.server.domain.GeneToDiseasesResult;
 import org.reactome.server.service.DiseaseService;
 import org.reactome.server.service.HintWordService;
 import org.reactome.server.service.SortBy;
@@ -93,7 +93,11 @@ public class DisgenetController {
     @RequestMapping(value = "/findByGenesAndMinScore", method = RequestMethod.POST, consumes = "text/plain", produces = "application/json")
     @ResponseBody
     @CrossOrigin()
-    public List<GeneToDiseases> findByGenes(@ApiParam(value = "Interactor accessions (or identifiers)", required = true, defaultValue = "O95631") @RequestBody String geneAcs) {
-        return diseaseService.findByGenes(Arrays.stream(geneAcs.split(",|;|\\n|\\t")).map(String::trim).collect(Collectors.toSet()));
+    public GeneToDiseasesResult findByGenes(@ApiParam(value = "Interactor accessions (or identifiers)", required = true, defaultValue = "O95631") @RequestBody String geneAcs) {
+        return new GeneToDiseasesResult("disgenet", diseaseService.findByGenes(
+                Arrays.stream(geneAcs.split(",|;|\\n|\\t"))
+                        .map(String::trim).collect(Collectors.toSet()
+                        ))
+        );
     }
 }

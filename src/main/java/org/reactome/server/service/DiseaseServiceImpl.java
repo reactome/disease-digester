@@ -70,20 +70,8 @@ public class DiseaseServiceImpl implements DiseaseService {
 
     @Override
     public List<GeneToDiseases> findByGenes(Set<String> geneAcs) {
-        List<Tuple> byGene = this.diseaseRepository.findByGenes(geneAcs);
-        ObjectMapper mapper = new ObjectMapper();
-        return byGene.stream().map(tuple ->
-                {
-                    try {
-                        return new GeneToDiseases(
-                                tuple.get(0, String.class),
-                                tuple.get(1, BigInteger.class).intValue(),
-                                Arrays.asList(mapper.readValue((String) tuple.get(2), Interactor[].class)));
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                        return new GeneToDiseases(tuple.get(0, String.class), tuple.get(1, BigInteger.class).intValue(), List.of());
-                    }
-                })
+        return this.diseaseRepository.findByGenes(geneAcs)
+                .stream().map(tuple -> new GeneToDiseases(tuple.get(0, String.class), tuple.get(1, BigInteger.class), tuple.get(2, String.class)))
                 .collect(Collectors.toList());
     }
 }
