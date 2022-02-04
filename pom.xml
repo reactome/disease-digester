@@ -224,6 +224,7 @@
                 <configuration>
                     <mainClass>${main.class}</mainClass>
                     <classifier>exec</classifier>
+                    <finalName>digester-importer-exec.jar</finalName>
                 </configuration>
                 <executions>
                     <execution>
