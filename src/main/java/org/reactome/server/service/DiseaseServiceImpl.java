@@ -1,12 +1,9 @@
 package org.reactome.server.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.reactome.server.domain.DiseaseResult;
 import org.reactome.server.domain.model.Disease;
 import org.reactome.server.repository.DiseaseRepository;
 import org.reactome.server.repository.out.GeneToDiseases;
-import org.reactome.server.repository.out.Interactor;
 import org.reactome.server.repository.out.Sorted;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,9 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Tuple;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

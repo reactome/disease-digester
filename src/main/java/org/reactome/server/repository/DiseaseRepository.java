@@ -2,7 +2,6 @@ package org.reactome.server.repository;
 
 import org.apache.ibatis.annotations.Param;
 import org.reactome.server.domain.model.Disease;
-import org.reactome.server.repository.out.GeneToDiseases;
 import org.reactome.server.repository.out.Sorted;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
