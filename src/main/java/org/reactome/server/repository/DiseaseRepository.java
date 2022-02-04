@@ -96,7 +96,7 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
     @Query("select g.geneSymbol " +
             "from Gene g " +
             "inner join GDA gda on gda.gene = g.geneId " +
-            "where gda.disease = :diseaseId")
+            "where gda.disease.diseaseId = :diseaseId")
     List<String> getGeneListByDiseaseId(@Param("diseaseId") String diseaseId);
 }
 
