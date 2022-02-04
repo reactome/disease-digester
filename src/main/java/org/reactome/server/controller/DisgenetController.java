@@ -90,7 +90,7 @@ public class DisgenetController {
     }
 
     @ApiOperation(value = "Retrieve a detailed interaction information of a given accession", response = List.class, produces = "application/json")
-    @RequestMapping(value = "/findByGenesAndMinScore", method = RequestMethod.POST, consumes = "text/plain", produces = "application/json")
+    @RequestMapping(value = "/findByGenes", method = RequestMethod.POST, consumes = "text/plain", produces = "application/json")
     @ResponseBody
     @CrossOrigin()
     public GeneToDiseasesResult findByGenes(@ApiParam(value = "Interactor accessions (or identifiers)", required = true, defaultValue = "O95631") @RequestBody String geneAcs) {
