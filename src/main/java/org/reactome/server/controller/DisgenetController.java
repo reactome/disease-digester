@@ -101,7 +101,7 @@ public class DisgenetController {
     @CrossOrigin()
     public GeneToDiseasesResult findByGenes(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Interactor accessions (or identifiers)",
+                    description = "<b>geneAcs</b> Interactor accessions (or identifiers)",
                     required = true,
                     content = @Content(examples = {@ExampleObject("P04637, P01189")}))
             @RequestBody String geneAcs) {
