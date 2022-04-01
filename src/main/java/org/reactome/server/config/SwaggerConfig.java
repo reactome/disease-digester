@@ -5,22 +5,26 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 import org.reflections.Reflections;
 import org.springdoc.core.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.ServletContext;
+
 @Configuration
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI createRestApi() {
+    public OpenAPI createRestApi(ServletContext context) {
         Reflections reflections = new Reflections(DatabaseObject.class.getPackage().getName());
         for (Class<?> clazz : reflections.getSubTypesOf(DatabaseObject.class)) {
             SpringDocUtils.getConfig().replaceWithClass(clazz, Void.class);
         }
 
         return new OpenAPI()
+                .addServersItem(new Server().url(context.getContextPath()))
                 .info(new Info()
                         .title("DisGeNET Analysis Service")
                         .description("Provides an API for DisGeNET analysis by a specific disease id.<br>" +
