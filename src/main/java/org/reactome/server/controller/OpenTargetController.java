@@ -107,7 +107,7 @@ public class OpenTargetController {
                     required = true,
                     content = @Content(examples = {@ExampleObject("P04637, P01189")}))
             @RequestBody String geneAcs) {
-        return new GeneToDiseasesResult("disgenet", diseaseService.findByGenes(
+        return new GeneToDiseasesResult("open-target", diseaseService.findByGenes(
                 Arrays.stream(geneAcs.split(",|;|\\n|\\t"))
                         .map(String::trim).collect(Collectors.toSet()),
                 SourceDatabase.OPEN_TARGET)
