@@ -7,6 +7,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Cacheable
 @Table(name = "disease")
@@ -18,18 +20,22 @@ public class Disease implements Serializable {
     private String diseaseName;
     @OneToMany(mappedBy = "disease")
     private List<GDA> associatedGenes;
+    @Enumerated(EnumType.ORDINAL)
+    private SourceDatabase source;
 
     public Disease() {
     }
 
-    public Disease(String diseaseId, String diseaseName) {
+    public Disease(String diseaseId, String diseaseName, SourceDatabase source) {
         this.diseaseId = diseaseId;
         this.diseaseName = diseaseName;
+        this.source = source;
     }
 
-    public Disease(String diseaseId, String diseaseName, List<GDA> associatedGenes) {
+    public Disease(String diseaseId, String diseaseName, SourceDatabase source, List<GDA> associatedGenes) {
         this.diseaseId = diseaseId;
         this.diseaseName = diseaseName;
+        this.source = source;
         this.associatedGenes = associatedGenes;
     }
 
@@ -68,8 +74,26 @@ public class Disease implements Serializable {
         return associatedGenes;
     }
 
+    public Set<String> getAssociatedGeneIds() {
+        return associatedGenes.stream().map(GDA::getGene).map(Gene::getGeneId).collect(Collectors.toSet());
+    }
+    public Set<String> getAssociatedGeneSymbols() {
+        return associatedGenes.stream().map(GDA::getGene).map(Gene::getGeneSymbol).collect(Collectors.toSet());
+    }
+    public Set<String> getAssociatedGeneAcs() {
+        return associatedGenes.stream().map(GDA::getGene).map(Gene::getAccessionNumber).collect(Collectors.toSet());
+    }
+
     public void setAssociatedGenes(List<GDA> associatedGenes) {
         this.associatedGenes = associatedGenes;
+    }
+
+    public SourceDatabase getSource() {
+        return source;
+    }
+
+    public void setSource(SourceDatabase source) {
+        this.source = source;
     }
 
     @Override
@@ -77,6 +101,7 @@ public class Disease implements Serializable {
         return "Disease{" +
                 ", diseaseId='" + diseaseId + '\'' +
                 ", diseaseName='" + diseaseName + '\'' +
+                ", source='" + source.name() + '\'' +
                 '}';
     }
 }

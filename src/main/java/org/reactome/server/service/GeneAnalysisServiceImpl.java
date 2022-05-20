@@ -3,6 +3,7 @@ package org.reactome.server.service;
 
 import org.reactome.server.domain.analysis.SortBy;
 import org.reactome.server.domain.analysis.*;
+import org.reactome.server.domain.model.SourceDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +49,9 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
 
     // TODO: 2020/5/24 add more parameter in this method
     @Override
-    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways) {
+    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways, SourceDatabase source) {
 //    public String analysisByDiseaseId(String diseaseId, Object... parameters) throws EmptyGeneAnalysisResultException {
-        String payLoad = String.join(" ", diseaseService.getGeneListByDiseaseId(disease));
+        String payLoad = String.join(" ", diseaseService.getGeneListByDiseaseId(disease, source));
         AnalysisParameter parameter = createAnalysisParameter(disease, projection, interactors, sortBy, order, resource, pValue, includeDiseasePathways);
         String url = ANALYSIS_SERVICE.concat(parameter.getParameter());
         logger.debug(url);

@@ -2,6 +2,7 @@ package org.reactome.server.domain.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "gda")
@@ -27,6 +28,13 @@ public class GDA implements Serializable {
 
     public GDA(Disease disease, Gene gene, float score) {
         this.id = new GDAKey(disease.getDiseaseId(), gene.getGeneId());
+        this.disease = disease;
+        this.gene = gene;
+        this.score = score;
+    }
+
+    public GDA(Disease disease, Gene gene, float score, String variantId) {
+        this.id = new GDAKey(disease.getDiseaseId(), gene.getGeneId(), variantId);
         this.disease = disease;
         this.gene = gene;
         this.score = score;
@@ -58,12 +66,34 @@ public class GDA implements Serializable {
         this.score = score;
     }
 
+    public String getVariantId() {
+        return id.getVariantId();
+    }
+
+    public void setVariantId(String variantId) {
+        this.id.setVariantId(variantId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GDA gda = (GDA) o;
+        return Objects.equals(id, gda.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     @Override
     public String toString() {
         return "GDA{" +
                 "disease=" + disease +
                 ", gene=" + gene +
                 ", score=" + score +
+                ", variantId='" + getVariantId() + '\'' +
                 '}';
     }
 }

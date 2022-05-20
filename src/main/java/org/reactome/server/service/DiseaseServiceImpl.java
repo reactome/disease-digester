@@ -2,6 +2,7 @@ package org.reactome.server.service;
 
 import org.reactome.server.domain.DiseaseResult;
 import org.reactome.server.domain.model.Disease;
+import org.reactome.server.domain.model.SourceDatabase;
 import org.reactome.server.repository.DiseaseRepository;
 import org.reactome.server.repository.out.GeneToDiseases;
 import org.reactome.server.repository.out.Sorted;
@@ -31,41 +32,41 @@ public class DiseaseServiceImpl implements DiseaseService {
 
     @Override
     @Transactional(readOnly = true)
-    public DiseaseResult findAll(Integer pageNumber, Integer pageSize, Float score, Integer geneSize, SortBy sortBy, Sort.Direction order) {
+    public DiseaseResult findAll(Integer pageNumber, Integer pageSize, Float score, Integer geneSize, SourceDatabase source, SortBy sortBy, Sort.Direction order) {
         Sort sort = Sort.by(order, sortBy == SortBy.GENE ? "associatedGenesCount" : "diseaseName")
                 .and(Sort.by(order, sortBy != SortBy.GENE ? "associatedGenesCount" : "diseaseName"));
 
-        Page<Sorted<Disease>> sortedDiseases = diseaseRepository.findAll(score, geneSize.longValue(), PageRequest.of(pageNumber - 1, pageSize, sort));
+        Page<Sorted<Disease>> sortedDiseases = diseaseRepository.findAll(score, geneSize.longValue(), source, PageRequest.of(pageNumber - 1, pageSize, sort));
         List<Disease> diseases = sortedDiseases.stream().map(Sorted::getResult).collect(Collectors.toList());
         return new DiseaseResult(diseases, pageNumber, sortedDiseases.getTotalPages());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public DiseaseResult findByDiseaseName(Integer pageNumber, Integer pageSize, String diseaseName, Float score, Integer geneSize, SortBy sortBy, Sort.Direction order) {
+    public DiseaseResult findByDiseaseName(Integer pageNumber, Integer pageSize, String diseaseName, Float score, Integer geneSize, SourceDatabase source, SortBy sortBy, Sort.Direction order) {
         Sort sort = Sort.by(order, sortBy == SortBy.GENE ? "associatedGenesCount" : "diseaseName")
                 .and(Sort.by(order, sortBy != SortBy.GENE ? "associatedGenesCount" : "diseaseName"));
 
-        Page<Sorted<Disease>> sortedDiseases = diseaseRepository.findByDiseaseName(diseaseName, score, geneSize.longValue(), PageRequest.of(pageNumber - 1, pageSize, sort));
+        Page<Sorted<Disease>> sortedDiseases = diseaseRepository.findByDiseaseName(diseaseName, score, geneSize.longValue(), source, PageRequest.of(pageNumber - 1, pageSize, sort));
         List<Disease> diseases = sortedDiseases.stream().map(Sorted::getResult).collect(Collectors.toList());
         return new DiseaseResult(diseases, pageNumber, sortedDiseases.getTotalPages());
     }
 
-    public Long getMaxGeneSize(Float score, String diseaseName) {
+    public Long getMaxGeneSize(Float score, String diseaseName, SourceDatabase source) {
         if (null == diseaseName) {
-            return diseaseRepository.selectMaxGeneSizeByScore(score);
+            return diseaseRepository.selectMaxGeneSizeByScore(score, source);
         } else {
-            return diseaseRepository.selectMaxGeneSizeByScoreAndDiseaseName(diseaseName, score);
+            return diseaseRepository.selectMaxGeneSizeByScoreAndDiseaseName(diseaseName, score, source);
         }
     }
 
-    public List<String> getGeneListByDiseaseId(String diseaseId) {
-        return diseaseRepository.getGeneListByDiseaseId(diseaseId);
+    public List<String> getGeneListByDiseaseId(String diseaseId, SourceDatabase source) {
+        return diseaseRepository.getGeneListByDiseaseId(diseaseId, source);
     }
 
     @Override
-    public List<GeneToDiseases> findByGenes(Set<String> geneAcs) {
-        return this.diseaseRepository.findByGenes(geneAcs)
+    public List<GeneToDiseases> findByGenes(Set<String> geneAcs, SourceDatabase source) {
+        return this.diseaseRepository.findByGenes(geneAcs, source)
                 .stream().map(tuple -> new GeneToDiseases(tuple.get(0, String.class), tuple.get(1, BigInteger.class), tuple.get(2, String.class)))
                 .collect(Collectors.toList());
     }

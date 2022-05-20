@@ -9,8 +9,9 @@ import org.reactome.server.annotation.ParameterLogger;
 import org.reactome.server.domain.DiseaseNameHintWord;
 import org.reactome.server.domain.DiseaseResult;
 import org.reactome.server.domain.GeneToDiseasesResult;
+import org.reactome.server.domain.model.SourceDatabase;
 import org.reactome.server.service.DiseaseService;
-import org.reactome.server.service.HintWordService;
+import org.reactome.server.service.DisGeNetHintWordService;
 import org.reactome.server.service.SortBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -28,17 +29,17 @@ import java.util.stream.Collectors;
 public class DisgenetController {
 
     private final DiseaseService diseaseService;
-    private final HintWordService hintWordService;
+    private final DisGeNetHintWordService hintWordService;
 
     @Autowired
-    public DisgenetController(DiseaseService diseaseService, HintWordService hintWordService) {
+    public DisgenetController(DiseaseService diseaseService, DisGeNetHintWordService hintWordService) {
         this.diseaseService = diseaseService;
         this.hintWordService = hintWordService;
     }
 
     @GetMapping
     public String index() {
-        return "index";
+        return "disgenet";
     }
 
     @GetMapping("/api")
@@ -58,7 +59,7 @@ public class DisgenetController {
             @RequestParam(value = "score", defaultValue = "0") Float score,
             @RequestParam(value = "sort", defaultValue = "NAME") SortBy sortBy,
             @RequestParam(value = "order", defaultValue = "ASC") Sort.Direction order) {
-        return diseaseService.findAll(pageNumber, pageSize, score, geneSize, sortBy, order);
+        return diseaseService.findAll(pageNumber, pageSize, score, geneSize, SourceDatabase.DISGENET, sortBy, order);
     }
 
     @ParameterLogger
@@ -73,7 +74,7 @@ public class DisgenetController {
                                     @RequestParam(required = false, defaultValue = "0") Float score,
                                     @RequestParam(required = false, defaultValue = "NAME") SortBy sort,
                                     @RequestParam(required = false, defaultValue = "ASC") Sort.Direction order) {
-        return diseaseService.findByDiseaseName(pageNumber, pageSize, diseaseName, score, geneSize, sort, order);
+        return diseaseService.findByDiseaseName(pageNumber, pageSize, diseaseName, score, geneSize, SourceDatabase.DISGENET, sort, order);
     }
 
 
@@ -91,7 +92,7 @@ public class DisgenetController {
     @CrossOrigin()
     public @ResponseBody
     Long getMaxGeneSize(@RequestParam("score") Float score, @RequestParam(value = "name", required = false) String name) {
-        return Optional.ofNullable(diseaseService.getMaxGeneSize(score, name)).orElse(0L);
+        return Optional.ofNullable(diseaseService.getMaxGeneSize(score, name, SourceDatabase.DISGENET)).orElse(0L);
     }
 
 
@@ -107,8 +108,8 @@ public class DisgenetController {
             @RequestBody String geneAcs) {
         return new GeneToDiseasesResult("disgenet", diseaseService.findByGenes(
                 Arrays.stream(geneAcs.split(",|;|\\n|\\t"))
-                        .map(String::trim).collect(Collectors.toSet()
-                        ))
+                        .map(String::trim).collect(Collectors.toSet()),
+                SourceDatabase.DISGENET)
         );
     }
 }

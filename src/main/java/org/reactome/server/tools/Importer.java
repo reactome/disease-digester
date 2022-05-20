@@ -24,25 +24,24 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 
 public class Importer {
-    private static final Logger logger = LoggerFactory.getLogger(Importer.class);
-    private static final String RAW_ZIPPED_FILE_NAME = "curated_gene_disease_associations.tsv.gz";
-    private static final String DOWNLOAD_LINK = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz";
-    private static final String DB_NAME = "overlays";
-    private static final String DB_CREATE = "create";
-    private static final Map<String, String> settings = new HashMap<>();
-    private static Session session;
+    static final Logger logger = LoggerFactory.getLogger(Importer.class);
+    static final String RAW_ZIPPED_FILE_NAME = "curated_gene_disease_associations.tsv.gz";
+    static final String DOWNLOAD_LINK = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz";
+    static final String DB_NAME = "overlays";
+    static final String DB_CREATE = "create";
+    static final Map<String, String> settings = new HashMap<>();
+    static Session session;
 
 
     public static void main(String[] args) throws Exception {
         /*prepare the args*/
         SimpleJSAP jsap = new SimpleJSAP(
-                DiseaseParser.class.getName(),
+                DisGeNetParser.class.getName(),
                 "Read, transfer and save disease-gene association table data from file to database.",
                 new Parameter[]{
                         new FlaggedOption("name", JSAP.STRING_PARSER, DB_NAME, JSAP.NOT_REQUIRED, 'n', "name", "[Optional] Specify the database"),
@@ -62,9 +61,9 @@ public class Importer {
 
         /*try to download the compressed association file from the given url*/
         try {
-            // TODO: 2020/6/8 refactor the code in this section
             BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
-            saveDiseaseItems(new DiseaseParser(bufferedReader));
+            saveDiseaseItems(new DisGeNetParser(bufferedReader));
+            saveDiseaseItems(new OpenTargetParser());
         } catch (Exception e) {
             logger.warn(e.getMessage());
             e.printStackTrace();
@@ -74,33 +73,7 @@ public class Importer {
         }
     }
 
-    private static void prepareSession(JSAPResult jsapResult) {
-        settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
-        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + jsapResult.getString("name") + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
-        settings.put(Environment.USER, jsapResult.getString("user"));
-        settings.put(Environment.PASS, jsapResult.getString("password"));
-        settings.put(Environment.HBM2DDL_AUTO, jsapResult.getString("mode"));
-        Configuration configuration = new Configuration();
-        configuration.addAnnotatedClass(GDA.class);
-        configuration.addAnnotatedClass(Disease.class);
-        configuration.addAnnotatedClass(Gene.class);
-        SessionFactory sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
-        session = sessionFactory.openSession();
-    }
-
-    private static void saveDiseaseItems(DiseaseParser parser) {
-        long start = System.currentTimeMillis();
-        Transaction transaction = session.beginTransaction();
-        parser.getGenes().forEach(session::save);
-        parser.getDiseases().forEach(session::save);
-        parser.getGdaList().forEach(session::save);
-        transaction.commit();
-        session.close();
-        logger.info("Load: " + parser.getGdaList().size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
-    }
-
-    private static BufferedReader downloadFile(URL url) throws IOException {
+    static BufferedReader downloadFile(URL url) throws IOException {
         String directory = Paths.get("").toAbsolutePath().toString().concat(File.separator);
         File rawZippedFile = new File(directory, RAW_ZIPPED_FILE_NAME);
         if (rawZippedFile.exists()) {
@@ -115,7 +88,7 @@ public class Importer {
         return new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(rawZippedFile)), StandardCharsets.UTF_8));
     }
 
-    private static void doHttpsDownload(URL url, File dest) {
+    static void doHttpsDownload(URL url, File dest) {
         // code from https://zwbetz.com/download-a-file-over-https-using-apache-commons-fileutils-copyurltofile/
         try {
             // Create a new trust manager that trusts all certificates
@@ -149,5 +122,30 @@ public class Importer {
             e.printStackTrace();
             System.exit(0);
         }
+    }
+
+    static void prepareSession(JSAPResult jsapResult) {
+        settings.put("connection.driver_class", "com.mysql.cj.jdbc.Driver");
+        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
+        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + jsapResult.getString("name") + "?&characterEncoding=utf-8&useUnicode=true&serverTimezone=America/Toronto");
+        settings.put(Environment.USER, jsapResult.getString("user"));
+        settings.put(Environment.PASS, jsapResult.getString("password"));
+        settings.put(Environment.HBM2DDL_AUTO, jsapResult.getString("mode"));
+        Configuration configuration = new Configuration();
+        configuration.addAnnotatedClass(GDA.class);
+        configuration.addAnnotatedClass(Disease.class);
+        configuration.addAnnotatedClass(Gene.class);
+        SessionFactory sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(settings).build());
+        session = sessionFactory.openSession();
+    }
+
+    static void saveDiseaseItems(Parser parser) {
+        long start = System.currentTimeMillis();
+        Transaction transaction = session.beginTransaction();
+        parser.getGenes().forEach(session::save);
+        parser.getDiseases().forEach(session::save);
+        parser.getGdaList().forEach(session::save);
+        transaction.commit();
+        logger.info("Load: " + parser.getGdaList().size() + " items in: " + (System.currentTimeMillis() - start) / 1000.0 + "s into database.");
     }
 }

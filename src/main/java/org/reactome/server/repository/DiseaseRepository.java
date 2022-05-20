@@ -2,6 +2,7 @@ package org.reactome.server.repository;
 
 import org.apache.ibatis.annotations.Param;
 import org.reactome.server.domain.model.Disease;
+import org.reactome.server.domain.model.SourceDatabase;
 import org.reactome.server.repository.out.Sorted;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,37 +32,40 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
                     "FROM disease d " +
                     "         INNER JOIN gda gda on d.diseaseId = gda.diseaseId " +
                     "         INNER JOIN gene g on gda.geneId = g.geneId " +
-                    "WHERE g.accessionNumber IN :geneAcs " +
+                    "WHERE d.source = :source AND g.accessionNumber IN :geneAcs " +
                     "GROUP BY g.accessionNumber ", nativeQuery = true)
-    List<Tuple> findByGenes(@Param("geneAcs") Set<String> geneAcs);
+    List<Tuple> findByGenes(@Param("geneAcs") Set<String> geneAcs, @Param("source") SourceDatabase source);
 
     @Query("select d as result, COUNT(gda.gene) as associatedGenesCount " +
             "from Disease d " +
             "inner join GDA gda on d.diseaseId = gda.disease " +
             "inner join Gene g on gda.gene = g.geneId " +
             "where gda.score >= :score " +
+            "and d.source = :source " +
             "group by d.diseaseId " +
             "having count(g.geneId) >= :size ")
-    Page<Sorted<Disease>> findAll(@Param("score") Float score, @Param("size") Long size, Pageable pageable);
+    Page<Sorted<Disease>> findAll(@Param("score") Float score, @Param("size") Long size, @Param("source") SourceDatabase source, Pageable pageable);
 
     @Query("select d as result, count(gda.gene) as associatedGenesCount " +
             "from Disease d " +
             "inner join GDA gda on d.diseaseId = gda.disease " +
             "inner join Gene g on gda.gene = g.geneId " +
             "where d.diseaseName like concat('%', :diseaseName ,'%') " +
+            "and d.source = :source " +
             "and gda.score >= :score " +
             "group by d.diseaseId " +
             "having count(g.geneId) >= :size ")
-    Page<Sorted<Disease>> findByDiseaseName(@Param("diseaseName") String diseaseName, @Param("score") Float score, @Param("size") Long size, Pageable pageable);
+    Page<Sorted<Disease>> findByDiseaseName(@Param("diseaseName") String diseaseName, @Param("score") Float score, @Param("size") Long size, @Param("source") SourceDatabase source, Pageable pageable);
 
     @Query("select count(d.diseaseId), count(gda) as associatedGenesCount " +
             "from Disease d " +
             "inner join GDA gda on d.diseaseId = gda.disease " +
             "inner join Gene g on gda.gene = g.geneId " +
             "where gda.score >= :score " +
+            "and d.source = :source " +
             "group by d.diseaseId " +
             "having count(g.geneId) >= :size")
-    Long selectDiseaseIdCount(@Param("score") Float score, @Param("size") Long size);
+    Long selectDiseaseIdCount(@Param("score") Float score, @Param("size") Long size, @Param("source") SourceDatabase source);
 
     @Query(value =
             "select max(c) " +
@@ -70,11 +74,11 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
                     "from Disease d " +
                     "inner join gda gda on d.diseaseId = gda.diseaseId " +
                     "inner join gene g on gda.geneId = g.geneId " +
-                    "where gda.score >= :score " +
+                    "where d.source = :source AND gda.score >= :score " +
                     "group by d.diseaseId" +
                     ") _"
             , nativeQuery = true)
-    Long selectMaxGeneSizeByScore(@Param("score") Float score);
+    Long selectMaxGeneSizeByScore(@Param("score") Float score, @Param("source") SourceDatabase source);
 
     @Query(value =
             "select max(c) " +
@@ -84,20 +88,25 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
                     "inner join gda gda on d.diseaseId = gda.diseaseId " +
                     "inner join gene g on gda.geneId = g.geneId " +
                     "where d.diseaseName like concat('%', :diseaseName,'%') " +
+                    "and d.source = :source " +
                     "and gda.score >= :score " +
                     "group by d.diseaseId) _"
             , nativeQuery = true)
-    Long selectMaxGeneSizeByScoreAndDiseaseName(@Param("diseaseName") String diseaseName, @Param("score") Float score);
+    Long selectMaxGeneSizeByScoreAndDiseaseName(@Param("diseaseName") String diseaseName, @Param("score") Float score, @Param("source") SourceDatabase source);
 
-    @Query("select d.diseaseName" +
-            " from Disease d order by d.diseaseName ASC ")
-    List<String> selectDiseaseName();
+    @Query("select d.diseaseName " +
+            "from Disease d " +
+            "where d.source = :source " +
+            "order by d.diseaseName ASC ")
+    List<String> selectDiseaseName(@Param("source") SourceDatabase source);
 
     @Query("select g.geneSymbol " +
-            "from Gene g " +
-            "inner join GDA gda on gda.gene = g.geneId " +
-            "where gda.disease.diseaseId = :diseaseId")
-    List<String> getGeneListByDiseaseId(@Param("diseaseId") String diseaseId);
+            "from Disease d " +
+            "inner join GDA gda on d.diseaseId = gda.disease " +
+            "inner join Gene g on gda.gene = g.geneId " +
+            "where gda.disease.diseaseId = :diseaseId " +
+            "and d.source = :source")
+    List<String> getGeneListByDiseaseId(@Param("diseaseId") String diseaseId, @Param("source") SourceDatabase source);
 }
 
 
