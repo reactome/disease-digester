@@ -47,6 +47,7 @@ public class Importer {
                         new FlaggedOption("name", JSAP.STRING_PARSER, DB_NAME, JSAP.NOT_REQUIRED, 'n', "name", "[Optional] Specify the database"),
                         new FlaggedOption("user", JSAP.STRING_PARSER, null, JSAP.REQUIRED, 'u', "user", "[Need] The database user name"),
                         new FlaggedOption("password", JSAP.STRING_PARSER, null, JSAP.REQUIRED, 'p', "password", "[Need] The database password"),
+                        new FlaggedOption("file", JSAP.STRING_PARSER, DOWNLOAD_LINK, JSAP.REQUIRED, 'f', "file", "[Need] The genetics target list data in json rows"),
                         new FlaggedOption("mode", JSAP.STRING_PARSER, DB_CREATE, JSAP.NOT_REQUIRED, 'm', "mode", "[Optional] The session mode [create | create-drop | update]"),
                         new FlaggedOption("url", JSAP.URL_PARSER, DOWNLOAD_LINK, JSAP.NOT_REQUIRED, 'd', "url", "[Optional] The disease overlay table data in tsv/csv format with columns: 'diseaseId', 'diseaseName' and 'geneSymbol' from DisGeNet"),
                 }
@@ -61,9 +62,9 @@ public class Importer {
 
         /*try to download the compressed association file from the given url*/
         try {
-            BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
-            saveDiseaseItems(new DisGeNetParser(bufferedReader));
-            saveDiseaseItems(new OpenTargetParser());
+//            BufferedReader bufferedReader = downloadFile(jsapResult.getURL("url"));
+//            saveDiseaseItems(new DisGeNetParser(bufferedReader));
+            saveDiseaseItems(new OpenTargetParser(new BufferedReader(new FileReader(jsapResult.getString("file")))));
         } catch (Exception e) {
             logger.warn(e.getMessage());
             e.printStackTrace();
