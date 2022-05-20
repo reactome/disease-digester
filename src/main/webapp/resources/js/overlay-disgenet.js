@@ -67,7 +67,7 @@ Vue.component('pagination', {
     }
 });
 
-let overlayDisgenet = new Vue({
+let overlay = new Vue({
     el: '#disease-overlay',
     data: {
         diseases: [],
@@ -266,4 +266,4 @@ let overlayDisgenet = new Vue({
         },
     },
 });
-export {overlayDisgenet};
+export {overlay};

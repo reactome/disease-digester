@@ -7,12 +7,12 @@
 <div class="favth-col-xs-12">
 
     <div>
-        <h2>OpenTarget overlayDisgenet of gene-disease associations</h2>
+        <h2>OpenTarget overlay of gene-disease associations</h2>
 
         <a href="https://www.opentargets.org/" target="_blank">OpenTarget </a>
         (<a href="https://pubmed.ncbi.nlm.nih.gov/27899665/" target="_blank">Koscielny G, et al, Nucleic Acids Res.
         2016</a>) is a platform for therapeutic target identification and validation.
-        We have pre-processed OpenTarget gene-disease associations for overlayDisgenet onto Reactome.
+        We have pre-processed OpenTarget gene-disease associations for overlay onto Reactome.
         For each disease, clicking on the "Analysis" button will show the results of Reactome pathway analysis with
         the set of genes associated with that disease.
         If you are interested in overlaying other data sources onto Reactome in a similar manner, please
