@@ -74,16 +74,6 @@ public class Disease implements Serializable {
         return associatedGenes;
     }
 
-    public Set<String> getAssociatedGeneIds() {
-        return associatedGenes.stream().map(GDA::getGene).map(Gene::getGeneId).collect(Collectors.toSet());
-    }
-    public Set<String> getAssociatedGeneSymbols() {
-        return associatedGenes.stream().map(GDA::getGene).map(Gene::getGeneSymbol).collect(Collectors.toSet());
-    }
-    public Set<String> getAssociatedGeneAcs() {
-        return associatedGenes.stream().map(GDA::getGene).map(Gene::getAccessionNumber).collect(Collectors.toSet());
-    }
-
     public void setAssociatedGenes(List<GDA> associatedGenes) {
         this.associatedGenes = associatedGenes;
     }

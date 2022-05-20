@@ -32,8 +32,8 @@ public class DiseaseSerializer extends StdSerializer<Disease> {
                 }
                 break;
             case OPEN_TARGET:
-                for (String s : disease.getAssociatedGeneIds()) {
-                    jsonGenerator.writeString(s);
+                for (GDA gda : disease.getAssociatedGenes()) {
+                    jsonGenerator.writeString(gda.getGene().getGeneId());
                 }
         }
 

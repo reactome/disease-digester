@@ -34,7 +34,7 @@ public class OpenTargetParser implements Parser {
                 diseases.add(disease);
                 row.getDetails().forEach(detail -> {
                     Gene gene = idToGene.computeIfAbsent(detail.getTarget(), ensemblId -> new Gene(ensemblId, ensemblId, ensemblId));
-                    gdaToScores.computeIfAbsent(new GDA(disease, gene, 0, detail.getVariantId()), gda -> new ArrayList<>()).add(detail.getL2g());
+                    gdaToScores.computeIfAbsent(new GDA(disease, gene, 0), gda -> new ArrayList<>()).add(detail.getL2g());
                 });
 
             } catch (JsonProcessingException e) {

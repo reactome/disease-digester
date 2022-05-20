@@ -33,13 +33,6 @@ public class GDA implements Serializable {
         this.score = score;
     }
 
-    public GDA(Disease disease, Gene gene, float score, String variantId) {
-        this.id = new GDAKey(disease.getDiseaseId(), gene.getGeneId(), variantId);
-        this.disease = disease;
-        this.gene = gene;
-        this.score = score;
-    }
-
     public Disease getDisease() {
         return disease;
     }
@@ -66,13 +59,6 @@ public class GDA implements Serializable {
         this.score = score;
     }
 
-    public String getVariantId() {
-        return id.getVariantId();
-    }
-
-    public void setVariantId(String variantId) {
-        this.id.setVariantId(variantId);
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -93,7 +79,6 @@ public class GDA implements Serializable {
                 "disease=" + disease +
                 ", gene=" + gene +
                 ", score=" + score +
-                ", variantId='" + getVariantId() + '\'' +
                 '}';
     }
 }

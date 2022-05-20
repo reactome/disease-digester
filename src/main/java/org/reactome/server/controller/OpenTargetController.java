@@ -109,8 +109,10 @@ public class OpenTargetController {
             @RequestBody String geneAcs) {
         return new GeneToDiseasesResult("open-target", diseaseService.findByGenes(
                 Arrays.stream(geneAcs.split(",|;|\\n|\\t"))
-                        .map(String::trim).collect(Collectors.toSet()),
-                SourceDatabase.OPEN_TARGET)
+                        .map(String::trim)
+                        .collect(Collectors.toSet()),
+                SourceDatabase.OPEN_TARGET
+        )
         );
     }
 }
