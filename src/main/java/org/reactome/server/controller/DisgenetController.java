@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Tag(name = "content", description = "Access Reactome imported DisGeNET content")
+@Tag(name = "disgenet", description = "Access Reactome imported DisGeNET content")
 @Controller
 @RequestMapping("/disgenet")
 public class DisgenetController {

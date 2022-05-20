@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Tag(name = "content", description = "Access Reactome imported OpenTarget content")
+@Tag(name = "open-target", description = "Access Reactome imported OpenTarget content")
 @Controller
 @RequestMapping("/open-target")
 public class OpenTargetController {
