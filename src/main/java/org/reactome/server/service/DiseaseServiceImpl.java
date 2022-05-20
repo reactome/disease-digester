@@ -66,8 +66,9 @@ public class DiseaseServiceImpl implements DiseaseService {
 
     @Override
     public List<GeneToDiseases> findByGenes(Set<String> geneAcs, SourceDatabase source) {
-        return this.diseaseRepository.findByGenes(geneAcs, source)
-                .stream().map(tuple -> new GeneToDiseases(tuple.get(0, String.class), tuple.get(1, BigInteger.class), tuple.get(2, String.class)))
+        return this.diseaseRepository.findByGenes(geneAcs, source).stream()
+                .map(tuple -> new GeneToDiseases(tuple.get(0, String.class), tuple.get(1, BigInteger.class), tuple.get(2, String.class)))
+                .distinct()
                 .collect(Collectors.toList());
     }
 }

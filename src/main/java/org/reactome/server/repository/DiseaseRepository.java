@@ -36,17 +36,17 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
                     "GROUP BY g.accessionNumber ", nativeQuery = true)
     List<Tuple> findByGenes(@Param("geneAcs") Set<String> geneAcs, @Param("source") SourceDatabase source);
 
-    @Query("select d as result, COUNT(gda.gene) as associatedGenesCount " +
+    @Query("select d as result, COUNT(distinct gda.gene) as associatedGenesCount " +
             "from Disease d " +
             "inner join GDA gda on d.diseaseId = gda.disease " +
             "inner join Gene g on gda.gene = g.geneId " +
             "where gda.score >= :score " +
             "and d.source = :source " +
             "group by d.diseaseId " +
-            "having count(g.geneId) >= :size ")
+            "having count(distinct g.geneId) >= :size ")
     Page<Sorted<Disease>> findAll(@Param("score") Float score, @Param("size") Long size, @Param("source") SourceDatabase source, Pageable pageable);
 
-    @Query("select d as result, count(gda.gene) as associatedGenesCount " +
+    @Query("select d as result, count(distinct gda.gene) as associatedGenesCount " +
             "from Disease d " +
             "inner join GDA gda on d.diseaseId = gda.disease " +
             "inner join Gene g on gda.gene = g.geneId " +
@@ -54,23 +54,23 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
             "and d.source = :source " +
             "and gda.score >= :score " +
             "group by d.diseaseId " +
-            "having count(g.geneId) >= :size ")
+            "having count(distinct g.geneId) >= :size ")
     Page<Sorted<Disease>> findByDiseaseName(@Param("diseaseName") String diseaseName, @Param("score") Float score, @Param("size") Long size, @Param("source") SourceDatabase source, Pageable pageable);
 
-    @Query("select count(d.diseaseId), count(gda) as associatedGenesCount " +
+    @Query("select count(d.diseaseId), count(distinct gda.gene) as associatedGenesCount " +
             "from Disease d " +
             "inner join GDA gda on d.diseaseId = gda.disease " +
             "inner join Gene g on gda.gene = g.geneId " +
             "where gda.score >= :score " +
             "and d.source = :source " +
             "group by d.diseaseId " +
-            "having count(g.geneId) >= :size")
+            "having count(distinct g.geneId) >= :size")
     Long selectDiseaseIdCount(@Param("score") Float score, @Param("size") Long size, @Param("source") SourceDatabase source);
 
     @Query(value =
             "select max(c) " +
                     "from (" +
-                    "select count(g.geneId) c " +
+                    "select count(distinct g.geneId) c " +
                     "from Disease d " +
                     "inner join gda gda on d.diseaseId = gda.diseaseId " +
                     "inner join gene g on gda.geneId = g.geneId " +
@@ -83,7 +83,7 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
     @Query(value =
             "select max(c) " +
                     "from (" +
-                    "select count(g.geneId) c " +
+                    "select count(distinct g.geneId) c " +
                     "from disease d " +
                     "inner join gda gda on d.diseaseId = gda.diseaseId " +
                     "inner join gene g on gda.geneId = g.geneId " +
@@ -100,7 +100,7 @@ public interface DiseaseRepository extends CrudRepository<Disease, String> {
             "order by d.diseaseName ASC ")
     List<String> selectDiseaseName(@Param("source") SourceDatabase source);
 
-    @Query("select g.geneSymbol " +
+    @Query("select distinct g.geneSymbol " +
             "from Disease d " +
             "inner join GDA gda on d.diseaseId = gda.disease " +
             "inner join Gene g on gda.gene = g.geneId " +
