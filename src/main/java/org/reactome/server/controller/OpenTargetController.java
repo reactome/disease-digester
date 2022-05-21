@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -39,12 +40,14 @@ public class OpenTargetController {
     }
 
     @GetMapping
-    public String index() {
+    public String index(ModelMap model) {
+        model.addAttribute("title", "OpenTarget overlay");
         return "open-target";
     }
 
     @GetMapping("/api")
-    public String apiDoc() {
+    public String apiDoc(ModelMap model) {
+        model.addAttribute("title", "OpenTarget overlay API");
         return "swagger/disgenet-api-doc";
     }
 

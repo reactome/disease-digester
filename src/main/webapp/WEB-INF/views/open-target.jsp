@@ -9,7 +9,7 @@
     <div>
         <h2>OpenTarget overlay of gene-disease associations</h2>
 
-        <a href="https://www.opentargets.org/" target="_blank">OpenTarget </a>
+        <a href="https://www.opentargets.org/" target="_blank">OpenTarget</a>
         (<a href="https://pubmed.ncbi.nlm.nih.gov/27899665/" target="_blank">Koscielny G, et al, Nucleic Acids Res.
         2016</a>) is a platform for therapeutic target identification and validation.
         We have pre-processed OpenTarget gene-disease associations for overlay onto Reactome.
