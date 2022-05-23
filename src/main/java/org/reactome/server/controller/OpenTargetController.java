@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Tag(name = "open-target", description = "Access Reactome imported OpenTarget content")
+@Tag(name = "content", description = "Access Reactome imported OpenTarget content")
 @Controller
 @RequestMapping("/open-target")
 public class OpenTargetController {
@@ -48,7 +48,7 @@ public class OpenTargetController {
     @GetMapping("/api")
     public String apiDoc(ModelMap model) {
         model.addAttribute("title", "OpenTarget overlay API");
-        return "swagger/disgenet-api-doc";
+        return "swagger/open-target-api-doc";
     }
 
     @ParameterLogger

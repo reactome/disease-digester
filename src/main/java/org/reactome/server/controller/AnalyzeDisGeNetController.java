@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/disgenet/analyze")
 @SuppressWarnings("unused")
-@Tag(name = "analyze-disgenet", description = "Reactome DisGeNET analysis queries")
+@Tag(name = "analyze", description = "Reactome DisGeNET analysis queries")
 public class AnalyzeDisGeNetController {
 
     private final GeneAnalysisService geneAnalysisService;

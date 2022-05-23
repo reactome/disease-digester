@@ -42,7 +42,7 @@
         }
         // Build a system
         window.ui = SwaggerUIBundle({
-            url: window.location.origin + deployPath + "/api-docs/disgenet",
+            url: window.location.origin + deployPath + "/api-docs/open-target",
             dom_id: '#swagger-ui',
             deepLinking: true,
             presets: [

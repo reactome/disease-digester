@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/open-target/analyze")
 @SuppressWarnings("unused")
-@Tag(name = "analyze-open-target", description = "Reactome OpenTarget analysis queries")
+@Tag(name = "analyze", description = "Reactome OpenTarget analysis queries")
 public class AnalyzeOpenTargetController {
 
     private final GeneAnalysisService geneAnalysisService;
