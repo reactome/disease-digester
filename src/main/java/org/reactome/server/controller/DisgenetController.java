@@ -4,12 +4,15 @@ package org.reactome.server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.reactome.server.annotation.ParameterLogger;
 import org.reactome.server.domain.DiseaseNameHintWord;
 import org.reactome.server.domain.DiseaseResult;
 import org.reactome.server.domain.GeneToDiseasesResult;
 import org.reactome.server.domain.model.SourceDatabase;
+import org.reactome.server.exception.NotFoundException;
 import org.reactome.server.service.DiseaseService;
 import org.reactome.server.service.DisGeNetHintWordService;
 import org.reactome.server.service.SortBy;
@@ -100,6 +103,11 @@ public class DisgenetController {
 
 
     @Operation(summary = "Retrieve a detailed interaction information of a given accession")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "Could not find the Interactors"),
+            @ApiResponse(responseCode = "406", description = "Not acceptable according to the accept headers sent in the request"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     @RequestMapping(value = "/findByGenes", method = RequestMethod.POST, consumes = "text/plain", produces = "application/json")
     @ResponseBody
     @CrossOrigin()
@@ -109,10 +117,14 @@ public class DisgenetController {
                     required = true,
                     content = @Content(examples = {@ExampleObject("P04637, P01189")}))
             @RequestBody String geneAcs) {
-        return new GeneToDiseasesResult("disgenet", diseaseService.findByGenes(
+        GeneToDiseasesResult result = new GeneToDiseasesResult("disgenet", diseaseService.findByGenes(
                 Arrays.stream(geneAcs.split(",|;|\\n|\\t"))
                         .map(String::trim).collect(Collectors.toSet()),
                 SourceDatabase.DISGENET)
         );
+        if (result.getEntities().isEmpty()) {
+            throw new NotFoundException("No interactors found for accession: " + Arrays.toString(geneAcs.split(",|;|\\n|\\t")));
+        }
+        return result;
     }
 }
