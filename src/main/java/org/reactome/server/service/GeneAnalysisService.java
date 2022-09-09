@@ -9,7 +9,7 @@ import org.reactome.server.domain.model.SourceDatabase;
 import org.reactome.server.exception.FailedAnalyzeDiseaseException;
 
 public interface GeneAnalysisService {
-    String checkGeneListAnalysisResult(AnalysisRequestData requestData) throws FailedAnalyzeDiseaseException;
+    String checkGeneListAnalysisResult(AnalysisRequestData requestData, String baseUrl) throws FailedAnalyzeDiseaseException;
 
-    AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways, SourceDatabase source);
+    AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways, SourceDatabase source, String baseUrl);
 }

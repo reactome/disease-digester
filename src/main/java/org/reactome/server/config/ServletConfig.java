@@ -76,4 +76,52 @@ public class ServletConfig {
         );
         return bean;
     }
+
+    @Bean
+    public ServletRegistrationBean<ProxyServlet> analysisServiceServletBean() {
+        ServletRegistrationBean<ProxyServlet> bean = new ServletRegistrationBean<>(new ProxyServlet(), "/AnalysisService/*");
+        bean.setName("AnalysisService");
+        bean.setInitParameters(Map.of(
+                "proxyHost", this.proxyHost,
+                "proxyPort", "80",
+                "proxyPath", "/AnalysisService")
+        );
+        return bean;
+    }
+
+    @Bean
+    public ServletRegistrationBean<ProxyServlet> contentServiceServletBean() {
+        ServletRegistrationBean<ProxyServlet> bean = new ServletRegistrationBean<>(new ProxyServlet(), "/ContentService/*");
+        bean.setName("ContentService");
+        bean.setInitParameters(Map.of(
+                "proxyHost", this.proxyHost,
+                "proxyPort", "80",
+                "proxyPath", "/ContentService")
+        );
+        return bean;
+    }
+
+    @Bean
+    public ServletRegistrationBean<ProxyServlet> reacfoamServletBean() {
+        ServletRegistrationBean<ProxyServlet> bean = new ServletRegistrationBean<>(new ProxyServlet(), "/reacfoam/*");
+        bean.setName("reacFoam");
+        bean.setInitParameters(Map.of(
+                "proxyHost", this.proxyHost,
+                "proxyPort", "80",
+                "proxyPath", "/reacfoam")
+        );
+        return bean;
+    }
+
+    @Bean
+    public ServletRegistrationBean<ProxyServlet> pbServletBean() {
+        ServletRegistrationBean<ProxyServlet> bean = new ServletRegistrationBean<>(new ProxyServlet(), "/PathwayBrowser/*");
+        bean.setName("PathwayBrowser");
+        bean.setInitParameters(Map.of(
+                "proxyHost", this.proxyHost,
+                "proxyPort", "80",
+                "proxyPath", "/PathwayBrowser")
+        );
+        return bean;
+    }
 }

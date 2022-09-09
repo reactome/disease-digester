@@ -9,8 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import javax.servlet.ServletContext;
+import java.util.List;
 
 @Service
 public class GeneAnalysisServiceImpl implements GeneAnalysisService {
@@ -25,6 +29,7 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
     @Value("${reactome.analysis.service}")
     private String ANALYSIS_SERVICE;
 
+
     @Autowired
     public GeneAnalysisServiceImpl(RestTemplate restTemplate, DiseaseService diseaseService) {
         this.restTemplate = restTemplate;
@@ -33,11 +38,11 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
 
     // todo: use reactome analysis-service as internal component instead of request data via API from network
     @Override
-    public String checkGeneListAnalysisResult(AnalysisRequestData requestData) {
+    public String checkGeneListAnalysisResult(AnalysisRequestData requestData, String baseUrl) {
         String payLoad = String.join(" ", requestData.getGenes());
         AnalysisParameter parameter = new AnalysisParameter();
         parameter.setInteractors(requestData.isIncludeInteractors());
-        String url = ANALYSIS_SERVICE.concat(parameter.getParameter());
+        String url = baseUrl +  ANALYSIS_SERVICE.concat(parameter.getParameter());
         logger.debug(url);
         String token = doAnalysis(url, payLoad);
         ReacfoamParameter reacfoamParameter = new ReacfoamParameter();
@@ -49,11 +54,11 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
 
     // TODO: 2020/5/24 add more parameter in this method
     @Override
-    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways, SourceDatabase source) {
+    public AnalysisResult analysisByDisease(String disease, Boolean projection, Boolean interactors, SortBy sortBy, OrderBy order, Resource resource, Float pValue, Boolean includeDiseasePathways, SourceDatabase source, String baseUrl) {
 //    public String analysisByDiseaseId(String diseaseId, Object... parameters) throws EmptyGeneAnalysisResultException {
         String payLoad = String.join(" ", diseaseService.getGeneListByDiseaseId(disease, source));
         AnalysisParameter parameter = createAnalysisParameter(disease, projection, interactors, sortBy, order, resource, pValue, includeDiseasePathways);
-        String url = ANALYSIS_SERVICE.concat(parameter.getParameter());
+        String url = baseUrl + ANALYSIS_SERVICE.concat(parameter.getParameter());
         logger.debug(url);
         AnalysisResult result;
         String token = doAnalysis(url, payLoad);
@@ -61,7 +66,7 @@ public class GeneAnalysisServiceImpl implements GeneAnalysisService {
             ReacfoamParameter reacfoamParameter = new ReacfoamParameter();
             reacfoamParameter.setAnalysis(token);
             result = new AnalysisResult(HttpStatus.OK, parameter);
-            result.setUrl(PATHWAY_BROWSER_REACFOAM.concat(reacfoamParameter.getParameter()));
+            result.setUrl(baseUrl + PATHWAY_BROWSER_REACFOAM.concat(reacfoamParameter.getParameter()));
             result.setMessage("success");
         } else {
             result = new AnalysisResult(HttpStatus.NOT_ACCEPTABLE, parameter);

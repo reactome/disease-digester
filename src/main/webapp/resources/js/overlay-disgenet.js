@@ -162,7 +162,7 @@ let overlay = new Vue({
                 "genes": geneItems
             };
             let url = this.redirectToReacFoam ?
-                "https://reactome.org/reacfoam/" : "https://reactome.org/PathwayBrowser/";
+                "/reacfoam/" : "/PathwayBrowser/";
             // to avoid the popup-blocker, must open a page immediately after the btn on-click event,
             // then await to set the true location from the response url,
             let analyzeWindow = window.open(url);
