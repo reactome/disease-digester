@@ -9,7 +9,7 @@ digester-importer [usage:]
 
 - use `mvn clean package` to package codes into executable jar file
 
-- use `java -jar digester-importer-exec.war --help` to show the help message:
+- use `java -jar digester-importer-disgenet-exec.war --help` to show the help message:
 
     ```
   
@@ -45,7 +45,7 @@ digester-importer [usage:]
             https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz)
     ```
   
-- use `java -jar digester-importer-exec.war -n DATABASE_NAME -u USER_NAME -p PASS_WORD` to download the latest update data and load into MySQL8 database
+- use `java -jar digester-importer-disgenet-exec.war -n DATABASE_NAME -u USER_NAME -p PASS_WORD` to download the latest update data and load into MySQL8 database
 
 disease-digester api [usage:]
 
