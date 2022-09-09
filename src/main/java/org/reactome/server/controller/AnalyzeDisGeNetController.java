@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/disgenet/analyze")
 @SuppressWarnings("unused")
@@ -36,8 +38,8 @@ public class AnalyzeDisGeNetController {
     @PostMapping
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    String analyse(@RequestBody AnalysisRequestData requestData) throws FailedAnalyzeDiseaseException {
-        return geneAnalysisService.checkGeneListAnalysisResult(requestData);
+    String analyse(@RequestBody AnalysisRequestData requestData, HttpServletRequest request) throws FailedAnalyzeDiseaseException {
+        return geneAnalysisService.checkGeneListAnalysisResult(requestData, UrlUtil.getBaseUrl(request));
     }
 
     @CrossOrigin
@@ -51,7 +53,8 @@ public class AnalyzeDisGeNetController {
                                    @Parameter(name = "projection", description = "Map identifiers to Homo sapiens.", example = "true") @RequestParam(value = "projection", required = false) Boolean projection,
                                    @Parameter(name = "interactors", description = "Include high confidence IntAct interactors to extend coverage of Reactome.", example = "true") @RequestParam(value = "interactors", required = false) Boolean interactors,
                                    @Parameter(name = "pValue", description = "Defines the pValue threshold. Only hit pathways with pValue equals below the threshold will be returned.", example = "1.0") @RequestParam(value = "pValue", required = false) Float pValue,
-                                   @Parameter(name = "includeDiseasePathways", description = "Set to 'false' to exclude the Reactome disease pathways from the result (it does not alter the statistics).", example = "true") @RequestParam(value = "includeDiseasePathways", required = false) Boolean includeDiseasePathways) {
-        return geneAnalysisService.analysisByDisease(disease, projection, interactors, SortBy.ENTITIES_PVALUE, OrderBy.ASC, Resource.TOTAL, pValue, includeDiseasePathways, SourceDatabase.DISGENET);
+                                   @Parameter(name = "includeDiseasePathways", description = "Set to 'false' to exclude the Reactome disease pathways from the result (it does not alter the statistics).", example = "true") @RequestParam(value = "includeDiseasePathways", required = false) Boolean includeDiseasePathways,
+                                   HttpServletRequest request) {
+        return geneAnalysisService.analysisByDisease(disease, projection, interactors, SortBy.ENTITIES_PVALUE, OrderBy.ASC, Resource.TOTAL, pValue, includeDiseasePathways, SourceDatabase.DISGENET, UrlUtil.getBaseUrl(request));
     }
 }
