@@ -5,7 +5,7 @@
 To represent the disease-gene binary relationship with a REACTOME overlay           
 ---
 
-digester-importer [usage:]
+digester-importer :orange_book:
 
 - use `mvn clean package` to package codes into executable jar file
 
@@ -47,7 +47,7 @@ digester-importer [usage:]
   
 - use `java -jar digester-importer-disgenet-exec.war -n DATABASE_NAME -u USER_NAME -p PASS_WORD` to download the latest update data and load into MySQL8 database
 
-disease-digester api [usage:]
+disease-digester api :blue_book:
 
 - run: `mvn spring-boot:run`
 
@@ -70,6 +70,10 @@ disease-digester api [usage:]
 - [/disease-digester/findByDiseaseName?name=immune&page=1&size=40&sort=disease&order=desc]()
 
 - [/disease-digester/findByDiseaseName?name=immune&page=1&size=40&sort=gene&order=desc]()
+
+disease-digester web :green_book:
+
+Visit: http://localhost:8080/overlays/disgenet
 
 ## Task list, ordered in descending importance: 
 
